@@ -1,0 +1,10 @@
+AddDefaultCharset UTF-8
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	RewriteBase /
+
+	RewriteRule .*\.ini$ /boot.php [NE,L]
+
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule .* /boot.php [NE,L]
+</IfModule>

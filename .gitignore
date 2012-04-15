@@ -1,0 +1,7 @@
+images/*
+!images/.gitignore
+
+cache/*
+!cache/.gitignore
+
+define.ini
