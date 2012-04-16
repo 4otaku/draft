@@ -8,7 +8,9 @@
 		<link rel="stylesheet" href="/external/m/?b=css&f={{css.list|join(',')}}&ver={{css.time}}" type="text/css" media="screen" />
 	</head>
 	<body>
-		{% block content %}{% endblock %}
+		<div class="content">
+			{% block content %}{% endblock %}
+		</div>
 		<script type="text/javascript" src="/external/m/?b=js&f={{js.list|join(',')}}&ver={{js.time}}"></script>
 	</body>
 </html>

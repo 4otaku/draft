@@ -1,15 +1,7 @@
-body {
-	background-color: #999;
+.content {
+	margin: 60px 120px;
 }
 
-.tabbable {
-	margin: 40px 80px;
-	padding: 10px 20px;
-	border-radius: 20px;
-	-moz-border-radius: 20px;
-	-webkit-border-radius: 20px;
-	-moz-box-shadow: 10px 10px 5px #333;
-	-webkit-box-shadow: 10px 10px 5px #333;
-	box-shadow: 10px 10px 5px #333;
-	background-color: #FFF;
+.tabbable form {
+	background-color: inherit !important;
 }

@@ -1,0 +1,16 @@
+body {
+	background-color: #688A08;
+	background-image: url('/images/background.png');
+}
+
+.content {
+	border-radius: 20px;
+	-moz-border-radius: 20px;
+	-webkit-border-radius: 20px;
+	-moz-box-shadow: 10px 10px 5px #333;
+	-webkit-box-shadow: 10px 10px 5px #333;
+	box-shadow: 10px 10px 5px #333;
+	background: rgb(255, 255, 255);
+	background: rgba(255, 255, 255, 0.9);
+	padding: 10px 20px;
+}

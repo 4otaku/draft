@@ -2,7 +2,7 @@
 
 abstract class Module_Abstract_Html extends Module_Abstract
 {
-	protected $default_css = array('external/bootstrap');
+	protected $default_css = array('external/bootstrap', 'base');
 	protected $default_js = array('external/jquery', 'base');
 	protected $css = array();
 	protected $js = array();
