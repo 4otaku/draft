@@ -46,6 +46,29 @@ class Module_Ajax extends Module_Abstract
 	/* From here are realization functions */
 
 	function do_upload ($get) {
-		return ($get);
+		if (!empty($_FILES)) {
+			$file = current(($_FILES));
+
+			$file = $file['tmp_name'];
+			$name = $file['name'];
+		} elseif ($get['qqfile']) {
+
+			$file = file_get_contents('php://input');
+			$name = urldecode($get['qqfile']);
+		} else {
+			return array('error' => 5, 'success' => false);
+		}
+
+		$worker = new Transform_Upload_Avatar($file, $name);
+
+		try {
+			$data = $worker->process_file();
+			$data['success'] = true;
+		} catch (Error_Upload $e) {
+			$data = array('error' => $e->getCode());
+			$data['success'] = false;
+		}
+
+		return $data;
 	}
 }

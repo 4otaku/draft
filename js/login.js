@@ -7,7 +7,6 @@ $(document).ready(function(){
 		multiple: false,
 		allowedExtensions: ['jpg', 'jpeg', 'gif', 'png'],
 		sizeLimit: 5*1024*1024,
-		// messages
 		messages: {
 			typeError: "{file} не является картинкой. Разрешены только {extensions}.",
 			sizeError: "{file} слишком большой, максимальный размер файла {sizeLimit}.",
@@ -19,32 +18,25 @@ $(document).ready(function(){
 		},
 		onSubmit: function(id, file) {
 			$(".processing-image").show();
-			$('#error').html('');
 		},
 		onComplete: function(id, file, response) {
-/*
-			if (!response.success) {
-				var error = response.data.error;
+			$(".processing-image").hide();
 
-				if (error == 'filetype') {
-					$('#error').html('<b>Ошибка! Выбранный вами файл не является картинкой.</b>');
-				} else if (error == 'maxsize') {
-					$('#error').html('<b>Ошибка! Выбранный вами файл превышает 2 мегабайт.</b>');
+			if (!response.success) {
+				var error = response.error;
+
+				if (error == 5 || error == 20) {
+					this.showMessage('Ошибка! Выбранный вами файл не является картинкой.');
+				} else if (error == 10) {
+					this.showMessage('Ошибка! Выбранный вами файл превышает 5 мегабайт.');
 				} else {
-					$('#error').html('<b>Неизвестная ошибка.</b>');
+					this.showMessage('Неизвестная ошибка.');
 				}
 			} else {
-				response = response.data;
 
-				$('#transparent td').html('<div style="background-image: url('+response['image']+');" class="left right20"><img class="cancel" src="'+window.config.image_dir+'/cancel.png"><input type="hidden" name="image" value="'+response['data']+'"></div>');
-				$("#transparent td img.cancel").click(function(){
-					$(this).parent().remove();
-				});
-			} */
+				$('.ready-image').css('background-image', 'url(/images/avatar/'+response.thumb+'.jpg)')
+					.html('<input type="hidden" name="image" value="'+response.thumb+'" /></div>');
+			}
 		}
-	});
-
-	$("#transparent td img.cancel").click(function(){
-		$(this).parent().remove();
 	});
 });

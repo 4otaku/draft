@@ -5,3 +5,18 @@
 .tabbable form {
 	background-color: inherit !important;
 }
+
+.processing-image {
+	display: none;
+}
+
+.ready-image {
+	float: right;
+	background-repeat: no-repeat;
+	background-position: 50% 50%;
+	width: 100px;
+	height: 100px;
+	border: 2px dashed #B6B6B6;
+	margin: 5px 10px;
+	position: relative;
+}
