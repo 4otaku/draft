@@ -7,17 +7,22 @@
 }
 
 .processing-image {
-	display: none;
+	visibility: hidden;
+}
+
+.right {
+	float: right;
+	margin: 15px 15px 0 0;
 }
 
 .ready-image {
-	float: right;
 	background-repeat: no-repeat;
 	background-position: 50% 50%;
 	background-image: url('/images/no_avatar.png');
 	width: 100px;
 	height: 100px;
 	border: 2px dashed #B6B6B6;
-	margin: 5px 10px;
+	margin: 25px auto 0px auto;
+	text-align: center;
 	position: relative;
 }

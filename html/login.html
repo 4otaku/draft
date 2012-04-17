@@ -3,37 +3,38 @@
 {% block content %}
 <div class="tabbable">
 	<ul class="nav nav-tabs">
-		<li class="active"><a href="#tab1" data-toggle="tab">Логин</a></li>
-		<li><a href="#tab2" data-toggle="tab">Регистрация</a></li>
+		<li class="active"><a href="#login" data-toggle="tab">Логин</a></li>
+		<li><a href="#register" data-toggle="tab">Регистрация</a></li>
 	</ul>
 	<div class="tab-content">
-		<div class="tab-pane active" id="tab1">
+		<div class="tab-pane active" id="login">
 			<form class="well">
 				<label>Имя пользователя</label>
-				<input type="text" class="span3" placeholder="">
+				<input type="text" class="span3" name="login">
 				<label>Пароль</label>
-				<input type="password" class="span3" placeholder="">
+				<input type="password" class="span3" name="password">
 				<br /><br />
-				<button type="submit" class="btn">Войти</button>
+				<button type="submit" class="btn disabled submit">Войти</button>
 			</form>
 		</div>
-		<div class="tab-pane" id="tab2">
-			<form class="well">
-				<div class="ready-image"></div>
-				<label>Имя пользователя</label>
-				<input type="text" class="span3" placeholder="">
-				<label>Пароль</label>
-				<input type="password" class="span3" placeholder="">
-				<label>Повторите пароль</label>
-				<input type="password" class="span3" placeholder="">
-				<br /><br />
+		<div class="tab-pane" id="register">
+			<div class="right">
 				<div class="btn" id="avatar">
-					<i class="icon-upload"></i>
+					<i class="icon-user"></i>
 					<span>Загрузить аватарку</span>
 					<img class="processing-image" src="/images/loading.gif" />
 				</div>
+				<div class="ready-image"></div>
+			</div>
+			<form class="well">
+				<label>Имя пользователя</label>
+				<input type="text" class="span3" name="login">
+				<label>Пароль</label>
+				<input type="password" class="span3" name="password">
+				<label>Повторите пароль</label>
+				<input type="password" class="span3" name="password2">
 				<br /><br />
-				<button type="submit" class="btn">Войти</button>
+				<button type="submit" class="btn disabled submit">Зарегистрироваться</button>
 			</form>
 		</div>
 	</div>
