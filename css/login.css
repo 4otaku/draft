@@ -10,11 +10,6 @@
 	visibility: hidden;
 }
 
-.right {
-	float: right;
-	margin: 15px 15px 0 0;
-}
-
 .ready-image {
 	background-repeat: no-repeat;
 	background-position: 50% 50%;

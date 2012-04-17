@@ -5,12 +5,19 @@
 		<meta http-equiv="Pragma" content="no-cache" />
 		<meta http-equiv="Expires" content="-1" />
 		<title>МТГ драфт-сервис.</title>
+		<link rel="stylesheet" href="/css/external/bootstrap.css" type="text/css" media="screen" />
 		<link rel="stylesheet" href="/external/m/?b=css&f={{css.list|join(',')}}&ver={{css.time}}" type="text/css" media="screen" />
 	</head>
 	<body>
 		<div class="content">
 			{% block content %}{% endblock %}
 		</div>
+		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+		<script type="text/javascript">
+			if (typeof jQuery == 'undefined') {
+				document.write(unescape("%3Cscript src='/js/external/jquery.js' type='text/javascript'%3E%3C/script%3E"));
+			}
+		</script>
 		<script type="text/javascript" src="/external/m/?b=js&f={{js.list|join(',')}}&ver={{js.time}}"></script>
 	</body>
 </html>
