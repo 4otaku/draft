@@ -7,9 +7,9 @@ body {
 	border-radius: 20px;
 	-moz-border-radius: 20px;
 	-webkit-border-radius: 20px;
+	box-shadow: 10px 10px 5px #333;
 	-moz-box-shadow: 10px 10px 5px #333;
 	-webkit-box-shadow: 10px 10px 5px #333;
-	box-shadow: 10px 10px 5px #333;
 	background: rgb(255, 255, 255);
 	background: rgba(255, 255, 255, 0.9);
 	padding: 10px 20px;
@@ -22,4 +22,8 @@ body {
 .right {
 	float: right;
 	margin: 15px 15px 0 0;
+}
+
+.right .btn {
+	margin-left: 20px;
 }

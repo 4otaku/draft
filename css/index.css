@@ -2,6 +2,30 @@
 	margin: 10px 20px;
 }
 
-.right .btn {
-	margin-left: 20px;
+.draft_base {
+	width: 600px;
+	height: 200px;
+	border: 10px solid #999;
+	border-radius: 20px;
+	-moz-border-radius: 20px;
+	-webkit-border-radius: 20px;
+}
+
+.draft_add {
+	text-align: center;
+	display: table-cell;
+	vertical-align: middle;
+}
+
+.draft_add .form-horizontal {
+	display: none;
+}
+
+.draft_add select.number {
+	width: auto !important;
+	margin-right: 20px;
+}
+
+.draft_add .draft-actions {
+	text-align: center;
 }

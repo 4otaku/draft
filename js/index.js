@@ -8,12 +8,14 @@ $(window).resize(function() { setSizes();});
 $(document).ready(function(){
 	setSizes();
 
-	$(".faq").click(function(){
-		document.location.href = '/faq/';
+	$('.draft_add .btn-large').click(function(){
+		$(this).hide();
+		$(this).parent().children('.form-horizontal').show();
 	});
 
-	$(".exit").click(function(){
-		$.cookie("user", null);
-		document.location.reload();
+	$('.draft_add .draft_cancel').click(function(){
+		var parent = $(this).parents('.draft_add');
+		parent.children('.form-horizontal').hide();
+		parent.children('.btn-large').show();
 	});
 });
