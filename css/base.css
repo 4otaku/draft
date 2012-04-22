@@ -27,3 +27,9 @@ body {
 .right .btn {
 	margin-left: 20px;
 }
+
+.left_wrapper {
+	width: 620px;
+	float: left;
+	margin-top: 10px;
+}

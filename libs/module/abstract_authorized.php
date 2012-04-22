@@ -34,4 +34,12 @@ abstract class Module_Abstract_Authorized extends Module_Abstract_Html
 
 		return Database::get_full_row('user', 'cookie = ?', $cookie);
 	}
+
+	protected function get_data() {
+		$data = parent::get_data();
+
+		$data['user'] = $this->user;
+
+		return $data;
+	}
 }

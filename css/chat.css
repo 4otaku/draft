@@ -1,0 +1,54 @@
+.chat_wrapper {
+	margin-left: 670px;
+	margin-right: 10px;
+}
+
+.chat {
+	width: 100%;
+	background-color: #FFFFFF;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	margin: 10px 0;
+	border: 2px solid #999;
+}
+
+.chat_users {
+	height: 30px;
+}
+
+.chat_users h5, .chat_user_list {
+	margin: 5px 0 0 10px;
+}
+
+.chat_user_list span.chat_user_color {
+	width: 10px;
+	height: 10px;
+	display: table-cell;
+}
+
+.chat_user_list span.chat_user_name {
+	margin-left: 3px;
+	position: relative;
+	bottom: 1px;
+}
+
+.chat hr {
+	border-color: inherit;
+}
+
+.chat_form {
+	background-color: inherit !important;
+	border: none !important;
+	box-shadow: none !important;
+}
+
+.chat_form textarea {
+	width: 100%;
+	height: 40px !important;
+}
+
+.chat_form button {
+	margin-top: 15px;
+	float: right;
+}

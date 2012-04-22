@@ -12,7 +12,7 @@ $(document).ready(function(){
 	});
 
 	$(".exit").click(function(){
-		$.cookie("user", null);
+		$.cookie("user", null, {path: '/'});
 		document.location.reload();
 	});
 });

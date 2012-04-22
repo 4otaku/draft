@@ -18,6 +18,15 @@
 				document.write(unescape("%3Cscript src='/js/external/jquery.js' type='text/javascript'%3E%3C/script%3E"));
 			}
 		</script>
+		{% if user %}
+			<script type="text/javascript">
+				var User = {
+					name: "{{user.login}}",
+					avatar: "{{user.avatar}}",
+					id: {{user.id}}
+				};
+			</script>
+		{% endif %}
 		<script type="text/javascript" src="/external/m/?b=js&f={{js.list|join(',')}}&ver={{js.time}}"></script>
 	</body>
 </html>

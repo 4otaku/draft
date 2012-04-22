@@ -11,42 +11,46 @@
 			<i class="icon-remove-circle icon-white"></i>
 		</button>
 	</div>
-	<div class="draft_base draft_add">
-		<button class="btn btn-primary btn-large" type="submit">
-			Создать новый драфт
-		</button>
-		<div class="form-horizontal">
-			<fieldset>
-				<div class="control-group">
-					<label class="control-label" for="select01">Максимум участников:</label>
-					<div class="controls">
-						<select id="select01" class="number">
-							<option>1</option>
-							<option>2</option>
-							<option>3</option>
-							<option>4</option>
-							<option>5</option>
-							<option>6</option>
-							<option>7</option>
-							<option selected="selected">8</option>
-							<option>9</option>
-							<option>10</option>
-							<option>11</option>
-							<option>12</option>
-							<option>13</option>
-							<option>14</option>
-							<option>15</option>
-							<option>16</option>
-						</select>
-						<input type="checkbox" class="invite" />
-						По приглашениям
+	<div class="clear"></div>
+	<div class="left_wrapper">
+		<div class="draft_base draft_add">
+			<button class="btn btn-primary btn-large" type="submit">
+				Создать новый драфт
+			</button>
+			<div class="form-horizontal">
+				<fieldset>
+					<div class="control-group">
+						<label class="control-label" for="select01">Максимум участников:</label>
+						<div class="controls">
+							<select id="select01" class="number">
+								<option>1</option>
+								<option>2</option>
+								<option>3</option>
+								<option>4</option>
+								<option>5</option>
+								<option>6</option>
+								<option>7</option>
+								<option selected="selected">8</option>
+								<option>9</option>
+								<option>10</option>
+								<option>11</option>
+								<option>12</option>
+								<option>13</option>
+								<option>14</option>
+								<option>15</option>
+								<option>16</option>
+							</select>
+							<input type="checkbox" class="invite" />
+							По приглашениям
+						</div>
 					</div>
-				</div>
-				<div class="draft-actions">
-					<button class="btn btn-primary draft_create">Создать</button>
-					<button class="btn btn-warning draft_cancel">Отменить</button>
-				</div>
-			</fieldset>
+					<div class="draft-actions">
+						<button class="btn btn-primary draft_create">Создать</button>
+						<button class="btn btn-warning draft_cancel">Отменить</button>
+					</div>
+				</fieldset>
+			</div>
 		</div>
 	</div>
+	{% include 'chat.html' %}
 {% endblock %}

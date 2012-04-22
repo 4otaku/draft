@@ -2,6 +2,6 @@
 
 class Module_Index extends Module_Abstract_Authorized
 {
-	protected $css = array('index');
-	protected $js = array('external/cookie', 'index');
+	protected $css = array('chat', 'index');
+	protected $js = array('external/cookie', 'external/md5', 'chat', 'index');
 }
