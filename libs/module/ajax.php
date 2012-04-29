@@ -132,4 +132,48 @@ class Module_Ajax extends Module_Abstract
 
 		return array('success' => true);
 	}
+
+	protected function do_get_messages ($get) {
+
+		if (!isset($get['room']) || !is_numeric($get['room']) || !User::get('id')) {
+			return array('success' => false);
+		}
+
+		Database::replace('presense', array(
+			'id_room' => $get['room'],
+			'id_user' => User::get('id'),
+			'time' => NULL
+		), array('room', 'user'));
+
+		$time = date('Y-m-d G:i:s', time() - Config::get('chat', 'loadtime'));
+
+		return array(
+			'success' => true, 2 => User::get('id'),
+			'presense' => Database::join('user', 'u.id = p.id_user')->
+				get_table('presense', 'u.id, u.login', 'p.time > ?', $time)
+		);
+	}
+
+	protected function add_message ($get) {
+
+		$time = date('Y-m-d G:i:s', time() - Config::get('chat', 'loadtime'));
+
+		if (!isset($get['room']) || !is_numeric($get['room']) ||
+			!isset($get['text']) || preg_match('/<>&\n\r/', $get['text'])
+			|| !User::get('id') || !Database::get_count('presense',
+				'time > ? and id_user = ?', array($time, User::get('id')))) {
+
+			return array('success' => false);
+		}
+
+		Database::insert('message', array(
+			'id_room' => $get['room'],
+			'id_user' => User::get('id'),
+			'text' => $get['text']
+		));
+
+		return array(
+			'success' => true
+		);
+	}
 }

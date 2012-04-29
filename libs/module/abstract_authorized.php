@@ -27,12 +27,7 @@ abstract class Module_Abstract_Authorized extends Module_Abstract_Html
 	}
 
 	protected function get_user() {
-		if (!isset($_COOKIE['user'])) {
-			return false;
-		}
-		$cookie = $_COOKIE['user'];
-
-		return Database::get_full_row('user', 'cookie = ?', $cookie);
+		return User::get();
 	}
 
 	protected function get_data() {
