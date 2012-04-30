@@ -146,22 +146,29 @@ class Module_Ajax extends Module_Abstract
 		), array('room', 'user'));
 
 		$time = date('Y-m-d G:i:s', time() - Config::get('chat', 'loadtime'));
+		$message_time = empty($get['first_load']) ? $time :
+			date('Y-m-d G:i:s', time() - Config::get('chat', 'firsttime'));
 
 		return array(
 			'success' => true, 2 => User::get('id'),
 			'presense' => Database::join('user', 'u.id = p.id_user')->
-				get_table('presense', 'u.id, u.login', 'p.time > ?', $time)
+				get_table('presense', 'u.id, u.login', 'p.time > ? and id_room = ?',
+				array($time, $get['room'])),
+			'message' => Database::get_table('message',
+				'id, id_user, text', 'time > ? and id_room = ?',
+				array($message_time, $get['room']))
 		);
 	}
 
-	protected function add_message ($get) {
+	protected function do_add_message ($get) {
 
 		$time = date('Y-m-d G:i:s', time() - Config::get('chat', 'loadtime'));
 
 		if (!isset($get['room']) || !is_numeric($get['room']) ||
 			!isset($get['text']) || preg_match('/<>&\n\r/', $get['text'])
 			|| !User::get('id') || !Database::get_count('presense',
-				'time > ? and id_user = ?', array($time, User::get('id')))) {
+				'time > ? and id_user = ? and id_room = ?',
+				array($time, User::get('id'), $get['room']))) {
 
 			return array('success' => false);
 		}
@@ -173,7 +180,8 @@ class Module_Ajax extends Module_Abstract
 		));
 
 		return array(
-			'success' => true
+			'success' => true,
+			'id' => Database::last_id()
 		);
 	}
 }

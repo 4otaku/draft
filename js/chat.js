@@ -1,6 +1,9 @@
 $.extend(Chat, {
 	users: {},
-	messages: {}
+	messages: {
+		temp: {},
+		broken: {}
+	}
 });
 
 function add_user(name, id) {
@@ -20,15 +23,31 @@ function add_user(name, id) {
 	redo_user_list();
 }
 
-function add_message(text, id) {
-	var cl = id ? 'default' : 'system';
+function add_message(text, id_user, id) {
 
-	text = id ? '<span class="message_name" style="color: #' +
-		Chat.users[id].color+';">' +
-		Chat.users[id].name + ':</span> ' + text
-		: text;
+	text = '<span class="message_name" style="color: #' +
+		Chat.users[id_user].color+';">' +
+		Chat.users[id_user].name + ':</span> ' + text;
 
-	$(".chat_messages").append('<div class="message_' + cl + '">' +
+	var message = $('<div class="message_default">' +
+		text + '</div>');
+
+	$(".chat_messages").append(message);
+
+	if (!id) {
+		var temp_id = $.md5(((1+Math.random())*0x10000)|0);
+		Chat.messages.temp[temp_id] = message;
+
+		return temp_id;
+	} else {
+		Chat.messages[id] = message;
+
+		return id;
+	}
+}
+
+function add_system_message(text) {
+	$(".chat_messages").append('<div class="message_system">' +
 		text + '</div>');
 }
 
@@ -55,25 +74,37 @@ function send_message() {
 		.replace(/</g, '&lt;')
 		.replace(/\n\r?/g, '<br />');
 
-	add_message(val, User.id);
+	var id = add_message(val, User.id);
 	$('.chat_form textarea').val('');
 
 	$.get('/ajax/add_message', {
 		room: Chat.room,
 		text: val
+	}, function(response) {
+		if (response.success) {
+			Chat.messages[response.id] = Chat.messages.temp[id];
+		} else {
+			Chat.messages.broken[id] = Chat.messages.temp[id];
+			Chat.messages.temp[id].removeClass('message_default')
+				.addClass('message_system');
+			add_system_message('Не удалось отправить сообщение, пожалуйста попробуйте снова.');
+		}
+		delete Chat.messages.temp[id];
 	});
 }
 
-function get_chat_data() {
-	$.get('/ajax/get_messages', {
+function get_chat_data(params) {
+	params = params || {};
+
+	$.get('/ajax/get_messages', $.extend(params, {
 		room: Chat.room
-	}, function(response) {
+	}), function(response) {
 		if (response.success) {
 			var ids = {};
 			$.each(response.presense, function(key, item) {
 				if (!Chat.users[item.id]) {
 					add_user(item.login, item.id);
-					add_message(item.login + ' вошел в комнату.');
+					add_system_message(item.login + ' вошел в комнату.');
 				}
 				ids[item.id] = true;
 			});
@@ -81,7 +112,20 @@ function get_chat_data() {
 				if (!ids[key] && key != User.id) {
 					delete Chat.users[key];
 					redo_user_list();
-					add_message(item.name + ' покинул комнату.');
+					add_system_message(item.name + ' покинул комнату.');
+				}
+			});
+
+			$.each(response.message, function(key, item) {
+				if (!Chat.messages[item.id]) {
+					if (item.id_user == User.id) {
+						for (key in Chat.messages.temp) {
+							if (Chat.messages.temp.hasOwnProperty(key)) {
+								return;
+							}
+						}
+					}
+					add_message(item.text, item.id_user, item.id);
 				}
 			});
 		}
@@ -105,4 +149,4 @@ $('.chat').everyTime(Chat.freq, function(){
 	get_chat_data();
 });
 
-get_chat_data();
+get_chat_data({first_load: true});
