@@ -140,7 +140,7 @@ class Module_Ajax extends Module_Abstract
 		}
 
 		Database::replace('presense', array(
-			'id_room' => $get['room'],
+			'id_draft' => $get['room'],
 			'id_user' => User::get('id'),
 			'time' => NULL
 		), array('room', 'user'));
@@ -152,10 +152,10 @@ class Module_Ajax extends Module_Abstract
 		return array(
 			'success' => true, 2 => User::get('id'),
 			'presense' => Database::join('user', 'u.id = p.id_user')->
-				get_table('presense', 'u.id, u.login', 'p.time > ? and id_room = ?',
+				get_table('presense', 'u.id, u.login', 'p.time > ? and id_draft = ?',
 				array($time, $get['room'])),
 			'message' => Database::get_table('message',
-				'id, id_user, text', 'time > ? and id_room = ?',
+				'id, id_user, text', 'time > ? and id_draft = ?',
 				array($message_time, $get['room']))
 		);
 	}
@@ -167,14 +167,14 @@ class Module_Ajax extends Module_Abstract
 		if (!isset($get['room']) || !is_numeric($get['room']) ||
 			!isset($get['text']) || preg_match('/<>&\n\r/', $get['text'])
 			|| !User::get('id') || !Database::get_count('presense',
-				'time > ? and id_user = ? and id_room = ?',
+				'time > ? and id_user = ? and id_draft = ?',
 				array($time, User::get('id'), $get['room']))) {
 
 			return array('success' => false);
 		}
 
 		Database::insert('message', array(
-			'id_room' => $get['room'],
+			'id_draft' => $get['room'],
 			'id_user' => User::get('id'),
 			'text' => $get['text']
 		));
@@ -183,5 +183,48 @@ class Module_Ajax extends Module_Abstract
 			'success' => true,
 			'id' => Database::last_id()
 		);
+	}
+
+	protected function do_add_draft ($get) {
+		if (!isset($get['pick_time']) || !is_numeric($get['pick_time']) ||
+			!isset($get['pause_time']) || !is_numeric($get['pause_time']) ||
+			!isset($get['set']) || !is_array($get['set'])) {
+
+			return array('success' => false);
+		}
+
+		Database::insert('draft', array(
+			'id_user' => User::get('id'),
+			'pick_time' => $get['pick_time'],
+			'pause_time' => $get['pause_time']
+		));
+
+		$id_draft = Database::last_id();
+
+		$order = 0;
+		foreach ($get['set'] as $set) {
+			if (preg_match('/[^-\d\.a-z]/ui', $set)) {
+				continue;
+			}
+
+			$set = Database::get_full_row('set', 'id = ?', $set);
+
+			if (empty($set)) {
+				continue;
+			}
+
+			Database::insert('draft_booster', array(
+				'id_draft' => $id_draft,
+				'order' => ++$order,
+				'id_set' => $set['id']
+			));
+
+			if (!$set['grabbed']) {
+				Grabber::get_set($set['id']);
+			}
+
+		}
+
+		return array('success' => true);
 	}
 }

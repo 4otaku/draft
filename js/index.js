@@ -21,4 +21,22 @@ $(document).ready(function(){
 		parent.children('.form-horizontal').hide();
 		parent.children('.btn-large').show();
 	});
+
+	$('.selected').attr('selected', 'selected');
+
+	$('.draft_add .draft_create').click(function(){
+		var parent = $(this).parents('.draft_add'),
+			request = parent.children('.form-horizontal').find('select').serialize();
+
+		parent.find('.draft-actions button').hide();
+		parent.find('.draft-actions .loader').show();
+
+		$.get('/ajax/add_draft?' + request, function(response) {
+			console.log(response);
+
+			parent.find('.draft-actions button').show();
+			parent.find('.draft-actions .loader').hide();
+			parent.find('.draft_cancel').click();
+		});
+	});
 });

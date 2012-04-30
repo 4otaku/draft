@@ -1,3 +1,5 @@
+
+
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
 
@@ -14,18 +16,77 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Структура таблицы `card`
+--
+
+CREATE TABLE IF NOT EXISTS `card` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(256) NOT NULL,
+  `color` varchar(1) NOT NULL,
+  `mana_cost` varchar(32) NOT NULL,
+  `image` varchar(256) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=141 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `draft`
+--
+
+CREATE TABLE IF NOT EXISTS `draft` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_user` int(10) unsigned NOT NULL,
+  `pick_time` int(10) unsigned NOT NULL,
+  `pause_time` int(10) unsigned NOT NULL,
+  `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `state` smallint(5) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=50 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `draft_booster`
+--
+
+CREATE TABLE IF NOT EXISTS `draft_booster` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `id_draft` int(10) unsigned NOT NULL,
+  `id_set` varchar(8) NOT NULL,
+  `order` smallint(5) unsigned NOT NULL,
+  `state` smallint(5) unsigned NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `selector` (`id_draft`,`order`,`state`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=66 ;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `draft_user`
+--
+
+CREATE TABLE IF NOT EXISTS `draft_user` (
+  `id_draft` int(10) unsigned NOT NULL,
+  `id_user` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id_draft`,`id_user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Структура таблицы `message`
 --
 
 CREATE TABLE IF NOT EXISTS `message` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `id_room` int(10) unsigned NOT NULL,
+  `id_draft` int(10) unsigned NOT NULL,
   `id_user` int(10) unsigned NOT NULL,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `text` text NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `selector` (`id_room`,`time`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14 ;
+  KEY `selector` (`id_draft`,`time`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=85 ;
 
 -- --------------------------------------------------------
 
@@ -34,11 +95,38 @@ CREATE TABLE IF NOT EXISTS `message` (
 --
 
 CREATE TABLE IF NOT EXISTS `presense` (
-  `id_room` int(10) unsigned NOT NULL,
+  `id_draft` int(10) unsigned NOT NULL,
   `id_user` int(10) unsigned NOT NULL,
   `time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id_room`,`id_user`),
-  KEY `selector` (`id_room`,`time`,`id_user`)
+  PRIMARY KEY (`id_draft`,`id_user`),
+  KEY `selector` (`id_draft`,`time`,`id_user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `set`
+--
+
+CREATE TABLE IF NOT EXISTS `set` (
+  `id` varchar(8) NOT NULL,
+  `name` varchar(128) NOT NULL,
+  `grabbed` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `order` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `set_card`
+--
+
+CREATE TABLE IF NOT EXISTS `set_card` (
+  `id_set` varchar(8) NOT NULL,
+  `id_card` int(10) unsigned NOT NULL,
+  `rarity` smallint(5) unsigned NOT NULL,
+  PRIMARY KEY (`id_set`,`id_card`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
