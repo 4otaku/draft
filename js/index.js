@@ -1,7 +1,9 @@
 function setSizes() {
 	var containerHeight = $(window).height();
+	var usersHeight = $('.chat_users').height() + 18;
 	$(".content").height(containerHeight - 40);
 	$(".chat").height(containerHeight - 240);
+	$(".chat_messages").height(containerHeight - 268 - usersHeight);
 }
 
 $(window).resize(function() { setSizes();});

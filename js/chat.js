@@ -24,6 +24,7 @@ function add_user(name, id) {
 }
 
 function add_message(text, id_user, id) {
+	var chat = $(".chat_messages");
 
 	text = '<span class="message_name" style="color: #' +
 		Chat.users[id_user].color+';">' +
@@ -32,7 +33,8 @@ function add_message(text, id_user, id) {
 	var message = $('<div class="message_default">' +
 		text + '</div>');
 
-	$(".chat_messages").append(message);
+	chat.append(message);
+	chat.animate({scrollTop: chat.prop('scrollHeight')}, 1000);
 
 	if (!id) {
 		var temp_id = $.md5(((1+Math.random())*0x10000)|0);
@@ -47,16 +49,19 @@ function add_message(text, id_user, id) {
 }
 
 function add_system_message(text) {
-	$(".chat_messages").append('<div class="message_system">' +
+	var chat = $(".chat_messages");
+
+	chat.append('<div class="message_system">' +
 		text + '</div>');
+	chat.animate({scrollTop: chat.prop('scrollHeight')}, 1000);
 }
 
 function redo_user_list() {
 	var html = '';
 
 	$.each(Chat.users, function(key, value) {
-		html += '<span class="chat_user"><span class="chat_user_color" style="background-color: #'
-			+ value.color + ';"> </span><span class="chat_user_name">' + value.name + '</span></span>';
+		html += '<span class="chat_user"><span class="chat_user_color" style="color: #'
+			+ value.color + ';">&#9632;</span><span class="chat_user_name">' + value.name + '</span></span>';
 	});
 
 	$(".chat_user_list").html(html);

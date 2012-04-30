@@ -17,24 +17,36 @@
 	height: 30px;
 }
 
+.chat_user {
+	margin: 0 7px;
+}
+
 .chat_users h5, .chat_user_list {
 	margin: 5px 0 0 10px;
 }
 
 .chat_user_list span.chat_user_color {
-	width: 10px;
-	height: 10px;
-	display: table-cell;
-}
-
-.chat_user_list span.chat_user_name {
-	margin-left: 3px;
+	font-size: 16px;
 	position: relative;
 	bottom: 1px;
 }
 
+.chat_user_list span.chat_user_name {
+	margin-left: 3px;
+}
+
 .chat hr {
 	border-color: inherit;
+	margin-bottom: 0px;
+}
+
+.chat_messages {
+	padding: 10px;
+	overflow-y: scroll;
+}
+
+.chat_messages .message_system {
+	font-style: italic;
 }
 
 .chat_form {
