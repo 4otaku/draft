@@ -25,12 +25,35 @@ function do_get_draft(callback, scope) {
 
 			Draft[item.id] = item;
 			var object = $('.draft_example').clone();
+			var booster = item.booster.split(',');
+			object.find('.name').html(item.login);
+			if (booster[0]) {
+				object.find('.booster_1').html(booster[0]);
+			}
+			if (booster[1]) {
+				object.find('.booster_2').html(booster[1]);
+			}
+			if (booster[2]) {
+				object.find('.booster_3').html(booster[2]);
+			}
+			object.find('.pick_time').html(format_time(item.pick_time));
+			object.find('.pause_time').html(format_time(item.pause_time));
+			object.find('.join').attr('href', '/draft/' + item.id);
 			object.prependTo('.left_wrapper').slideDown(1500)
 				.removeClass('draft_example');
 		});
 
 		callback.call(scope);
 	});
+}
+
+function format_time(seconds) {
+	if (seconds < 120) {
+		return seconds + ' секунд';
+	}
+
+	var minutes = Math.round(seconds / 60, 2);
+	return minutes + ' минуты';
 }
 
 function hide_draft_loader() {

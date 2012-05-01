@@ -245,7 +245,7 @@ class Module_Ajax extends Module_Abstract
 				->join('user', 'u.id = d.id_user')
 				->join('set', 'db.id_set = s.id')->group('d.id')
 				->get_table('draft', array('d.id, u.login, d.pick_time,
-				d.pause_time', 'group_concat(s.name)'), 'd.state != ?', 3)
+				d.pause_time', 'group_concat(s.name) as booster'), 'd.state != ?', 3)
 		);
 	}
 }
