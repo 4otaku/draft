@@ -29,7 +29,8 @@ body {
 }
 
 .left_wrapper {
-	width: 620px;
+	width: 640px;
 	float: left;
 	margin-top: 10px;
+	overflow-y: auto;
 }

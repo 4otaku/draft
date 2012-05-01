@@ -50,6 +50,7 @@ class Grabber
 
 	public static function get_set($set) {
 		try {
+			Database::begin();
 			$count = 0;
 
 			while ($count < 2000) {
@@ -107,8 +108,11 @@ class Grabber
 				}
 			}
 
+			Database::update('set', array('grabbed' => 1), 'id = ?', $set);
+
+			Database::commit();
 		} catch (DOMException $e) {
-			return array('id' => 0, 'name' => 'Произошла ошибка');
+			Database::rollback();
 		}
 	}
 }

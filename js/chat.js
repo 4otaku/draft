@@ -133,6 +133,8 @@ function get_chat_data(params) {
 					add_message(item.text, item.id_user, item.id);
 				}
 			});
+
+			$('body').trigger('last_draft', response.last_draft);
 		}
 	});
 }

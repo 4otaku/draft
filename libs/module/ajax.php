@@ -156,7 +156,9 @@ class Module_Ajax extends Module_Abstract
 				array($time, $get['room'])),
 			'message' => Database::get_table('message',
 				'id, id_user, text', 'time > ? and id_draft = ?',
-				array($message_time, $get['room']))
+				array($message_time, $get['room'])),
+			'last_draft' => strtotime(Database::order('time')
+				->get_field('draft', 'time', 'state != ?', 3))
 		);
 	}
 
@@ -193,15 +195,7 @@ class Module_Ajax extends Module_Abstract
 			return array('success' => false);
 		}
 
-		Database::insert('draft', array(
-			'id_user' => User::get('id'),
-			'pick_time' => $get['pick_time'],
-			'pause_time' => $get['pause_time']
-		));
-
-		$id_draft = Database::last_id();
-
-		$order = 0;
+		$sets = array();
 		foreach ($get['set'] as $set) {
 			if (preg_match('/[^-\d\.a-z]/ui', $set)) {
 				continue;
@@ -213,18 +207,45 @@ class Module_Ajax extends Module_Abstract
 				continue;
 			}
 
+			$sets[] = $set;
+
+			if (!$set['grabbed']) {
+				Grabber::get_set($set['id']);
+			}
+		}
+
+		Database::begin();
+
+		Database::insert('draft', array(
+			'id_user' => User::get('id'),
+			'pick_time' => $get['pick_time'],
+			'pause_time' => $get['pause_time']
+		));
+
+		$id_draft = Database::last_id();
+
+		$order = 0;
+		foreach ($sets as $set) {
 			Database::insert('draft_booster', array(
 				'id_draft' => $id_draft,
 				'order' => ++$order,
 				'id_set' => $set['id']
 			));
-
-			if (!$set['grabbed']) {
-				Grabber::get_set($set['id']);
-			}
-
 		}
 
+		Database::commit();
+
 		return array('success' => true);
+	}
+
+	protected function do_get_draft ($get) {
+		return array(
+			'success' => true,
+			'data' => Database::join('draft_booster', 'db.id_draft = d.id')
+				->join('user', 'u.id = d.id_user')
+				->join('set', 'db.id_set = s.id')->group('d.id')
+				->get_table('draft', array('d.id, u.login, d.pick_time,
+				d.pause_time', 'group_concat(s.name)'), 'd.state != ?', 3)
+		);
 	}
 }
