@@ -1,17 +1,8 @@
+init_sizes();
+
 var Draft = {
 	last_time: null
 };
-
-function setSizes() {
-	var containerHeight = $(window).height();
-	var usersHeight = $('.chat_users').height() + 18;
-	$(".content").height(containerHeight - 40);
-	$(".chat").height(containerHeight - 240);
-	$(".left_wrapper").height(containerHeight - 140);
-	$(".chat_messages").height(containerHeight - 268 - usersHeight);
-}
-
-$(window).resize(function() { setSizes();});
 
 function do_get_draft(callback, scope) {
 	callback = callback || function(){};
@@ -75,15 +66,6 @@ function do_get_draft(callback, scope) {
 	});
 }
 
-function format_time(seconds) {
-	if (seconds < 120) {
-		return seconds + ' секунд';
-	}
-
-	var minutes = Math.round(seconds / 60, 2);
-	return minutes + ' минуты';
-}
-
 function hide_draft_loader() {
 	this.find('.draft-actions button').show();
 	this.find('.draft-actions .loader').hide();
@@ -91,7 +73,6 @@ function hide_draft_loader() {
 }
 
 $(document).ready(function(){
-	setSizes();
 
 	$('body').bind('draft_change', function(e, time){
 		time = new Date(time * 1000);

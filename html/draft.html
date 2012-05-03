@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<div class="right">
+		<button class="btn btn-primary index">
+			<span>На главную</span>
+			<i class="icon-list-alt icon-white"></i>
+		</button>
+		<button class="btn btn-info faq">
+			<span>Частые вопросы</span>
+			<i class="icon-search icon-white"></i>
+		</button>
+		<button class="btn btn-warning exit">
+			<span>Выйти</span>
+			<i class="icon-remove-circle icon-white"></i>
+		</button>
+	</div>
+	<div class="clear"></div>
+	<div class="left_wrapper">
+		<div class="draft_info draft_base">
+			<table><tr><td>
+				<h3>Владелец: <span>{{draft.login}}</span></h3>
+				<h5>Время на выбор карты: <span class="pick_time"></span></h5>
+				<h5>Пауза между бустерами: <span class="pause_time"></span></h5>
+			</td><td>
+				<h5>Первый бустер: <span>{{draft.booster.0.name}}</span></h5>
+				<h5>Второй бустер: <span>{{draft.booster.1.name}}</span></h5>
+				<h5>Третий бустер: <span>{{draft.booster.2.name}}</span></h5>
+			</td></tr></table>
+		</div>
+		<div class="draft_waiting_start draft_base">
+			<h2>Ожидаем старта</h2>
+		</div>
+	</div>
+	<script type="text/javascript">
+		var Draft = {
+			id: {{draft.id}},
+			id_owner: {{draft.id_user}},
+			owner: '{{draft.login}}',
+			pick_time: {{draft.pick_time}},
+			pause_time: {{draft.pause_time}},
+			booster: [
+				{% for booster in draft.booster %}
+					{id: '{{booster.id}}', name: '{{booster.name}}',
+						state: {{booster.state}}}
+					{% if not loop.last %},{% endif %}
+				{% endfor %}
+			]
+		};
+	</script>
+	<script type="text/javascript">var Chat = {room: {{draft.id}}, freq: 2000};</script>
+	{% include 'chat.html' %}
+{% endblock %}

@@ -10,16 +10,21 @@ abstract class Module_Abstract_Authorized extends Module_Abstract_Html
 
 		$user = $this->get_user();
 		if (empty($user)) {
-			$this->headers[] = 'HTTP/1.x 302 Moved Temporarily';
-			$this->headers['Location'] = $this->redirect_location;
-			$this->redirect = true;
+			$this->create_redirect();
 		} else {
 			$this->user = $user;
 		}
 	}
 
+	protected function create_redirect() {
+		$this->headers[] = 'HTTP/1.x 302 Moved Temporarily';
+		$this->headers['Location'] = $this->redirect_location;
+		$this->redirect = true;
+	}
+
 	public function send_headers() {
 		parent::send_headers();
+
 		if ($this->redirect) {
 			exit;
 		}

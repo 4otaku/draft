@@ -1,0 +1,33 @@
+.content {
+	margin: 10px 20px;
+}
+
+.draft_base {
+	width: 600px;
+}
+
+.draft_info {
+	padding: 7px;
+	border: 3px solid #999;
+	border-radius: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	margin-bottom: 10px;
+}
+
+.draft_info table {
+	width: 100%;
+}
+
+.draft_info h3, .draft_info h5 {
+	font-weight: normal;
+	white-space: nowrap;
+}
+
+.draft_info h3 span, .draft_info h5 span {
+	font-weight: bold;
+}
+
+.draft_waiting_start {
+	text-align: center;
+}
