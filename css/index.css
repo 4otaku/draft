@@ -37,6 +37,11 @@
 	width: 100%;
 }
 
+.draft_item .delete {
+	margin-top: 30px;
+	display: none;
+}
+
 .draft_add {
 	text-align: center;
 	height: 220px;

@@ -18,13 +18,16 @@ function do_get_draft(callback, scope) {
 	scope = scope || this;
 
 	$.get('/ajax/get_draft', function(response) {
+		var ids = {};
 		$.each(response.data, function(key, item){
+			ids[item.id] = true;
+
 			if (Draft[item.id]) {
 				return;
 			}
 
 			Draft[item.id] = item;
-			var object = $('.draft_example').clone();
+			var object = $('.draft_example').clone().attr('id', 'draft-' + item.id);
 			var booster = item.booster.split(',');
 			object.find('.name').html(item.login);
 			if (booster[0]) {
@@ -39,8 +42,33 @@ function do_get_draft(callback, scope) {
 			object.find('.pick_time').html(format_time(item.pick_time));
 			object.find('.pause_time').html(format_time(item.pause_time));
 			object.find('.join').attr('href', '/draft/' + item.id);
+			if (item.id_user == User.id) {
+				object.find('.delete').show().click(function(){
+					if (confirm('Вы уверены, что хотите удалить драфт?')) {
+						object.slideUp(1500);
+						$.get('/ajax/delete_draft', {id: item.id});
+					}
+				});
+			}
 			object.prependTo('.left_wrapper').slideDown(1500)
 				.removeClass('draft_example');
+
+			$('body').trigger('message', 'Драфт №' +
+				item.id + ' (' + booster.join(', ') +') добавлен.');
+
+		});
+
+
+		$.each(Draft, function(key, item) {
+			if (!ids[key] && key != 'last_time') {
+				delete Draft[key];
+				if ($('#draft-' + key).length > 0) {
+					$('#draft-' + key).slideUp(1500);
+
+					$('body').trigger('message', 'Драфт №' + item.id +
+						' (' + item.booster.replace(/,/g,', ') +') удален.');
+				}
+			}
 		});
 
 		callback.call(scope);
@@ -65,7 +93,7 @@ function hide_draft_loader() {
 $(document).ready(function(){
 	setSizes();
 
-	$('body').bind('last_draft', function(e, time){
+	$('body').bind('draft_change', function(e, time){
 		time = new Date(time * 1000);
 		if (!Draft.last_time || Draft.last_time < time) {
 			Draft.last_time = time;

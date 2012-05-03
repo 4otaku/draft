@@ -157,8 +157,8 @@ class Module_Ajax extends Module_Abstract
 			'message' => Database::get_table('message',
 				'id, id_user, text', 'time > ? and id_draft = ?',
 				array($message_time, $get['room'])),
-			'last_draft' => strtotime(Database::order('time')
-				->get_field('draft', 'time', 'state != ?', 3))
+			'last_draft_change' => strtotime(Database::order('update')
+				->get_field('draft', 'update'))
 		);
 	}
 
@@ -190,7 +190,7 @@ class Module_Ajax extends Module_Abstract
 	protected function do_add_draft ($get) {
 		if (!isset($get['pick_time']) || !is_numeric($get['pick_time']) ||
 			!isset($get['pause_time']) || !is_numeric($get['pause_time']) ||
-			!isset($get['set']) || !is_array($get['set'])) {
+			!isset($get['set']) || !is_array($get['set']) || !User::get('id')) {
 
 			return array('success' => false);
 		}
@@ -244,8 +244,22 @@ class Module_Ajax extends Module_Abstract
 			'data' => Database::join('draft_booster', 'db.id_draft = d.id')
 				->join('user', 'u.id = d.id_user')
 				->join('set', 'db.id_set = s.id')->group('d.id')
-				->get_table('draft', array('d.id, u.login, d.pick_time,
-				d.pause_time', 'group_concat(s.name) as booster'), 'd.state != ?', 3)
+				->get_table('draft', array('d.id, d.id_user, d.state, u.login, d.pick_time,
+				d.pause_time', 'group_concat(s.name) as booster'), 'd.state != ?', 4)
 		);
+	}
+
+	protected function do_delete_draft ($get) {
+		if (!isset($get['id']) || !is_numeric($get['id']) || !User::get('id') ||
+			!Database::get_count('draft', 'id_user = ? and id = ? and state != ?',
+				array(User::get('id'), $get['id'], 4))) {
+
+			return array('success' => false);
+		}
+
+		Database::update('draft', array('state' => 4),
+			'id_user = ? and id = ?', array(User::get('id'), $get['id']));
+
+		return array('success' => true);
 	}
 }

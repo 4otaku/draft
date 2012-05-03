@@ -34,7 +34,7 @@ function add_message(text, id_user, id) {
 		text + '</div>');
 
 	chat.append(message);
-	chat.animate({scrollTop: chat.prop('scrollHeight')}, 1000);
+	chat.animate({scrollTop: chat.prop('scrollHeight')}, 200);
 
 	if (!id) {
 		var temp_id = $.md5(((1+Math.random())*0x10000)|0);
@@ -53,7 +53,7 @@ function add_system_message(text) {
 
 	chat.append('<div class="message_system">' +
 		text + '</div>');
-	chat.animate({scrollTop: chat.prop('scrollHeight')}, 1000);
+	chat.animate({scrollTop: chat.prop('scrollHeight')}, 200);
 }
 
 function redo_user_list() {
@@ -134,7 +134,7 @@ function get_chat_data(params) {
 				}
 			});
 
-			$('body').trigger('last_draft', response.last_draft);
+			$('body').trigger('draft_change', response.last_draft_change);
 		}
 	});
 }
@@ -149,6 +149,10 @@ $('.chat_form textarea').keydown(function(e){
 	}
 });
 
+$('body').bind('message', function(e, text){
+	add_system_message(text);
+});
+
 add_user(User.name, User.id);
 $('.chat_form textarea').val('');
 
@@ -157,3 +161,4 @@ $('.chat').everyTime(Chat.freq, function(){
 });
 
 get_chat_data({first_load: true});
+
