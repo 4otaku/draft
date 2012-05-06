@@ -150,7 +150,7 @@ class Module_Ajax extends Module_Abstract
 			date('Y-m-d G:i:s', time() - Config::get('chat', 'firsttime'));
 
 		return array(
-			'success' => true, 2 => User::get('id'),
+			'success' => true,
 			'presense' => Database::join('user', 'u.id = p.id_user')->
 				get_table('presense', 'u.id, u.login', 'p.time > ? and id_draft = ?',
 				array($time, $get['room'])),
@@ -349,7 +349,48 @@ class Module_Ajax extends Module_Abstract
 			}
 		}
 
+		Database::insert('draft_step', array(
+			'id_draft' => $get['id'],
+			'type' => 'start',
+			'time' => date('Y-m-d G:i:s', time() +
+				Database::get_field('draft', 'pause_time', $get['id']))
+		));
+
 		Database::commit();
 		return array('success' => true);
+	}
+
+	protected function do_get_draft_data ($get) {
+		if (!isset($get['id']) || !is_numeric($get['id'])) {
+			return array('success' => false);
+		}
+
+		$action = Database::order('time', 'asc')->get_full_row('draft_step',
+			'id_draft = ? and time > current_timestamp', $get['id']);
+
+		if (!empty($action)) {
+			$action['time'] = strtotime($action['time']);
+		}
+
+		return array('success' => true, 'action' => $action);
+	}
+
+	protected function do_get_draft_user ($get) {
+		if (!isset($get['id']) || !is_numeric($get['id'])) {
+			return array('success' => false);
+		}
+		return array('success' => true,
+			'user' => Database::join('user', 'u.id = du.id_user')->
+				order('du.order', 'asc')->get_table('draft_user',
+				'u.id, u.login', 'du.id_draft = ?', $get['id']));
+	}
+
+	protected function do_get_draft_card ($get) {
+		if (!isset($get['id']) || !is_numeric($get['id'])) {
+			return array('success' => false);
+		}
+
+
+		return array('success' => true, 'action' => $action);
 	}
 }

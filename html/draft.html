@@ -18,33 +18,67 @@
 	<div class="clear"></div>
 	<div class="left_wrapper">
 		<div class="draft_info draft_base">
-			<table><tr><td>
-				<h3>Владелец: <span>{{draft.login}}</span></h3>
-				<h5>Время на выбор карты: <span class="pick_time"></span></h5>
-				<h5>Пауза между бустерами: <span class="pause_time"></span></h5>
-			</td><td>
-				<h5>Первый бустер: <span>{{draft.booster.0.name}}</span></h5>
-				<h5>Второй бустер: <span>{{draft.booster.1.name}}</span></h5>
-				<h5>Третий бустер: <span>{{draft.booster.2.name}}</span></h5>
-			</td></tr></table>
+			<table>
+				<tr><td>
+					<h3>Владелец: <span>{{draft.login}}</span></h3>
+					<h5>Время на выбор карты: <span class="pick_time"></span></h5>
+					<h5>Пауза между бустерами: <span class="pause_time"></span></h5>
+				</td><td>
+					<h5>Первый бустер: <span>{{draft.booster.0.name}}</span></h5>
+					<h5>Второй бустер: <span>{{draft.booster.1.name}}</span></h5>
+					<h5>Третий бустер: <span>{{draft.booster.2.name}}</span></h5>
+				</td></tr>
+				<tr><td colspan="2" class="participants">
+				</td></tr>
+			</table>
 		</div>
 		<div class="draft_waiting_start draft_base">
 			<h2>Ожидаем старта</h2>
 			{% if draft.id_user == user.id %}
-				<button class="btn btn-success btn-large draft_start">
+				<button class="btn btn-success btn-large draft_start_button">
 					Начать драфт c текущим составом
 					<img src="/images/loading.gif" class="loader" />
 				</button>
 			{% endif %}
+		</div>
+		<div class="draft_start draft_base">
+			<h2>Старт через:</h2>
+		</div>
+	</div>
+	<div class="hidden">
+		<div id="counter">
+			<div id="counter_item1" class="counter_item">
+				<div class="front"></div>
+				<div class="digit digit0"></div>
+			</div>
+			<div id="counter_item2" class="counter_item">
+				<div class="front"></div>
+				<div class="digit digit0"></div>
+			</div>
+			<div id="counter_item3" class="counter_item">
+				<div class="front"></div>
+				<div class="digit digit_colon"></div>
+			</div>
+			<div id="counter_item4" class="counter_item">
+				<div class="front"></div>
+				<div class="digit digit0"></div>
+			</div>
+			<div id="counter_item5" class="counter_item">
+				<div class="front"></div>
+				<div class="digit digit0"></div>
+			</div>
 		</div>
 	</div>
 	<script type="text/javascript">
 		var Draft = {
 			id: {{draft.id}},
 			id_owner: {{draft.id_user}},
+			state: {{draft.state}},
 			owner: '{{draft.login}}',
 			pick_time: {{draft.pick_time}},
 			pause_time: {{draft.pause_time}},
+			current_action: false,
+			current_action_time: false,
 			booster: [
 				{% for booster in draft.booster %}
 					{id: '{{booster.id}}', name: '{{booster.name}}',

@@ -2,8 +2,13 @@
 	margin: 10px 20px;
 }
 
+.hidden {
+	display: none;
+}
+
 .draft_base {
 	width: 600px;
+	display: none;
 }
 
 .draft_info {
@@ -13,6 +18,7 @@
 	-moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
 	margin-bottom: 10px;
+	display: block;
 }
 
 .draft_info table {
@@ -32,10 +38,20 @@
 	text-align: center;
 }
 
-.draft_start {
+.draft_start_button {
 	margin-top: 20px;
 }
 
-.draft_start .loader {
+.draft_start_button .loader {
 	display: none;
+}
+
+.draft_start {
+	text-align: center;
+}
+
+.draft_start #counter {
+	margin-top: 20px;
+	margin-left: auto;
+	margin-right: auto;
 }
