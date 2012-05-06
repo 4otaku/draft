@@ -31,3 +31,11 @@
 .draft_waiting_start {
 	text-align: center;
 }
+
+.draft_start {
+	margin-top: 20px;
+}
+
+.draft_start .loader {
+	display: none;
+}

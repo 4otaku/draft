@@ -226,7 +226,7 @@ class Module_Ajax extends Module_Abstract
 
 		$order = 0;
 		foreach ($sets as $set) {
-			Database::insert('draft_booster', array(
+			Database::insert('draft_set', array(
 				'id_draft' => $id_draft,
 				'order' => ++$order,
 				'id_set' => $set['id']
@@ -241,9 +241,9 @@ class Module_Ajax extends Module_Abstract
 	protected function do_get_draft ($get) {
 		return array(
 			'success' => true,
-			'data' => Database::join('draft_booster', 'db.id_draft = d.id')
+			'data' => Database::join('draft_set', 'ds.id_draft = d.id')
 				->join('user', 'u.id = d.id_user')
-				->join('set', 'db.id_set = s.id')->group('d.id')
+				->join('set', 'ds.id_set = s.id')->group('d.id')
 				->get_table('draft', array('d.id, d.id_user, d.state, u.login, d.pick_time,
 				d.pause_time', 'group_concat(s.name) as booster'), 'd.state != ?', 4)
 		);
@@ -260,6 +260,96 @@ class Module_Ajax extends Module_Abstract
 		Database::update('draft', array('state' => 4),
 			'id_user = ? and id = ?', array(User::get('id'), $get['id']));
 
+		return array('success' => true);
+	}
+
+	protected function do_start_draft ($get) {
+		if (!isset($get['id']) || !is_numeric($get['id']) ||
+			!User::get('id') || preg_match('/[^,\d]/ui', $get['user']) ||
+			!Database::get_count('draft', 'id_user = ? and id = ? and state = ?',
+				array(User::get('id'), $get['id'], 0))) {
+
+			return array('success' => false);
+		}
+
+		$users = array_filter(explode(',', $get['user']));
+		$users[] = User::get('id');
+		$users = array_unique($users);
+		shuffle($users);
+
+		Database::begin();
+
+		Database::update('draft', array('state' => 1),
+			'id_user = ? and id = ?', array(User::get('id'), $get['id']));
+
+		$order = 0;
+		foreach ($users as $user) {
+			Database::insert('draft_user', array(
+				'id_draft' => $get['id'],
+				'id_user' => $user,
+				'order' => $order
+			));
+			$order++;
+		}
+
+		$sets = Database::order('order', 'asc')
+			->get_full_table('draft_set', 'id_draft = ?', $get['id']);
+
+		foreach ($sets as $set) {
+			$card_ids = Database::join('set_card', 'sc.id_card = c.id')
+				->group('sc.rarity')->get_table('card', array('sc.rarity',
+				'group_concat(c.`id`) as ids'), 'sc.id_set = ?', $set['id_set']);
+
+			$cards = array();
+			foreach ($card_ids as $group) {
+				$cards[$group['rarity']] = explode(',', $group['ids']);
+				shuffle($cards[$group['rarity']]);
+			}
+
+			if (!isset($cards[1])) {
+				Database::rollback();
+				return array('success' => false);
+			}
+
+			foreach ($users as $user) {
+				$mythic = mt_rand(0, 8) < 1;
+				$generate = array(1 => 11, 2 => 0, 3 => 0, 4 => 0);
+
+				if ($mythic && isset($cards[4])) {
+					$generate[4] += 1;
+				} elseif (isset($cards[3])) {
+					$generate[3] += 1;
+				} elseif (isset($cards[2])) {
+					$generate[2] += 1;
+				} else {
+					$generate[1] += 1;
+				}
+
+				if (isset($cards[2])) {
+					$generate[2] += 3;
+				} else {
+					$generate[1] += 3;
+				}
+
+				Database::insert('draft_booster', array(
+					'id_draft_set' => $set['id'],
+					'id_user' => $user
+				));
+
+				$id_booster = Database::last_id();
+
+				foreach ($generate as $rarity => $number) {
+					for ($i = 0; $i < $number; $i++) {
+						Database::insert('draft_booster_card', array(
+							'id_draft_booster' => $id_booster,
+							'id_card' => $cards[$rarity][array_rand($cards[$rarity])]
+						));
+					}
+				}
+			}
+		}
+
+		Database::commit();
 		return array('success' => true);
 	}
 }

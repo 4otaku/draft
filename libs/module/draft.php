@@ -28,9 +28,9 @@ class Module_Draft extends Module_Abstract_Authorized
 	protected function get_data() {
 		$data = parent::get_data();
 
-		$this->draft['booster'] = Database::join('set', 's.id = db.id_set')
-			->order('db.order', 'asc')->get_table('draft_booster',
-			's.name, s.id, db.state', 'db.id_draft = ?', $this->draft['id']);
+		$this->draft['booster'] = Database::join('set', 's.id = ds.id_set')
+			->order('ds.order', 'asc')->get_table('draft_set',
+			's.name, s.id, ds.state', 'ds.id_draft = ?', $this->draft['id']);
 
 		$data['draft'] = $this->draft;
 

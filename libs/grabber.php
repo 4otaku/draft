@@ -13,7 +13,8 @@ class Grabber
 		'Common' => 1,
 		'Uncommon' => 2,
 		'Rare' => 3,
-		'Mythic' => 4
+		'Mythic' => 4,
+		'Special' => 1
 	);
 
 	public static function get_set_list() {

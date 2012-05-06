@@ -30,6 +30,12 @@
 		</div>
 		<div class="draft_waiting_start draft_base">
 			<h2>Ожидаем старта</h2>
+			{% if draft.id_user == user.id %}
+				<button class="btn btn-success btn-large draft_start">
+					Начать драфт c текущим составом
+					<img src="/images/loading.gif" class="loader" />
+				</button>
+			{% endif %}
 		</div>
 	</div>
 	<script type="text/javascript">
