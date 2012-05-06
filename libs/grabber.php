@@ -87,6 +87,8 @@ class Grabber
 
 					$insert['image'] = $xpath->query(self::$queryImg,
 						$element)->item(0)->getAttribute('src');
+					$insert['image'] = str_replace('/pictures', '', $insert['image']);
+					$insert['image'] = str_replace('_small/', '/', $insert['image']);
 					$manas = $xpath->query(self::$queryMana,
 						$element);
 					foreach ($manas as $mana) {

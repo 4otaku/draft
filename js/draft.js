@@ -67,19 +67,38 @@ function get_base_data() {
 			return;
 		}
 
-		var found = false;
+		var found = false, users = [];
 		$.each(response.user, function(key, user) {
 			if (User.id == user.id) {
 				found = true;
 			}
+
+			var md5 = $.md5(user.login);
+
+			var parts = [md5[0] + md5[1], md5[2] + md5[3], md5[4] + md5[5]];
+			$.each(parts, function(key, value) {
+				value = Math.floor((parseInt(value, 16) / 2)).toString(16);
+				parts[key] = value;
+			});
+			users.push('<span style="color: #'+ parts.join('') + ';">' + user.login + '</span>');
 		});
 		if (!found) {
 			document.location.href = '/';
 		}
+
+		$(".participants").html('Участвуют: ' + users.join(', ') + '.');
 	});
 
 	$.get('/ajax/get_draft_card', {id: Draft.id}, function(response) {
 		console.log(response);
+/*
+			img1 = new Image();
+				img2 = new Image();
+				img3 = new Image();
+
+					img1.src = "http://domain.tld/path/to/image-001.gif";
+				img2.src = "http://domain.tld/path/to/image-002.gif";
+				img3.src = "http://domain.tld/path/to/image-003.gif"; */
 	});
 }
 

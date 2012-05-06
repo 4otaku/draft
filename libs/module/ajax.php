@@ -390,7 +390,12 @@ class Module_Ajax extends Module_Abstract
 			return array('success' => false);
 		}
 
+		$cards = Database::join('draft_booster', 'db.id_draft_set = ds.id')
+			->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
+			->join('card', 'c.id = dbc.id_card')->group('c.id')
+			->get_table('draft_set', array('c.id', 'c.name', 'c.image'),
+				'ds.id_draft = ?', $get['id']);
 
-		return array('success' => true, 'action' => $action);
+		return array('success' => true, 'cards' => $cards, 1 => Database::debug(false));
 	}
 }
