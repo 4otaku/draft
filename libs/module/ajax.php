@@ -295,6 +295,7 @@ class Module_Ajax extends Module_Abstract
 		$sets = Database::order('order', 'asc')
 			->get_full_table('draft_set', 'id_draft = ?', $get['id']);
 
+		$ids = array();
 		foreach ($sets as $set) {
 			$card_ids = Database::join('set_card', 'sc.id_card = c.id')
 				->group('sc.rarity')->get_table('card', array('sc.rarity',
@@ -340,14 +341,18 @@ class Module_Ajax extends Module_Abstract
 
 				foreach ($generate as $rarity => $number) {
 					for ($i = 0; $i < $number; $i++) {
+						$id_card = $cards[$rarity][array_rand($cards[$rarity])];
 						Database::insert('draft_booster_card', array(
 							'id_draft_booster' => $id_booster,
-							'id_card' => $cards[$rarity][array_rand($cards[$rarity])]
+							'id_card' => $id_card
 						));
+						$ids[] = $id_card;
 					}
 				}
 			}
 		}
+
+		Grabber::get_images(array_unique($ids));
 
 		Database::insert('draft_step', array(
 			'id_draft' => $get['id'],
@@ -396,6 +401,6 @@ class Module_Ajax extends Module_Abstract
 			->get_table('draft_set', array('c.id', 'c.name', 'c.image'),
 				'ds.id_draft = ?', $get['id']);
 
-		return array('success' => true, 'cards' => $cards, 1 => Database::debug(false));
+		return array('success' => true, 'cards' => $cards);
 	}
 }

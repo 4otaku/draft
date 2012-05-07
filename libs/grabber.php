@@ -118,4 +118,21 @@ class Grabber
 			Database::rollback();
 		}
 	}
+
+	public static function get_images($ids) {
+		$images = Database::get_vector('card', array('id', 'image'),
+			Database::array_in('id', $ids), $ids);
+		foreach ($images as $image) {
+			if (file_exists(IMAGES . SL . 'small' . SL . $image)) {
+				continue;
+			}
+
+			$url = preg_replace('/^(\/.*)(\/.*)$/ui', 'http://mtg.ru/pictures$1_big$2', $image);
+			$worker = new Transform_Upload_Mtg(file_get_contents($url), $image);
+
+			try {
+				$worker->process_file();
+			} catch (Error_Upload $e) {}
+		}
+	}
 }

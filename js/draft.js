@@ -13,13 +13,13 @@ $('.draft_start_button').click(function(){
 		ids += key + ',';
 		draft_users[key] = value;
 	});
-	$('.draft_start .loader').show();
-	$('.draft_start').addClass('disabled');
+	$('.draft_start_button .loader').show();
+	$('.draft_start_button').addClass('disabled');
 	this.starting = true;
 
 	$.get('/ajax/start_draft', {id: Draft.id, user: ids}, function(response) {
-		$('.draft_start .loader').hide();
-		$('.draft_start').removeClass('disabled');
+		$('.draft_start_button .loader').hide();
+		$('.draft_start_button').removeClass('disabled');
 		me.starting = false;
 
 		if (response.success) {
@@ -90,15 +90,18 @@ function get_base_data() {
 	});
 
 	$.get('/ajax/get_draft_card', {id: Draft.id}, function(response) {
-		console.log(response);
-/*
-			img1 = new Image();
-				img2 = new Image();
-				img3 = new Image();
+		if (!response.success || !response.cards) {
+			return;
+		}
 
-					img1.src = "http://domain.tld/path/to/image-001.gif";
-				img2.src = "http://domain.tld/path/to/image-002.gif";
-				img3.src = "http://domain.tld/path/to/image-003.gif"; */
+		$.each(response.cards, function(nul, card){
+			Draft.card[card.id] = card;
+			Draft.card[card.id].small = new Image();
+			Draft.card[card.id].full = new Image();
+			Draft.card[card.id].small.src = '/images/small' + card.image;
+			Draft.card[card.id].full.src = '/images/full' + card.image;
+		});
+		console.log(Draft);
 	});
 }
 

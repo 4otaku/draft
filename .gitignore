@@ -1,5 +1,9 @@
-images/*
-!images/.gitignore
+images/avatar/*
+!images/avatar/.gitignore
+images/small/*
+!images/small/.gitignore
+images/full/*
+!images/full/.gitignore
 
 cache/*
 !cache/.gitignore
