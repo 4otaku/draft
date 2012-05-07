@@ -64,7 +64,7 @@ function display_start(time) {
 }
 
 function display_pick(time, number) {
-	$('#counter').appendTo('.draft_pick');
+	$('#counter').prependTo('.draft_pick');
 	CounterInit(Math.ceil((time.getTime() - (new Date()).getTime()) / 1000));
 
 	$('.draft_pick .loader').show();
@@ -145,3 +145,11 @@ if (Draft.state == 0) {
 		$('body').everyTime(1500, get_draft_data);
 	});
 }
+
+$('.draft_pick .cards img').hover(function(){
+	var src = $(this).attr('src').replace('/small/', '/full/');
+	$('.display_card img').attr('src', src);
+	$('.display_card').show();
+}, function(){
+	$('.display_card').hide();
+});
