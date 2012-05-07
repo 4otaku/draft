@@ -48,6 +48,8 @@ function get_draft_data() {
 
 		if (type == 'start') {
 			display_start(time);
+		} else {
+			display_pick(time, type.replace('pick_', '') - 0);
 		}
 	});
 }
@@ -61,7 +63,22 @@ function display_start(time) {
 	get_base_data();
 }
 
-function get_base_data() {
+function display_pick(time, number) {
+	$('#counter').appendTo('.draft_pick');
+	CounterInit(Math.ceil((time.getTime() - (new Date()).getTime()) / 1000));
+
+	$('.draft_pick .loader').show();
+	$('.draft_pick .cards').hide();
+	switch_display('pick');
+
+	$.get('/ajax/get_draft_pick', {id: Draft.id, number: number}, function(response){
+		console.log(response);
+	});
+}
+
+function get_base_data(callback) {
+	callback = callback || function(){};
+
 	$.get('/ajax/get_draft_user', {id: Draft.id}, function(response) {
 		if (!response.success || !response.user) {
 			return;
@@ -101,7 +118,8 @@ function get_base_data() {
 			Draft.card[card.id].small.src = '/images/small' + card.image;
 			Draft.card[card.id].full.src = '/images/full' + card.image;
 		});
-		console.log(Draft);
+
+		callback.call(this);
 	});
 }
 
@@ -110,10 +128,11 @@ function switch_display(type) {
 	$('.draft_'+type).show();
 }
 
-$('body').everyTime(1500, get_draft_data);
-
 if (Draft.state == 0) {
 	switch_display('waiting_start');
+	$('body').everyTime(1500, get_draft_data);
 } else {
-	get_base_data();
+	get_base_data(function(){
+		$('body').everyTime(1500, get_draft_data);
+	});
 }

@@ -27,6 +27,6 @@ class Transform_Upload_Mtg extends Transform_Upload_Abstract_Image
 		$this->worker = Transform_Image::get_worker($this->file);
 		$this->animated = false;
 
-		$this->scale(array(Config::get('card', 'width'), 99999), $newthumb);
+		$this->scale(array(Config::get('card', 'width'), Config::get('card', 'height')), $newthumb);
 	}
 }

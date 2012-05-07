@@ -354,12 +354,22 @@ class Module_Ajax extends Module_Abstract
 
 		Grabber::get_images(array_unique($ids));
 
+		$sets = Database::get_row('draft', array('pause_time', 'pick_time'), $get['id']);
+		$start = time() + $sets['pause_time'];
+
 		Database::insert('draft_step', array(
 			'id_draft' => $get['id'],
 			'type' => 'start',
-			'time' => date('Y-m-d G:i:s', time() +
-				Database::get_field('draft', 'pause_time', $get['id']))
+			'time' => date('Y-m-d G:i:s', $start)
 		));
+
+		for ($i = 1; $i <= 15; $i++) {
+			Database::insert('draft_step', array(
+				'id_draft' => $get['id'],
+				'type' => 'pick_' . $i,
+				'time' => date('Y-m-d G:i:s', $start + $i * $sets['pick_time'])
+			));
+		}
 
 		Database::commit();
 		return array('success' => true);
@@ -397,10 +407,47 @@ class Module_Ajax extends Module_Abstract
 
 		$cards = Database::join('draft_booster', 'db.id_draft_set = ds.id')
 			->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
-			->join('card', 'c.id = dbc.id_card')->group('c.id')
+			->join('card', 'c.id = dbc.id_card')->group('c.id')->order('c.id')
 			->get_table('draft_set', array('c.id', 'c.name', 'c.image'),
 				'ds.id_draft = ?', $get['id']);
 
 		return array('success' => true, 'cards' => $cards);
+	}
+
+	protected function do_get_draft_pick ($get) {
+		if (!isset($get['id']) || !is_numeric($get['id']) ||
+			!isset($get['number']) || !is_numeric($get['number']) ||
+				($get['number'] > 1 &&
+					!Database::get_count('draft_step', 'id_draft = ? and type = ? and time < ?',
+						array($get['id'], 'pick_' . ($get['number'] - 1), date('Y-m-d G:i:s'))))) {
+
+			return array('success' => false, 1 => Database::debug(false));
+		}
+
+		$set = ceil($get['number'] / 15);
+		$shift = ($get['number'] - 1) % 15;
+		$order = Database::get_field('draft_user', 'order', 'id_user = ? and id_draft = ?',
+			array(User::get('id'), $get['id']));
+		$max = Database::get_field('draft_user', 'max(`order`)', 'id_draft = ?', $get['id']);
+
+		if ($order === false || $max === false) {
+			return array('success' => false);
+		}
+
+		$order = ($order + $shift) % ($max + 1);
+		$user = Database::get_field('draft_user', 'id_user', '`order` = ? and id_draft = ?',
+			array($order, $get['id']));
+
+		if ($user === false) {
+			return array('success' => false);
+		}
+
+		$cards = Database::join('draft_booster', 'db.id_draft_set = ds.id')
+			->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
+			->join('card', 'c.id = dbc.id_card')->get_vector('draft_set',
+				'c.id', 'ds.id_draft = ? and ds.order = ? and taken = ? and db.id_user = ?',
+				array($get['id'], $set, 0, $user));
+
+		return array('success' => true, 'cards' => array_keys($cards));
 	}
 }
