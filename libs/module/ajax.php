@@ -418,10 +418,10 @@ class Module_Ajax extends Module_Abstract
 		if (!isset($get['id']) || !is_numeric($get['id']) ||
 			!isset($get['number']) || !is_numeric($get['number']) ||
 				($get['number'] > 1 &&
-					!Database::get_count('draft_step', 'id_draft = ? and type = ? and time < ?',
+					!Database::get_count('draft_step', 'id_draft = ? and type = ? and time <= ?',
 						array($get['id'], 'pick_' . ($get['number'] - 1), date('Y-m-d G:i:s'))))) {
 
-			return array('success' => false, 1 => Database::debug(false));
+			return array('success' => false);
 		}
 
 		$set = ceil($get['number'] / 15);

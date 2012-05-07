@@ -72,7 +72,16 @@ function display_pick(time, number) {
 	switch_display('pick');
 
 	$.get('/ajax/get_draft_pick', {id: Draft.id, number: number}, function(response){
-		console.log(response);
+		if (!response.success || !response.cards) {
+			return;
+		}
+
+		$.each(response.cards, function(id, card){
+			$('.draft_pick .cards .card_' + (id + 1) + ' img').attr('src', Draft.card[card].small.src);
+		});
+
+		$('.draft_pick .loader').hide();
+		$('.draft_pick .cards').show();
 	});
 }
 
