@@ -387,7 +387,18 @@ class Module_Ajax extends Module_Abstract
 			$action['time'] = strtotime($action['time']);
 		}
 
-		return array('success' => true, 'action' => $action);
+		$forced = Database::join('draft_booster', 'db.id_draft_set = ds.id')
+			->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
+			->get_table('draft_set', array('dbc.id_card', 'dbc.id_user', 'dbc.pick'),
+				'ds.id_draft = ? and dbc.forced = 1', $get['id']);
+
+		foreach ($forced as &$item) {
+			if ($item['id_user'] != User::get('id')) {
+				unset($item['id_card']);
+			}
+		}
+
+		return array('success' => true, 'action' => $action, 'forced' => $forced);
 	}
 
 	protected function do_get_draft_user ($get) {
@@ -434,6 +445,8 @@ class Module_Ajax extends Module_Abstract
 			return array('success' => false);
 		}
 
+		$this->force_picks($get['id'], $set, $shift);
+
 		$order = ($order + $shift) % ($max + 1);
 		$user = Database::get_field('draft_user', 'id_user', '`order` = ? and id_draft = ?',
 			array($order, $get['id']));
@@ -444,10 +457,79 @@ class Module_Ajax extends Module_Abstract
 
 		$cards = Database::join('draft_booster', 'db.id_draft_set = ds.id')
 			->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
-			->join('card', 'c.id = dbc.id_card')->get_vector('draft_set',
-				'c.id', 'ds.id_draft = ? and ds.order = ? and taken = ? and db.id_user = ?',
+			->get_vector('draft_set', 'dbc.id_card',
+				'ds.id_draft = ? and ds.order = ? and dbc.id_user = ? and db.id_user = ?',
 				array($get['id'], $set, 0, $user));
 
-		return array('success' => true, 'cards' => array_keys($cards));
+		return array('success' => true, 'cards' => $cards);
+	}
+
+	protected function force_picks($draft, $set, $shift) {
+		if ($shift == 0) {
+			return;
+		}
+
+		$test = Database::join('draft_booster', 'db.id_draft_set = ds.id')
+			->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
+			->group('db.id_user')->get_table('draft_set', 'count(*) as count',
+				'ds.id_draft = ? and ds.order = ? and dbc.id_user = ?', array($draft, $set, 0));
+
+		$need_force = false;
+		foreach ($test as $item) {
+			if ($item['count'] > 15 - $shift) {
+				$need_force = true;
+				break;
+			}
+		}
+
+		if (!$need_force) {
+			return;
+		}
+
+		$needed = array();
+		$users = Database::get_vector('draft_user', 'id_user', 'id_draft = ?', $draft);
+		foreach ($users as $user) {
+			$needed[$user] = array();
+			for ($i = 0; $i < $shift; $i++) {
+				$needed[$user][$i] = true;
+			}
+		}
+
+		$data = Database::join('draft_booster', 'db.id_draft_set = ds.id')
+			->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
+			->get_full_table('draft_set', 'ds.id_draft = ? and ds.order = ?',
+			array($draft, $set));
+
+		foreach ($data as $card) {
+			if ($card['id_user'] == 0) {
+				continue;
+			}
+
+			unset($needed[$card['id_user']][$card['pick']]);
+		}
+
+		$max = Database::get_field('draft_user', 'max(`order`)', 'id_draft = ?', $draft);
+		foreach ($needed as $user => $picks) {
+			$order = Database::get_field('draft_user', 'order',
+				'id_user = ? and id_draft = ?', array($user, $draft));
+
+			foreach ($picks as $pick => $null) {
+				$order = ($order + $pick) % ($max + 1);
+				$booster_user = Database::get_field('draft_user', 'id_user',
+					'`order` = ? and id_draft = ?', array($order, $draft));
+
+				$cards = Database::join('draft_booster', 'db.id_draft_set = ds.id')
+					->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
+					->get_vector('draft_set', 'dbc.id', 'ds.id_draft = ? and ds.order = ? and dbc.id_user = ? and db.id_user = ?',
+						array($draft, $set, 0, $booster_user));
+
+				$card = array_rand($cards);
+				Database::update('draft_booster_card', array(
+					'id_user' => $user,
+					'pick' => $pick,
+					'forced' => 1
+				), 'id = ? and id_user = 0', $card);
+			}
+		}
 	}
 }

@@ -30,9 +30,29 @@ $('.draft_start_button').click(function(){
 
 function get_draft_data() {
 	$.get('/ajax/get_draft_data', {id: Draft.id}, function(response) {
-		if (!response.success || !response.action) {
+		if (!response.success || !response.action || !response.forced) {
 			return;
 		}
+
+		$.each(response.forced, function(key, value) {
+			var key = value.id_user + '-' + value.pick;
+
+			if (Draft.forced[key]) {
+				return;
+			}
+
+			Draft.forced[key] = value;
+
+			if (value.id_card) {
+				var msg = 'Вы зазевались на ' + (parseInt(value.pick) + 1) + ' пике, и схватили случайную карту. ';
+				msg += 'Это оказалась "'+Draft.card[value.id_card].name+'"';
+			} else {
+				var msg = Draft.users[value.id_user].login + ' зазевался на ' +
+					(parseInt(value.pick) + 1) + ' пике, и схватил случайную карту.';
+			}
+
+			$('body').trigger('message', msg);
+		});
 
 		var type = response.action.type;
 		var time = new Date(response.action.time * 1000);
@@ -69,6 +89,7 @@ function display_pick(time, number) {
 
 	$('.draft_pick .loader').show();
 	$('.draft_pick .cards').hide();
+	$('.display_card').hide();
 	switch_display('pick');
 
 	$.get('/ajax/get_draft_pick', {id: Draft.id, number: number}, function(response){
@@ -76,7 +97,8 @@ function display_pick(time, number) {
 			return;
 		}
 
-		$.each(response.cards, function(id, card){
+		$('.draft_pick .cards img').attr('src', '');
+		$.each(response.cards, function(id, card) {
 			$('.draft_pick .cards .card_' + (id + 1) + ' img').attr('src', Draft.card[card].small.src);
 		});
 
@@ -98,6 +120,8 @@ function get_base_data(callback) {
 			if (User.id == user.id) {
 				found = true;
 			}
+
+			Draft.users[user.id] = user;
 
 			var md5 = $.md5(user.login);
 

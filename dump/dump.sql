@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS `card` (
   `mana_cost` varchar(32) NOT NULL,
   `image` varchar(256) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2185 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1203 ;
 
 -- --------------------------------------------------------
 
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `draft` (
   `update` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `state` smallint(5) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=3 ;
 
 -- --------------------------------------------------------
 
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `draft_booster` (
   `id_user` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique` (`id_draft_set`,`id_user`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=20 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=13 ;
 
 -- --------------------------------------------------------
 
@@ -65,11 +65,14 @@ CREATE TABLE IF NOT EXISTS `draft_booster` (
 --
 
 CREATE TABLE IF NOT EXISTS `draft_booster_card` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `id_draft_booster` int(10) unsigned NOT NULL,
   `id_card` int(10) unsigned NOT NULL,
-  `taken` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id_draft_booster`,`id_card`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `id_user` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `pick` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `forced` tinyint(4) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=181 ;
 
 -- --------------------------------------------------------
 
@@ -85,7 +88,7 @@ CREATE TABLE IF NOT EXISTS `draft_set` (
   `state` smallint(5) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `selector` (`id_draft`,`order`,`state`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=37 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=7 ;
 
 -- --------------------------------------------------------
 
@@ -128,7 +131,7 @@ CREATE TABLE IF NOT EXISTS `message` (
   `text` text NOT NULL,
   PRIMARY KEY (`id`),
   KEY `selector` (`id_draft`,`time`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=91 ;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
 
