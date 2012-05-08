@@ -44,11 +44,13 @@ function get_draft_data() {
 			Draft.forced[key] = value;
 
 			if (value.id_card) {
-				var msg = 'Вы зазевались на ' + (parseInt(value.pick) + 1) + ' пике, и схватили случайную карту. ';
-				msg += 'Это оказалась "'+Draft.card[value.id_card].name+'"';
+				var msg = 'Вы зазевались на ' + (parseInt(value.pick) + 1) + ' пике ';
+				msg += value.order + '-го бустера, и схватили случайную карту. ';
+				msg += 'Вам достался "'+Draft.card[value.id_card].name+'".';
 			} else {
-				var msg = Draft.users[value.id_user].login + ' зазевался на ' +
-					(parseInt(value.pick) + 1) + ' пике, и схватил случайную карту.';
+				var msg = Draft.users[value.id_user].login + ' зазевался на ';
+				msg += (parseInt(value.pick) + 1) + ' пике ' + value.order;
+				msg += '-го бустера, и схватил случайную карту.';
 			}
 
 			$('body').trigger('message', msg);
@@ -87,10 +89,15 @@ function display_pick(time, number) {
 	$('#counter').prependTo('.draft_pick');
 	CounterInit(Math.ceil((time.getTime() - (new Date()).getTime()) / 1000));
 
+	Draft.pick = number;
+
 	$('.draft_pick .loader').show();
 	$('.draft_pick .cards').hide();
 	$('.display_card').hide();
+	$('.draft_pick .cards').removeClass('picking').removeClass('picked');
+	$('.draft_pick .cards img').removeClass('picking').removeClass('picked');
 	switch_display('pick');
+	Draft.picking = false;
 
 	$.get('/ajax/get_draft_pick', {id: Draft.id, number: number}, function(response){
 		if (!response.success || !response.cards) {
@@ -99,11 +106,13 @@ function display_pick(time, number) {
 
 		$('.draft_pick .cards img').attr('src', '');
 		$.each(response.cards, function(id, card) {
-			$('.draft_pick .cards .card_' + (id + 1) + ' img').attr('src', Draft.card[card].small.src);
+			$('.draft_pick .cards .card_' + (id + 1) + ' img')
+				.attr('src', Draft.card[card].small.src)
+				.data('id', card);
 		});
 
 		$('.draft_pick .loader').hide();
-		$('.draft_pick .cards').show();
+		$('.draft_pick .cards').fadeIn();
 	});
 }
 
@@ -176,4 +185,35 @@ $('.draft_pick .cards img').hover(function(){
 	$('.display_card').show();
 }, function(){
 	$('.display_card').hide();
+});
+
+$('.draft_pick .cards img').click(function(){
+	if (Draft.picking || !Draft.pick) {
+		return;
+	}
+
+	if (!$(this).attr('src') || !$(this).data('id')) {
+		return;
+	}
+
+	Draft.picking = true;
+	$('body').css('cursor', 'progress');
+	$(this).addClass('picking');
+	$('.draft_pick .cards').addClass('picking');
+
+	var me = this;
+
+	$.get('/ajax/draft_pick',
+		{id: Draft.id, number: Draft.pick, card: $(this).data('id')},
+		function(response) {
+			if (!response.success ) {
+				$(me).removeClass('picking');
+				$('.draft_pick .cards').removeClass('picking');
+				Draft.picking = false;
+			} else {
+				$(me).addClass('picked');
+				$('.draft_pick .cards').addClass('picked');
+			}
+			$('body').css('cursor', 'default');
+	});
 });

@@ -389,7 +389,7 @@ class Module_Ajax extends Module_Abstract
 
 		$forced = Database::join('draft_booster', 'db.id_draft_set = ds.id')
 			->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
-			->get_table('draft_set', array('dbc.id_card', 'dbc.id_user', 'dbc.pick'),
+			->get_table('draft_set', array('dbc.id_card', 'dbc.id_user', 'dbc.pick', 'ds.order'),
 				'ds.id_draft = ? and dbc.forced = 1', $get['id']);
 
 		foreach ($forced as &$item) {
@@ -531,5 +531,16 @@ class Module_Ajax extends Module_Abstract
 				), 'id = ? and id_user = 0', $card);
 			}
 		}
+	}
+
+	protected function do_draft_pick($get) {
+		if (!isset($get['id']) || !is_numeric($get['id']) ||
+			!isset($get['number']) || !is_numeric($get['number']) ||
+			!isset($get['card']) || !is_numeric($get['card'])) {
+
+			return array('success' => false);
+		}
+
+		return array('success' => true);
 	}
 }

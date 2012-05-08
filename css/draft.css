@@ -79,8 +79,33 @@
 }
 
 .draft_pick .cards td {
-	padding-right: 20px;
-	padding-top: 20px;
+	padding-right: 10px;
+	padding-top: 10px;
+}
+
+.draft_pick .cards img {
+	padding: 5px;
+	cursor: pointer;
+}
+
+.draft_pick .cards.picking img {
+	cursor: progress;
+}
+
+.draft_pick .cards.picked img {
+	cursor: default !important;
+}
+
+.draft_pick .cards img.picking {
+	border: 3px solid #999;
+	border-radius: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	padding: 2px;
+}
+
+.draft_pick .cards img.picked {
+	border-color: #42A3B9 !important;
 }
 
 .display_card {
