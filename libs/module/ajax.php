@@ -570,7 +570,7 @@ class Module_Ajax extends Module_Abstract
 		$user_booster = Database::get_field('draft_user', 'id_user', '`order` = ? and id_draft = ?',
 			array($order, $draft));
 		$id_booster = Database::join('draft_set', 'ds.id = db.id_draft_set')->
-			get_field('draft_booster', 'id', '`ds.order` = ? and ds.id_draft = ? and db.id_user = ?',
+			get_field('draft_booster', 'db.`id`', 'ds.`order` = ? and ds.id_draft = ? and db.id_user = ?',
 			array($set, $draft, $user_booster));
 
 		Database::update('draft_booster_card', array(
@@ -582,6 +582,29 @@ class Module_Ajax extends Module_Abstract
 			where t.pick = ? and t.id_user > 0)',
 		array($card, $id_booster, $shift));
 
-		return array('success' => Database::count_affected() > 0);
+		$success = Database::count_affected() > 0;
+
+		if ($success &&
+			Database::join('draft_booster', 'db.id_draft_set = ds.id')
+				->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
+				->get_count('draft_set',
+					'ds.id_draft = ? and ds.order = ? and dbc.pick = ? and dbc.id_user > 0',
+					array($draft, $set, $shift)) >= Database::get_count('draft_user', 'id_draft = ?', $draft)) {
+
+			$this->shift_draft_steps($draft, $get['number']);
+		}
+
+		return array('success' => $success);
+	}
+
+	protected function shift_draft_steps($id, $pick) {
+		$sets = Database::get_row('draft', array('pause_time', 'pick_time'), $id);
+		$start = time();
+
+		for ($i = $pick; $i <= 15; $i++) {
+			Database::update('draft_step', array(
+				'time' => date('Y-m-d G:i:s', $start + ($i - $pick) * $sets['pick_time'])
+			), 'id_draft = ? and type = ?', array($id, 'pick_' . $i));
+		}
 	}
 }
