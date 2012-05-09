@@ -18,7 +18,7 @@
 				document.write(unescape("%3Cscript src='/js/external/jquery.js' type='text/javascript'%3E%3C/script%3E"));
 			}
 		</script>
-		{% if user %}
+		{% if user.id %}
 			<script type="text/javascript">
 				var User = {
 					name: "{{user.login}}",

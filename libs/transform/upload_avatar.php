@@ -7,10 +7,6 @@ class Transform_Upload_Avatar extends Transform_Upload_Abstract_Image
 	}
 
 	protected function process() {
-		$pathinfo = pathinfo($this->name);
-
-		$extension = strtolower($pathinfo['extension']);
-
 		$thumb = md5(microtime(true));
 		$newthumb = IMAGES.SL.'avatar'.SL.$thumb.'.jpg';
 

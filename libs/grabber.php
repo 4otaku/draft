@@ -127,8 +127,27 @@ class Grabber
 				continue;
 			}
 
-			$url = preg_replace('/^(\/.*)(\/.*)$/ui', 'http://mtg.ru/pictures$1_big$2', $image);
-			$worker = new Transform_Upload_Mtg(file_get_contents($url), $image);
+			$url = preg_replace('/^(\/.*)(\/.*)$/ui', 'http://www.mtg.ru/pictures$1_big$2', $image);
+
+			$got = false; $i = 0;
+			while (!$got && (++$i < 15)) {
+				usleep(500000);
+
+				$handle = curl_init($url);
+				curl_setopt($handle,  CURLOPT_RETURNTRANSFER, 1);
+				curl_setopt($handle,  CURLOPT_BINARYTRANSFER, 1);
+				$response = curl_exec($handle);
+				$code = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+				curl_close($handle);
+
+				if ($code == 404) {
+					$url = 'http://www.mtg.ru/pictures' .  $image;
+				} elseif (md5($response) != 'b7b25d6d52c197be99ed9093958b6f39') {
+					$got = true;
+				}
+			}
+
+			$worker = new Transform_Upload_Mtg($response, $image);
 
 			try {
 				$worker->process_file();

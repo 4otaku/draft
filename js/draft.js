@@ -56,6 +56,15 @@ function get_draft_data() {
 			$('body').trigger('message', msg);
 		});
 
+		var picked = response.action.picked;
+		$('.draft_user').css('text-decoration', 'none');
+
+		if (picked) {
+			$.each(picked, function(key, value){
+				$('.draft_user_' + value.id_user).css('text-decoration', 'underline');
+			});
+		}
+
 		var type = response.action.type;
 		var time = new Date(response.action.time * 1000);
 
@@ -105,10 +114,11 @@ function display_pick(time, number) {
 		}
 
 		$('.draft_pick .cards img').attr('src', '');
+		$('.draft_pick .cards img').hide();
 		$.each(response.cards, function(id, card) {
 			$('.draft_pick .cards .card_' + (id + 1) + ' img')
-				.attr('src', Draft.card[card].small.src)
-				.data('id', card);
+				.attr('src', Draft.card[card.id_card].small.src)
+				.data('id', card.id).show();
 		});
 
 		$('.draft_pick .loader').hide();
@@ -139,7 +149,8 @@ function get_base_data(callback) {
 				value = Math.floor((parseInt(value, 16) / 2)).toString(16);
 				parts[key] = value;
 			});
-			users.push('<span style="color: #'+ parts.join('') + ';">' + user.login + '</span>');
+			users.push('<span style="color: #'+ parts.join('') + ';" ' +
+				'class="draft_user draft_user_' + user.id + '">' + user.login + '</span>');
 		});
 		if (!found) {
 			document.location.href = '/';

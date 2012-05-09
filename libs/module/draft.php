@@ -32,6 +32,10 @@ class Module_Draft extends Module_Abstract_Authorized
 			->order('ds.order', 'asc')->get_table('draft_set',
 			's.name, s.id, ds.state', 'ds.id_draft = ?', $this->draft['id']);
 
+		foreach ($this->draft['booster'] as &$booster) {
+			$booster['name'] = str_replace("'", '&apos;', $booster['name']);
+		}
+
 		$data['draft'] = $this->draft;
 
 		return $data;
