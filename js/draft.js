@@ -90,8 +90,6 @@ function get_draft_data() {
 }
 
 function display_start(time) {
-	$('#counter').appendTo('.draft_start');
-
 	switch_display('start', Math.ceil((time.getTime() - (new Date()).getTime()) / 1000));
 
 	get_base_data();

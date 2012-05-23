@@ -42,7 +42,7 @@
 		}
 
 		$('#' + $(this).attr('id') + ' .digit').html('<div class="top"></div><div class="bottom"></div>');
-		$(this).doCountDown($(this).attr('id'), diffSecs, 500);
+		$(this).doCountDown($(this).attr('id'), diffSecs, 1);
 
 		return this;
 
