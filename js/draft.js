@@ -82,7 +82,7 @@ function get_draft_data() {
 		} else if (type == 'look') {
 			display_look(time);
 		} else if (type == 'build') {
-			display_build();
+			display_look(time);
 		} else {
 			display_pick(time, type.replace('pick_', '') - 0);
 		}
@@ -91,16 +91,13 @@ function get_draft_data() {
 
 function display_start(time) {
 	$('#counter').appendTo('.draft_start');
-	CounterInit(Math.ceil((time.getTime() - (new Date()).getTime()) / 1000));
 
-	switch_display('start');
+	switch_display('start', Math.ceil((time.getTime() - (new Date()).getTime()) / 1000));
 
 	get_base_data();
 }
 
 function display_pick(time, number) {
-	$('#counter').prependTo('.draft_pick');
-	CounterInit(Math.ceil((time.getTime() - (new Date()).getTime()) / 1000));
 
 	Draft.pick = number;
 
@@ -109,7 +106,8 @@ function display_pick(time, number) {
 	$('.display_card').hide();
 	$('.draft_pick .cards').removeClass('picking').removeClass('picked');
 	$('.draft_pick .cards img').removeClass('picking').removeClass('picked');
-	switch_display('pick');
+
+	switch_display('pick', Math.ceil((time.getTime() - (new Date()).getTime()) / 1000));
 	Draft.picking = false;
 
 	$.get('/ajax/get_draft_pick', {id: Draft.id, number: number}, function(response){
@@ -131,33 +129,32 @@ function display_pick(time, number) {
 }
 
 function display_look(time) {
-	$('#counter').prependTo('.draft_look');
-	CounterInit(Math.ceil((time.getTime() - (new Date()).getTime()) / 1000));
-
 	$('.draft_look .loader').show();
-	$('.draft_look .deck').hide();
+	$('.draft_look .drafted').hide().html('');
+
+	switch_display('look', Math.ceil((time.getTime() - (new Date()).getTime()) / 1000));
 
 	$.get('/ajax/get_draft_deck', {id: Draft.id}, function(response){
 		if (!response.success || !response.cards) {
 			return;
 		}
 
-		Draft.deck = {};
+		var drafted = {};
 
 		$.each(response.cards, function(id, card) {
 			var count = card.count;
 			var card = Draft.card[card.id_card];
 
-			if (!Draft.deck[card.color]) {
-				Draft.deck[card.color] = [];
+			if (!drafted[card.color]) {
+				drafted[card.color] = [];
 			}
 
-			Draft.deck[card.color].push({id: card.id, name: card.name,
+			drafted[card.color].push({id: card.id, name: card.name,
 				image: card.full, count: count});
 		});
 
-		$.each(Draft.deck, function(id, color) {
-			Draft.deck[id].sort(function(a, b){
+		$.each(drafted, function(id, dev_null) {
+			drafted[id].sort(function(a, b){
 				if (a.count != b.count) {
 					return a.count < b.count;
 				}
@@ -166,13 +163,42 @@ function display_look(time) {
 			});
 		});
 
-		console.log(Draft.deck);
+		insert_drafted(drafted, 'M', 'Multicolor');
+		insert_drafted(drafted, 'W', 'White');
+		insert_drafted(drafted, 'G', 'Green');
+		insert_drafted(drafted, 'R', 'Red');
+		insert_drafted(drafted, 'B', 'Black');
+		insert_drafted(drafted, 'U', 'Blue');
+		insert_drafted(drafted, 'A', 'Artifact');
+		insert_drafted(drafted, 'L', 'Land');
+
+		$.each(drafted, function(id, dev_null) {
+			insert_drafted(drafted, id, id);
+		});
 
 		$('.draft_look .loader').hide();
-		$('.draft_look .deck').fadeIn();
+		$('.draft_look .drafted').fadeIn();
+	});
+}
+
+function insert_drafted(data, index, name) {
+	if (!data[index]) {
+		return;
+	}
+
+	var header = $('<div/>').addClass('drafted_color_header').html(name);
+	var div = $('<div/>').addClass('drafted_color').append(header);
+
+	$.each(data[index], function(id, item){
+		var span = $('<span/>').data('image', item.image)
+			.html(item.count + ' x ' + item.name);
+		var row = $('<div/>').addClass('drafted_row').append(span);
+		div.append(row);
 	});
 
-	switch_display('look');
+	$('.draft_look .drafted').append(div);
+
+	delete data[index];
 }
 
 function display_build(time) {
@@ -229,9 +255,38 @@ function get_base_data(callback) {
 	});
 }
 
-function switch_display(type) {
+function switch_display(type, counter) {
+	if (counter) {
+		counter_init(counter);
+		$('#counter').show();
+	} else {
+		$('#counter').hide();
+	}
+
 	$('.draft_base:not(.draft_info):not(.draft_'+type+')').hide();
 	$('.draft_'+type).show();
+}
+
+function counter_init(seconds) {
+	if (!$('#counter').data('started')) {
+		$('#counter').countDown({
+			targetOffset: {
+				day: 0, month: 0, year: 0,
+				hour: 0, min: 0, sec: seconds
+			}
+		});
+		$('#counter').data('started', true);
+	} else {
+
+		$('#counter').stopCountDown();
+		$('#counter').setCountDown({
+			targetOffset: {
+				day: 0, month: 0, year: 0,
+				hour: 0, min: 0, sec: seconds
+			}
+		});
+		$('#counter').startCountDown();
+	}
 }
 
 if (Draft.state == 0) {
@@ -249,6 +304,17 @@ $('.draft_pick .cards img').hover(function(){
 	$('.display_card').show();
 }, function(){
 	$('.display_card').hide();
+});
+
+$('.drafted_row span').live({
+	mouseover: function(){
+		var image = $(this).data('image');
+		$('.display_card img').attr('src', image.src);
+		$('.display_card').show();
+	},
+	mouseout: function(){
+		$('.display_card').hide();
+	}
 });
 
 $('.draft_pick .cards img').click(function(){

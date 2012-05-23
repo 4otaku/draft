@@ -19,6 +19,11 @@ body {
 	clear: both;
 }
 
+.left {
+	float: left;
+	margin: 15px 0 0 15px;
+}
+
 .right {
 	float: right;
 	margin: 15px 15px 0 0;

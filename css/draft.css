@@ -54,21 +54,11 @@
 	text-align: center;
 }
 
-.draft_start #counter {
-	margin-top: 20px;
-	margin-left: auto;
-	margin-right: auto;
-}
-
 .draft_pick {
 	text-align: center;
 }
 
-.draft_pick #counter {
-	float: right;
-}
-
-.draft_pick .loader {
+.loader {
 	margin-top: 200px;
 	margin-left: auto;
 	margin-right: auto;
@@ -114,4 +104,33 @@
 	right: 20px;
 	display: none;
 	z-index: 9001;
+}
+
+.draft_look {
+	background: rgb(0, 0, 0);
+	background: rgba(0, 0, 0, 0.6);
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	padding: 10px;
+	color: #FFFFFF;
+}
+
+.draft_look .drafted_color {
+	float: left;
+	margin: 10px;
+}
+
+.draft_look .drafted_color_header {
+	text-decoration: underline;
+	font-weight: bold;
+	font-size: 120%;
+}
+
+.draft_look .drafted_row span {
+	cursor: pointer;
+}
+
+.draft_look .drafted_row span:hover {
+	text-decoration: underline;
 }
