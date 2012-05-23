@@ -356,22 +356,43 @@ class Module_Ajax extends Module_Abstract
 
 		Grabber::get_images(array_unique($ids));
 
-		$sets = Database::get_row('draft', array('pause_time', 'pick_time'), $get['id']);
-		$start = time() + $sets['pause_time'];
+		$opts = Database::get_row('draft', array('pause_time', 'pick_time'), $get['id']);
+		$start = time() + $opts['pause_time'];
+
+		foreach ($sets as $set_number => $set) {
+
+			$set_start = $start +
+				15 * $set_number * $opts['pick_time'] +
+				$opts['pause_time'] * $set_number;
+
+			if (!$set_number) {
+				Database::insert('draft_step', array(
+					'id_draft' => $get['id'],
+					'type' => 'start',
+					'time' => date('Y-m-d G:i:s', $set_start)
+				));
+			} else {
+				Database::insert('draft_step', array(
+					'id_draft' => $get['id'],
+					'type' => 'look',
+					'time' => date('Y-m-d G:i:s', $set_start)
+				));
+			}
+
+			for ($i = 1; $i <= 15; $i++) {
+				Database::insert('draft_step', array(
+					'id_draft' => $get['id'],
+					'type' => 'pick_' . (15 * $set_number + $i),
+					'time' => date('Y-m-d G:i:s', $set_start + $i * $opts['pick_time'])
+				));
+			}
+		}
 
 		Database::insert('draft_step', array(
 			'id_draft' => $get['id'],
-			'type' => 'start',
-			'time' => date('Y-m-d G:i:s', $start)
+			'type' => 'build',
+			'time' => date('Y-m-d G:i:s', $start + 86400)
 		));
-
-		for ($i = 1; $i <= 15; $i++) {
-			Database::insert('draft_step', array(
-				'id_draft' => $get['id'],
-				'type' => 'pick_' . $i,
-				'time' => date('Y-m-d G:i:s', $start + $i * $sets['pick_time'])
-			));
-		}
 
 		Database::commit();
 		return array('success' => true);
@@ -429,7 +450,7 @@ class Module_Ajax extends Module_Abstract
 		$cards = Database::join('draft_booster', 'db.id_draft_set = ds.id')
 			->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
 			->join('card', 'c.id = dbc.id_card')->group('c.id')->order('c.id')
-			->get_table('draft_set', array('c.id', 'c.name', 'c.image'),
+			->get_table('draft_set', array('c.id', 'c.name', 'c.image', 'c.color'),
 				'ds.id_draft = ?', $get['id']);
 
 		return array('success' => true, 'cards' => $cards);
@@ -597,14 +618,46 @@ class Module_Ajax extends Module_Abstract
 		return array('success' => $success);
 	}
 
+	protected function do_get_draft_deck($get) {
+		if (!isset($get['id']) || !is_numeric($get['id']) || !User::get('id')) {
+			return array('success' => false);
+		}
+
+		$user = User::get('id');
+		$draft = $get['id'];
+
+		$data = Database::group('dbc.id_card')->join('draft_booster', 'db.id_draft_set = ds.id')
+			->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
+			->get_table('draft_set', array('dbc.id_card', 'count(*) as count'),
+				'ds.id_draft = ? and dbc.id_user = ?', array($draft, $user));
+
+		return array('success' => true, 'cards' => $data);
+	}
+
 	protected function shift_draft_steps($id, $pick) {
 		$sets = Database::get_row('draft', array('pause_time', 'pick_time'), $id);
+
 		$start = time();
 
-		for ($i = $pick; $i <= 15; $i++) {
+		$steps = Database::order('time', 'asc')->
+			get_vector('draft_step', array('id', 'time'),
+				'id_draft = ? and time > ?', array($id, date('Y-m-d G:i:s', $start)));
+
+		if (empty($steps)) {
+			return;
+		}
+
+		$step = reset($steps);
+		$shift = strtotime($step) - $start;
+
+		if ($shift < 3) {
+			return;
+		}
+
+		foreach ($steps as $id => $step) {
 			Database::update('draft_step', array(
-				'time' => date('Y-m-d G:i:s', $start + ($i - $pick) * $sets['pick_time'])
-			), 'id_draft = ? and type = ?', array($id, 'pick_' . $i));
+				'time' => date('Y-m-d G:i:s', strtotime($step) - $shift)
+			), $id);
 		}
 	}
 }

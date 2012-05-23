@@ -79,6 +79,10 @@ function get_draft_data() {
 
 		if (type == 'start') {
 			display_start(time);
+		} else if (type == 'look') {
+			display_look(time);
+		} else if (type == 'build') {
+			display_build();
 		} else {
 			display_pick(time, type.replace('pick_', '') - 0);
 		}
@@ -124,6 +128,55 @@ function display_pick(time, number) {
 		$('.draft_pick .loader').hide();
 		$('.draft_pick .cards').fadeIn();
 	});
+}
+
+function display_look(time) {
+	$('#counter').prependTo('.draft_look');
+	CounterInit(Math.ceil((time.getTime() - (new Date()).getTime()) / 1000));
+
+	$('.draft_look .loader').show();
+	$('.draft_look .deck').hide();
+
+	$.get('/ajax/get_draft_deck', {id: Draft.id}, function(response){
+		if (!response.success || !response.cards) {
+			return;
+		}
+
+		Draft.deck = {};
+
+		$.each(response.cards, function(id, card) {
+			var count = card.count;
+			var card = Draft.card[card.id_card];
+
+			if (!Draft.deck[card.color]) {
+				Draft.deck[card.color] = [];
+			}
+
+			Draft.deck[card.color].push({id: card.id, name: card.name,
+				image: card.full, count: count});
+		});
+
+		$.each(Draft.deck, function(id, color) {
+			Draft.deck[id].sort(function(a, b){
+				if (a.count != b.count) {
+					return a.count < b.count;
+				}
+
+				return a.name.localeCompare(b.name);
+			});
+		});
+
+		console.log(Draft.deck);
+
+		$('.draft_look .loader').hide();
+		$('.draft_look .deck').fadeIn();
+	});
+
+	switch_display('look');
+}
+
+function display_build(time) {
+	switch_display('build');
 }
 
 function get_base_data(callback) {
