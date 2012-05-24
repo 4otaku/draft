@@ -46,7 +46,7 @@
 	margin-top: 20px;
 }
 
-.draft_start_button .loader {
+.draft_start_button img {
 	display: none;
 }
 
@@ -114,6 +114,14 @@
 	-webkit-border-radius: 10px;
 	padding: 10px;
 	color: #FFFFFF;
+}
+
+.draft_look .deck {
+	display: none;
+}
+
+.draft_look .drafted h2 {
+	display: none;
 }
 
 .draft_look .drafted_color {

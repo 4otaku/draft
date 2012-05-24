@@ -3,6 +3,7 @@ images/avatar/*
 images/small/*
 !images/small/.gitignore
 images/full/*
+!images/full/Land/*
 !images/full/.gitignore
 
 cache/*

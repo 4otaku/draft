@@ -12,6 +12,7 @@
 				<span class="digit">0</span>
 				<span class="digit">0</span>
 			</span>
+			<span class="dash_clear">&#8203;</span>
 		</div>
 	</div>
 	<div class="right">
@@ -50,7 +51,7 @@
 			{% if draft.id_user == user.id %}
 				<button class="btn btn-success btn-large draft_start_button">
 					Начать драфт c текущим составом
-					<img src="/images/loading.gif" class="loader" />
+					<img src="/images/loading.gif" />
 				</button>
 			{% endif %}
 		</div>
@@ -85,7 +86,11 @@
 			</table>
 		</div>
 		<div class="draft_look draft_base">
+			<div class="deck">
+				<h2>Колода</h2>
+			</div>
 			<div class="drafted">
+				<h2>Сайдборд</h2>
 			</div>
 			<div class="clear"></div>
 		</div>

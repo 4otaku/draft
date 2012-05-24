@@ -1,16 +1,23 @@
 #counter {
 	display: none;
+	background: rgb(0, 0, 0);
+	background: rgba(0, 0, 0, 0.7);
+	padding: 2px 2px 2px 0;
 }
 
 .dash {
 	position: relative;
 }
 
-.dash .digit, .dash .added {
+.dash .digit, .dash .added, .dash_clear {
 	font: bold 16pt Verdana;
 	font-weight: bold;
-	float: left;
+	color: #FFFFFF;
 	width: 16px;
 	text-align: center;
 	position: relative;
+}
+
+.dash .digit, .dash .added {
+	float: left;
 }

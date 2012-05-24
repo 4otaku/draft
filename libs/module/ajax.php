@@ -447,13 +447,16 @@ class Module_Ajax extends Module_Abstract
 			return array('success' => false);
 		}
 
+		$lands = Database::get_table('card',
+			array('id', 'name', 'image', 'color'), 'id <= 5');
+
 		$cards = Database::join('draft_booster', 'db.id_draft_set = ds.id')
 			->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
 			->join('card', 'c.id = dbc.id_card')->group('c.id')->order('c.id')
 			->get_table('draft_set', array('c.id', 'c.name', 'c.image', 'c.color'),
 				'ds.id_draft = ?', $get['id']);
 
-		return array('success' => true, 'cards' => $cards);
+		return array('success' => true, 'cards' => array_merge($lands, $cards));
 	}
 
 	protected function do_get_draft_pick ($get) {
@@ -625,6 +628,28 @@ class Module_Ajax extends Module_Abstract
 
 		$user = User::get('id');
 		$draft = $get['id'];
+
+		if (!empty($get['add_land'])) {
+			$id_booster = Database::join('draft_booster', 'db.id_draft_set = ds.id')
+				->get_field('draft_set', 'db.id', 'ds.id_draft = ?', $draft);
+
+			$pick = 100;
+			$insert = array();
+			for ($id_card = 1; $id_card <=5; $id_card++) {
+				for ($j = 1; $j <=100; $j++) {
+					$pick++;
+
+					$insert[] = array(
+						'id_draft_booster' => $id_booster,
+						'id_card' => $id_card,
+						'id_user' => $user,
+						'pick' => $pick
+					);
+				}
+			}
+
+			Database::bulk_insert('draft_booster_card', $insert, true);
+		}
 
 		$data = Database::group('dbc.id_card')->join('draft_booster', 'db.id_draft_set = ds.id')
 			->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
