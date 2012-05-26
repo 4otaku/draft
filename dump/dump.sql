@@ -78,6 +78,8 @@ CREATE TABLE IF NOT EXISTS `draft_booster_card` (
   `id_user` smallint(5) unsigned NOT NULL DEFAULT '0',
   `pick` smallint(5) unsigned NOT NULL DEFAULT '0',
   `forced` tinyint(4) DEFAULT NULL,
+  `deck` tinyint(3) unsigned NOT NULL DEFAULT '0',
+  `sided` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -122,6 +124,7 @@ CREATE TABLE IF NOT EXISTS `draft_user` (
   `id_draft` int(10) unsigned NOT NULL,
   `id_user` int(10) unsigned NOT NULL,
   `order` smallint(5) unsigned NOT NULL,
+  `created_deck` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_draft`,`id_user`),
   UNIQUE KEY `order` (`id_draft`,`order`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -126,6 +126,10 @@
 	text-align: left;
 }
 
+.draft_look .deck .deck_finish {
+	float: right;
+}
+
 .draft_look .deck .buffer {
 	display: none;
 }
@@ -162,7 +166,8 @@
 
 .draft_look .drafted_color {
 	float: left;
-	margin: 10px;
+	margin: 5px;
+	width: 190px;
 }
 
 .draft_look .drafted_color:nth-child(3n+2) {

@@ -394,6 +394,7 @@ $('.drafted_row span').live({
 
 		$(this).data('item', item).trigger('compile');
 		target.data('item', item_target).trigger('compile', item_target.count == 1);
+		check_create_button();
 	}
 });
 
@@ -410,6 +411,7 @@ $('.remove_card').live({
 
 		parent.data('item', item).trigger('compile');
 		target.data('item', item_target).trigger('compile');
+		check_create_button();
 	}
 });
 
@@ -444,6 +446,33 @@ $('.draft_pick .cards img').click(function(){
 	});
 });
 
+$('.deck_finish').click(function(){
+	if ($(this).is('.disabled')) {
+		return;
+	}
+
+	$('.draft_look .loader').show();
+	$('.draft_look .drafted').hide();
+	$('.draft_look .deck').hide();
+
+	var cards = [];
+	$('.slot .items > div').each(function(){
+		var item = $(this).data('item');
+		for (var i = 0; i < item.count; i++) {
+			cards.push(item.id);
+		}
+	});
+
+	$.get('/ajax/set_draft_deck', {id: Draft.id, c: cards}, function(response) {
+		if (!response.success) {
+			$('.draft_look .loader').hide();
+			$('.draft_look .drafted').show();
+			$('.draft_look .deck').show();
+			alert('Не удалось создать колоду.');
+		}
+	});
+});
+
 function check_slot_height() {
 	var height = 100;
 
@@ -454,4 +483,18 @@ function check_slot_height() {
 	$('.slot').each(function(){
 		$(this).css('min-height', height + 'px');
 	});
+}
+
+function check_create_button() {
+	var count = 0;
+
+	$('.slot .items > div').each(function(){
+		count += $(this).data('item').count;
+	});
+
+	if (count >= 40) {
+		$('.deck_finish').removeClass('disabled');
+	} else {
+		$('.deck_finish').addClass('disabled');
+	}
 }
