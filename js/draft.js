@@ -142,6 +142,7 @@ function display_look(time, build) {
 		}
 
 		var drafted = {};
+		var deck = [];
 
 		$.each(response.cards, function(id, card) {
 			var count = card.count;
@@ -153,6 +154,9 @@ function display_look(time, build) {
 
 			drafted[card.color].push({id: card.id, name: card.name,
 				image: card.full, count: count});
+
+			deck.push({id: card.id, name: card.name,
+				image: card.full, count: 0});
 		});
 
 		$.each(drafted, function(id, dev_null) {
@@ -181,13 +185,15 @@ function display_look(time, build) {
 		if (build) {
 			$('.draft_look .drafted h2').show();
 			$('.add_card').show();
-			Draft.deck = {};
+			Draft.deck_building = true;
+			deck.sort(function(a, b){return a.name.localeCompare(b.name);});
+			insert_deck(deck);
 		}
 
 		$('.draft_look .loader').hide();
-		$('.draft_look .drafted').fadeIn();
+		$('.draft_look .drafted').slideDown();
 		if (build) {
-			$('.draft_look .deck').fadeIn();
+			$('.draft_look .deck').slideDown();
 		}
 	});
 }
@@ -204,7 +210,7 @@ function insert_drafted(data, index, name) {
 		var span = $('<span/>').data('item', item).bind('compile', function(){
 			var item = $(this).data('item');
 			$(this).html(item.count + ' x ' + item.name);
-		}).trigger('compile');
+		}).addClass('drafted-' + item.id).addClass('hover_card').trigger('compile');
 		var row = $('<div/>').addClass('drafted_row').append(span);
 		div.append(row);
 	});
@@ -212,6 +218,53 @@ function insert_drafted(data, index, name) {
 	$('.draft_look .drafted').append(div);
 
 	delete data[index];
+}
+
+function insert_deck(data) {
+	$.each(data, function(id, item){
+		var div = $('<div/>').data('item', item).bind('compile', function(e, display){
+			var item = $(this).data('item');
+			$(this).html('<span class="drag_card">' + item.count + ' x ' + item.name + '</span>' +
+				' <span class="remove_card">&#9746;</span>');
+			if (item.count == 0) {
+				$(this).appendTo('.buffer');
+			} else if (display) {
+				$(this).appendTo('.slot:last .items');
+				$(this).draggable('destroy');
+
+				$(this).draggable({
+					axis: 'x',
+					containment: '.slot_holder',
+					handle: '.drag_card',
+					cursor: 'move',
+					stop: function(e) {
+						var left = parseInt($(this).css('left'));
+						$(this).css('left', '0px');
+						if (left > 300) {
+							var shift = 2;
+						} else if (left > 100) {
+							var shift = 1;
+						} else if (left < -300) {
+							var shift = -2;
+						} else if (left < -100) {
+							var shift = -1;
+						} else {
+							return;
+						}
+						var newParent = $('.slot').index($(this).parent().parent()) + shift;
+						if (newParent > 2 || newParent < 0) {
+							return;
+						}
+
+						$(this).appendTo($('.slot_holder .slot').eq(newParent).children('.items'));
+						check_slot_height();
+					}
+				});
+			}
+			check_slot_height();
+		}).addClass('deck-' + item.id).addClass('hover_card').trigger('compile');
+		$('.deck .buffer').append(div);
+	});
 }
 
 function get_base_data(callback) {
@@ -315,7 +368,7 @@ $('.draft_pick .cards img').hover(function(){
 	$('.display_card').hide();
 });
 
-$('.drafted_row span').live({
+$('.hover_card').live({
 	mouseover: function(){
 		var image = $(this).data('item').image;
 		$('.display_card img').attr('src', image.src);
@@ -323,11 +376,40 @@ $('.drafted_row span').live({
 	},
 	mouseout: function(){
 		$('.display_card').hide();
-	},
+	}
+});
+
+$('.drafted_row span').live({
 	click: function(){
-		if (!Draft.deck) {
+		if (!Draft.deck_building) {
 			return;
 		}
+		var item = $(this).data('item');
+		if (!item.count) {
+			return;
+		}
+		item.count--;
+		var target = $('.deck-' + item.id), item_target = target.data('item');
+		item_target.count++;
+
+		$(this).data('item', item).trigger('compile');
+		target.data('item', item_target).trigger('compile', item_target.count == 1);
+	}
+});
+
+$('.remove_card').live({
+	click: function(){
+		var parent = $(this).parent();
+		var item = parent.data('item');
+		if (!item.count) {
+			return;
+		}
+		item.count--;
+		var target = $('.drafted-' + item.id), item_target = target.data('item');
+		item_target.count++;
+
+		parent.data('item', item).trigger('compile');
+		target.data('item', item_target).trigger('compile');
 	}
 });
 
@@ -361,3 +443,15 @@ $('.draft_pick .cards img').click(function(){
 			$('body').css('cursor', 'default');
 	});
 });
+
+function check_slot_height() {
+	var height = 100;
+
+	$('.slot').each(function(){
+		height = Math.max(height, $(this).children('.items').height());
+	});
+
+	$('.slot').each(function(){
+		$(this).css('min-height', height + 'px');
+	});
+}

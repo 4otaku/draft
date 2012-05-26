@@ -114,10 +114,46 @@
 	-webkit-border-radius: 10px;
 	padding: 10px;
 	color: #FFFFFF;
+	text-align: center;
+}
+
+.draft_look .loader {
+	margin-top: 0px;
 }
 
 .draft_look .deck {
 	display: none;
+	text-align: left;
+}
+
+.draft_look .deck .buffer {
+	display: none;
+}
+
+.draft_look .deck .slot {
+	width: 189px;
+	float: left;
+	border-left: 1px solid #FFF;
+	padding: 0 5px;
+	min-height: 100px;
+}
+
+.draft_look .deck .slot:first-child {
+	border-left: none;
+}
+
+.draft_look .deck .slot .drag_card {
+	cursor: move;
+}
+
+.draft_look .deck .slot .remove_card {
+	float: right;
+	font-size: 90%;
+	cursor: pointer;
+}
+
+.draft_look .drafted {
+	text-align: left;
 }
 
 .draft_look .drafted h2 {
@@ -127,6 +163,10 @@
 .draft_look .drafted_color {
 	float: left;
 	margin: 10px;
+}
+
+.draft_look .drafted_color:nth-child(3n+2) {
+	clear: left;
 }
 
 .draft_look .drafted_color_header {

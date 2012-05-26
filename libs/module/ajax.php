@@ -629,32 +629,20 @@ class Module_Ajax extends Module_Abstract
 		$user = User::get('id');
 		$draft = $get['id'];
 
-		if (!empty($get['add_land'])) {
-			$id_booster = Database::join('draft_booster', 'db.id_draft_set = ds.id')
-				->get_field('draft_set', 'db.id', 'ds.id_draft = ?', $draft);
-
-			$pick = 100;
-			$insert = array();
-			for ($id_card = 1; $id_card <=5; $id_card++) {
-				for ($j = 1; $j <=100; $j++) {
-					$pick++;
-
-					$insert[] = array(
-						'id_draft_booster' => $id_booster,
-						'id_card' => $id_card,
-						'id_user' => $user,
-						'pick' => $pick
-					);
-				}
-			}
-
-			Database::bulk_insert('draft_booster_card', $insert, true);
-		}
-
 		$data = Database::group('dbc.id_card')->join('draft_booster', 'db.id_draft_set = ds.id')
 			->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
 			->get_table('draft_set', array('dbc.id_card', 'count(*) as count'),
 				'ds.id_draft = ? and dbc.id_user = ?', array($draft, $user));
+
+		if (!empty($get['add_land'])) {
+
+			$lands = array();
+			for ($id_card = 1; $id_card <=5; $id_card++) {
+				$lands[] = array('id_card' => $id_card, 'count' => 100);
+			}
+
+			$data = array_merge($data, $lands);
+		}
 
 		return array('success' => true, 'cards' => $data);
 	}
