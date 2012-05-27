@@ -33,7 +33,7 @@ INSERT INTO `card` (`id`, `name`, `color`, `mana_cost`, `image`) VALUES
 (2, 'Forest', 'L', '', '/Land/Forest.jpg'),
 (3, 'Mountain', 'L', '', '/Land/Mountain.jpg'),
 (4, 'Swamp', 'L', '', '/Land/Swamp.jpg'),
-(5, 'Island', 'L', '', '/Land/Island.jpg')
+(5, 'Island', 'L', '', '/Land/Island.jpg');
 
 -- --------------------------------------------------------
 
