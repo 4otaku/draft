@@ -505,6 +505,33 @@ $('.deck_finish').click(function(){
 	});
 });
 
+$('.challenge button').click(function(){
+	var opponent = $('.challenge .opponents').val();
+	if (!opponent || !Draft.users[opponent]) {
+		return;
+	}
+
+	var win = window.open('', 'Дуэль');
+
+	win.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' +
+		'<html>' +
+			'<head>' +
+				'<meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />' +
+			'</head>' +
+		'<body onLoad="document.getElementById(\'form\').submit()">' +
+			'<form action="http://www.mtg.ru/play/start.phtml" method="POST" id="form">' +
+				'<input type="hidden" name="Player" value="' + User.login + '">' +
+				'<input type="hidden" name="Player_Avatar" value="http://mtgdraft.ru/images/avatar/' + User.avatar + '.jpg">' +
+				'<input type="hidden" name="Oponent" value="' + Draft.users[opponent].login + '">' +
+				'<input type="hidden" name="Oponent_Avatar" value="http://mtgdraft.ru/images/avatar/' + Draft.users[opponent].avatar + '.jpg">' +
+				'<input type="hidden" name="Lang" value="EN">' +
+				'<textarea style="display:none;" name="Deck">' + Draft.decklist + '</textarea>' +
+			'</form>' +
+		'</body>' +
+	'</html>');
+	win.document.close();
+});
+
 function check_slot_height() {
 	var height = 100;
 

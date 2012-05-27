@@ -445,7 +445,7 @@ class Module_Ajax extends Module_Abstract
 		return array('success' => true,
 			'user' => Database::join('user', 'u.id = du.id_user')->
 				order('du.order', 'asc')->get_table('draft_user',
-				'u.id, u.login', 'du.id_draft = ?', $get['id']));
+				'u.id, u.login, u.avatar', 'du.id_draft = ?', $get['id']));
 	}
 
 	protected function do_get_draft_card ($get) {
