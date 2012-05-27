@@ -126,6 +126,13 @@
 	text-align: left;
 }
 
+.draft_look .deck .count_cards {
+	margin-left: 30px;
+	font-size: 50%;
+	position: relative;
+	bottom: 5px;
+}
+
 .draft_look .deck .deck_finish {
 	float: right;
 }

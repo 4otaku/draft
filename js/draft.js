@@ -556,6 +556,8 @@ function check_create_button() {
 	} else {
 		$('.deck_finish').addClass('disabled');
 	}
+
+	$('.count_cards .count').html(count);
 }
 
 function build_deck(cards) {
