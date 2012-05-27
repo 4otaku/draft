@@ -520,7 +520,7 @@ $('.challenge button').click(function(){
 			'</head>' +
 		'<body onLoad="document.getElementById(\'form\').submit()">' +
 			'<form action="http://www.mtg.ru/play/start.phtml" method="POST" id="form">' +
-				'<input type="hidden" name="Player" value="' + User.login + '">' +
+				'<input type="hidden" name="Player" value="' + User.name + '">' +
 				'<input type="hidden" name="Player_Avatar" value="http://mtgdraft.ru/images/avatar/' + User.avatar + '.jpg">' +
 				'<input type="hidden" name="Oponent" value="' + Draft.users[opponent].login + '">' +
 				'<input type="hidden" name="Oponent_Avatar" value="http://mtgdraft.ru/images/avatar/' + Draft.users[opponent].avatar + '.jpg">' +
