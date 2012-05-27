@@ -30,7 +30,35 @@ $('.draft_start_button').click(function(){
 
 function get_draft_data() {
 	$.get('/ajax/get_draft_data', {id: Draft.id}, function(response) {
-		if (!response.success || !response.action || !response.forced) {
+		if (!response.success) {
+			return;
+		}
+
+		if (response.ready) {
+			var need_opponents_refresh = false;
+			$.each(response.users, function(key, value){
+				var user = value.id_user;
+				if (Draft.opponents[user]) {
+					return;
+				}
+
+				Draft.opponents[user] = Draft.users[user];
+				$('body').trigger('message', Draft.opponents[user].login +
+					' собрал колоду и готов играть.');
+				need_opponents_refresh = true;
+			});
+
+			if (need_opponents_refresh) {
+				refresh_opponents();
+			}
+
+			if (!Draft.deck) {
+				build_deck(response.deck);
+				display_ready();
+			}
+		}
+
+		if (!response.action || !response.forced) {
 			return;
 		}
 
@@ -196,6 +224,10 @@ function display_look(time, build) {
 			$('.draft_look .deck').slideDown();
 		}
 	});
+}
+
+function display_ready() {
+	switch_display('ready');
 }
 
 function insert_drafted(data, index, name) {
@@ -497,4 +529,40 @@ function check_create_button() {
 	} else {
 		$('.deck_finish').addClass('disabled');
 	}
+}
+
+function build_deck(cards) {
+	Draft.deck = {}, Draft.side = {};
+	$.each(cards, function(key, card){
+		if (card.deck == 0) {
+
+			if (!Draft.side[card.id_card]) {
+				Draft.side[card.id_card] = 0;
+			}
+			Draft.side[card.id_card]++;
+
+		} else {
+
+			if (!Draft.deck[card.id_card]) {
+				Draft.deck[card.id_card] = 0;
+			}
+			Draft.deck[card.id_card]++;
+		}
+	});
+
+	var list = [];
+	$.each(Draft.deck, function(id, count) {
+		list.push(count + ' ' + Draft.card[id].name);
+	});
+
+	Draft.decklist = list.join('\n');
+}
+
+function refresh_opponents() {
+	$('.challenge .opponents').children().remove();
+
+	$.each(Draft.opponents, function(id, opponent) {
+		$('.challenge .opponents').append('<option value="' +
+			opponent.id + '">' + opponent.login + '</option>');
+	});
 }

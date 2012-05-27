@@ -399,8 +399,14 @@ class Module_Ajax extends Module_Abstract
 	}
 
 	protected function do_get_draft_data ($get) {
-		if (!isset($get['id']) || !is_numeric($get['id'])) {
+		if (!isset($get['id']) || !is_numeric($get['id']) || !User::get('id')) {
 			return array('success' => false);
+		}
+
+		if (Database::get_count('draft_user', 'id_draft = ? and id_user = ? and created_deck = 1',
+			array($get['id'], User::get('id')))) {
+
+			return $this->get_duel_data($get['id'], User::get('id'));
 		}
 
 		$action = Database::order('time', 'asc')->get_full_row('draft_step',
@@ -666,6 +672,52 @@ class Module_Ajax extends Module_Abstract
 		return array('success' => true, 'cards' => $data);
 	}
 
+	protected function do_set_draft_deck($get) {
+		if (!isset($get['id']) || !is_numeric($get['id']) ||
+			!isset($get['c']) || !is_array($get['c']) ||
+			count($get['c']) < 40 || !User::get('id')) {
+
+			return array('success' => false);
+		}
+
+		$user = User::get('id');
+		$draft = $get['id'];
+
+		if (!Database::get_count('draft_user', 'id_draft = ? and id_user = ? and created_deck = 0',
+			array($draft, $user))) {
+
+			return array('success' => false);
+		}
+
+		Database::begin();
+
+		foreach ($get['c'] as $card) {
+			if (!is_numeric($card)) {
+				Database::rollback();
+				return array('success' => false);
+			}
+
+			$id = Database::join('draft_booster', 'db.id_draft_set = ds.id')
+				->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
+				->get_field('draft_set', 'dbc.id',
+					'ds.id_draft = ? and dbc.id_user = ? and dbc.id_card = ? and deck = 0',
+					array($draft, $user, $card));
+
+			if (!$id) {
+				Database::rollback();
+				return array('success' => false);
+			}
+
+			Database::update('draft_booster_card', array('deck' => 1), $id);
+		}
+
+		Database::update('draft_user', array('created_deck' => 1),
+			'id_draft = ? and id_user = ?', array($draft, $user));
+
+		Database::commit();
+		return array('success' => true);
+	}
+
 	protected function shift_draft_steps($id, $pick) {
 		$sets = Database::get_row('draft', array('pause_time', 'pick_time'), $id);
 
@@ -691,5 +743,19 @@ class Module_Ajax extends Module_Abstract
 				'time' => date('Y-m-d G:i:s', strtotime($step) - $shift)
 			), $id);
 		}
+	}
+
+	protected function get_duel_data($draft, $user) {
+
+		$deck = Database::join('draft_booster', 'db.id_draft_set = ds.id')
+			->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
+			->get_table('draft_set', array('dbc.id_card', 'dbc.deck', 'dbc.sided'),
+				'ds.id_draft = ? and dbc.id_user = ?', array($draft, $user));
+
+		$users = Database::get_table('draft_user', 'id_user',
+			'id_draft = ? and id_user != ? and created_deck = 1',
+			array($draft, $user));
+
+		return array('success' => true, 'deck' => $deck, 'users' => $users, 'ready' => true);
 	}
 }

@@ -187,3 +187,14 @@
 .draft_look .drafted_row span:hover {
 	text-decoration: underline;
 }
+
+.draft_ready {
+	text-align: center;
+}
+
+.draft_ready .challenge{
+	background-color: inherit !important;
+	border: none !important;
+	border-radius: 0 0 0 0 !important;
+	box-shadow: none !important;
+}
