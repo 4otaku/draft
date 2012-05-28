@@ -316,7 +316,8 @@ class Module_Ajax extends Module_Abstract
 
 			foreach ($users as $user) {
 				$mythic = mt_rand(0, 8) < 1;
-				$generate = array(1 => 11, 2 => 0, 3 => 0, 4 => 0);
+				$foil = mt_rand(0, 4) < 1;
+				$generate = array(1 => $foil ? 10 : 11, 2 => 0, 3 => 0, 4 => 0);
 
 				if ($mythic && isset($cards[4])) {
 					$generate[4] += 1;
@@ -342,14 +343,37 @@ class Module_Ajax extends Module_Abstract
 				$id_booster = Database::last_id();
 
 				foreach ($generate as $rarity => $number) {
+					$tmp = $cards[$rarity];
 					for ($i = 0; $i < $number; $i++) {
-						$id_card = $cards[$rarity][array_rand($cards[$rarity])];
+						$key = array_rand($tmp);
+						$id_card = $tmp[$key];
 						Database::insert('draft_booster_card', array(
 							'id_draft_booster' => $id_booster,
 							'id_card' => $id_card
 						));
 						$ids[] = $id_card;
+						unset($tmp[$key]);
 					}
+				}
+
+				if ($foil) {
+					$foil_rarity = mt_rand(0, 120);
+					if ($foil_rarity < 1 && isset($cards[4])) {
+						$foil_rarity = 4;
+					} elseif ($foil_rarity < 8 && isset($cards[3])) {
+						$foil_rarity = 3;
+					} elseif ($foil_rarity < 32 && isset($cards[2])) {
+						$foil_rarity = 2;
+					} else {
+						$foil_rarity = 1;
+					}
+					$tmp = $cards[$foil_rarity];
+					$id_card = $tmp[array_rand($tmp)];
+					Database::insert('draft_booster_card', array(
+						'id_draft_booster' => $id_booster,
+						'id_card' => $id_card
+					));
+					$ids[] = $id_card;
 				}
 			}
 		}
