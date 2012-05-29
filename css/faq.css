@@ -1,3 +1,17 @@
 .content {
 	margin: 50px 100px;
 }
+
+.question {
+	margin-top: 20px;
+	font-weight: bold;
+	font-size: 110%;
+}
+
+.answer {
+	margin-top: 5px;
+}
+
+.answer ul {
+	list-style-type: none;
+}

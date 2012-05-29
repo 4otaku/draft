@@ -545,13 +545,14 @@ function check_slot_height() {
 }
 
 function check_create_button() {
-	var count = 0;
+	var count = 0, type_count = 0;
 
 	$('.slot .items > div').each(function(){
 		count += $(this).data('item').count;
+		type_count++;
 	});
 
-	if (count >= 40) {
+	if (count >= 40 && type_count <= 25) {
 		$('.deck_finish').removeClass('disabled');
 	} else {
 		$('.deck_finish').addClass('disabled');
