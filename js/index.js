@@ -14,10 +14,15 @@ function do_get_draft(callback, scope) {
 			ids[item.id] = true;
 
 			if (Draft[item.id]) {
+				if (Draft[item.id].state != item.state) {
+					Draft[item.id] = item;
+					Draft[item.id].update_state = true;
+				}
 				return;
 			}
 
 			Draft[item.id] = item;
+			Draft[item.id].update_state = true;
 			var object = $('.draft_example').clone().attr('id', 'draft-' + item.id);
 			var booster = item.booster.split(',');
 			object.find('.name').html(item.login);
@@ -33,22 +38,12 @@ function do_get_draft(callback, scope) {
 			object.find('.pick_time').html(format_time(item.pick_time));
 			object.find('.pause_time').html(format_time(item.pause_time));
 			object.find('.join').attr('href', '/draft/' + item.id);
-			if (item.id_user == User.id) {
-				object.find('.delete').show().click(function(){
-					if (confirm('Вы уверены, что хотите удалить драфт?')) {
-						object.slideUp(1500);
-						$.get('/ajax/delete_draft', {id: item.id});
-					}
-				});
-			}
 			object.prependTo('.left_wrapper').slideDown(1500)
 				.removeClass('draft_example');
 
 			$('body').trigger('message', 'Драфт №' +
 				item.id + ' (' + booster.join(', ') +') добавлен.');
-
 		});
-
 
 		$.each(Draft, function(key, item) {
 			if (!ids[key] && key != 'last_time') {
@@ -59,6 +54,32 @@ function do_get_draft(callback, scope) {
 					$('body').trigger('message', 'Драфт №' + item.id +
 						' (' + item.booster.replace(/,/g,', ') +') удален.');
 				}
+			}
+
+			if (item.update_state) {
+				var object = $('#draft-' + key);
+
+				if (item.state == 0) {
+					if (item.id_user == User.id) {
+						object.find('.delete').show().click(function(){
+							if (confirm('Вы уверены, что хотите удалить драфт?')) {
+								object.slideUp(1500);
+								$.get('/ajax/delete_draft', {id: item.id});
+							}
+						});
+					}
+				} else if (item.state == 1) {
+					if (item.presence > 0) {
+						object.find('.join_going').show();
+					} else {
+						object.find('.join_going').hide();
+					}
+				}
+
+				object.find('.wrapper_state').hide();
+				object.find('.wrapper_state_' + item.state).show();
+
+				item.update_state = false;
 			}
 		});
 

@@ -241,13 +241,21 @@ class Module_Ajax extends Module_Abstract
 	}
 
 	protected function do_get_draft ($get) {
+		if (!User::get('id')) {
+			return array('success' => false);
+		}
+
+		$data = Database::join('draft_set', 'ds.id_draft = d.id')
+			->join('user', 'u.id = d.id_user')
+			->join('draft_user', 'd.id = du.id_draft and du.id_user = ' . User::get('id'))
+			->join('set', 'ds.id_set = s.id')->group('d.id')
+			->get_table('draft', array('d.id, d.id_user, d.state, u.login, d.pick_time,
+				d.pause_time', 'group_concat(s.name) as booster', 'du.id_user as presence'),
+				'd.state != ? and d.update > ?', array(4, date('Y-m-d G:i:s', time() - 86400000)));
+
 		return array(
 			'success' => true,
-			'data' => Database::join('draft_set', 'ds.id_draft = d.id')
-				->join('user', 'u.id = d.id_user')
-				->join('set', 'ds.id_set = s.id')->group('d.id')
-				->get_table('draft', array('d.id, d.id_user, d.state, u.login, d.pick_time,
-				d.pause_time', 'group_concat(s.name) as booster'), 'd.state != ?', 4)
+			'data' => $data
 		);
 	}
 
@@ -415,7 +423,7 @@ class Module_Ajax extends Module_Abstract
 		Database::insert('draft_step', array(
 			'id_draft' => $get['id'],
 			'type' => 'build',
-			'time' => date('Y-m-d G:i:s', $start + 86400)
+			'time' => date('Y-m-d G:i:s', $start + 864000)
 		));
 
 		Database::commit();
