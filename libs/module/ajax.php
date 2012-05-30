@@ -251,7 +251,7 @@ class Module_Ajax extends Module_Abstract
 			->join('set', 'ds.id_set = s.id')->group('d.id')
 			->get_table('draft', array('d.id, d.id_user, d.state, u.login, d.pick_time,
 				d.pause_time', 'group_concat(s.name) as booster', 'du.id_user as presence'),
-				'd.state != ? and d.update > ?', array(4, date('Y-m-d G:i:s', time() - 86400000)));
+				'd.state != ? and d.update > ?', array(4, date('Y-m-d G:i:s', time() - 86400)));
 
 		return array(
 			'success' => true,
