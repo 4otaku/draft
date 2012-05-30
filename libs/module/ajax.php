@@ -156,9 +156,9 @@ class Module_Ajax extends Module_Abstract
 			'presense' => Database::join('user', 'u.id = p.id_user')->
 				get_table('presense', 'u.id, u.login', 'p.time > ? and id_draft = ?',
 				array($time, $get['room'])),
-			'message' => Database::get_table('message',
-				'id, id_user, text', 'time > ? and id_draft = ?',
-				array($message_time, $get['room'])),
+			'message' => Database::join('user', 'u.id = m.id_user')->
+				get_table('message', 'm.id, m.id_user, m.text, u.login',
+					'm.time > ? and m.id_draft = ?', array($message_time, $get['room'])),
 			'last_draft_change' => strtotime(Database::order('update')
 				->get_field('draft', 'update'))
 		);

@@ -6,21 +6,30 @@ $.extend(Chat, {
 	}
 });
 
-function add_user(name, id) {
-	var md5 = $.md5(name);
+function add_user(name, id, silent) {
+	silent = silent || false;
 
-	var parts = [md5[0] + md5[1], md5[2] + md5[3], md5[4] + md5[5]];
-	$.each(parts, function(key, value) {
-		value = Math.floor((parseInt(value, 16) / 2)).toString(16);
-		parts[key] = value;
-	});
+	if (!Chat.users[id]) {
+		var md5 = $.md5(name);
 
-	Chat.users[id] = {
-		color: parts.join(''),
-		name: name
-	};
+		var parts = [md5[0] + md5[1], md5[2] + md5[3], md5[4] + md5[5]];
+		$.each(parts, function(key, value) {
+			value = Math.floor((parseInt(value, 16) / 2)).toString(16);
+			parts[key] = value;
+		});
 
-	redo_user_list();
+		Chat.users[id] = {
+			color: parts.join(''),
+			name: name,
+			present: !silent
+		};
+	} else if (!silent) {
+		Chat.users[id].present = true;
+	}
+
+	if (!silent) {
+		redo_user_list();
+	}
 }
 
 function add_message(text, id_user, id) {
@@ -60,8 +69,10 @@ function redo_user_list() {
 	var html = '';
 
 	$.each(Chat.users, function(key, value) {
-		html += '<span class="chat_user"><span class="chat_user_color" style="color: #'
-			+ value.color + ';">&#9632;</span><span class="chat_user_name">' + value.name + '</span></span>';
+		if (value.present) {
+			html += '<span class="chat_user"><span class="chat_user_color" style="color: #'
+				+ value.color + ';">&#9632;</span><span class="chat_user_name">' + value.name + '</span></span>';
+		}
 	});
 
 	$(".chat_user_list").html(html);
@@ -107,15 +118,15 @@ function get_chat_data(params) {
 		if (response.success) {
 			var ids = {};
 			$.each(response.presense, function(key, item) {
-				if (!Chat.users[item.id]) {
+				if (!Chat.users[item.id] || !Chat.users[item.id].present) {
 					add_user(item.login, item.id);
 					add_system_message(item.login + ' вошел в комнату.');
 				}
 				ids[item.id] = true;
 			});
 			$.each(Chat.users, function(key, item) {
-				if (!ids[key] && key != User.id) {
-					delete Chat.users[key];
+				if (item.present && !ids[key] && key != User.id) {
+					Chat.users[key].present = false;
 					redo_user_list();
 					add_system_message(item.name + ' покинул комнату.');
 				}
@@ -129,6 +140,9 @@ function get_chat_data(params) {
 								return;
 							}
 						}
+					}
+					if (!Chat.users[item.id_user]) {
+						add_user(item.login, item.id_user, true);
 					}
 					add_message(item.text, item.id_user, item.id);
 				}
