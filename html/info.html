@@ -1,7 +1,7 @@
 
 {% for item in note %}
 	<div class="note">
-		<h4 class="note_time">{{item.time}}</h4>
+		<span class="note_time">{{item.time}}</span>
 		<h4 style="color: #{{item.color}};">{{item.login}}</h4>
 		{% if item.header %}
 			<div class="note_header">
