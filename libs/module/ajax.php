@@ -447,11 +447,14 @@ class Module_Ajax extends Module_Abstract
 		if (!empty($action)) {
 			$action['time'] = strtotime($action['time']);
 			if (strpos($action['type'], 'pick_') === 0) {
-				$pick = str_replace('pick_', '', $action['type']) - 1;
+				$pick = str_replace('pick_', '', $action['type']);
+				$set = ceil($pick / 15);
+				$shift = ($pick - 1) % 15;
 				$action['picked'] = Database::join('draft_booster', 'db.id_draft_set = ds.id')
 					->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
 					->get_table('draft_set', 'dbc.id_user',
-						'ds.id_draft = ? and dbc.pick = ? and dbc.id_user > 0', array($get['id'], $pick));
+						'ds.id_draft = ? and ds.order = ? and dbc.pick = ? and dbc.id_user > 0',
+						array($get['id'], $set, $shift));
 			}
 		}
 
