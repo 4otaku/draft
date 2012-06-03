@@ -13,6 +13,10 @@
 				<span class="digit">0</span>
 			</span>
 		</div>
+		<button class="btn btn-danger info" rel="#overlay">
+			<i class="icon-question-sign icon-white"></i>
+			<span>Информация</span>
+		</button>
 	</div>
 	<div class="right">
 		<button class="btn btn-primary index">
@@ -146,4 +150,5 @@
 	<script type="text/javascript">var Chat = {room: {{draft.id}}, freq: 2000};</script>
 	{% include 'chat.html' %}
 	<div class="display_card"><img /></div>
+	<div id="overlay"><div class="overlay_content"></div></div>
 {% endblock %}

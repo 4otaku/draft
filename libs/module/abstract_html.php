@@ -3,7 +3,7 @@
 abstract class Module_Abstract_Html extends Module_Abstract
 {
 	protected $default_css = array('base');
-	protected $default_js = array('base');
+	protected $default_js = array('base', 'external/overlay');
 	protected $css = array();
 	protected $js = array();
 
