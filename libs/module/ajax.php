@@ -20,9 +20,10 @@ class Module_Ajax extends Module_Abstract
 		$method = 'do_' . rtrim($this->url[2], '?');
 
 		$get = $this->clean_globals($_GET, array());
+		$post = $this->clean_globals($_POST, array());
 
 		if (method_exists($this, $method)) {
-			return $this->$method($get);
+			return $this->$method(array_merge($post, $get));
 		}
 
 		return array('error' => Error::INCORRECT_URL, 'success' => false);
@@ -750,6 +751,65 @@ class Module_Ajax extends Module_Abstract
 			'id_draft = ? and id_user = ?', array($draft, $user));
 
 		Database::commit();
+		return array('success' => true);
+	}
+
+	protected function do_add_note($data) {
+		if (!isset($data['room']) || !is_numeric($data['room']) ||
+			empty($data['text']) || !User::get('id')) {
+
+			return array('success' => false);
+		}
+
+		$user = User::get('id');
+		$room = $data['room'];
+		$text = $data['text'];
+
+		if ($room > 0 && !Database::get_count('draft_user',
+			'id_draft = ? and id_user = ?', array($room, $user))) {
+
+			return array('success' => false);
+		}
+
+		$replace = array('&' => '&amp', '"' => '&quot;', '<' => '&lt;',
+			'>' => '&gt;', '\\' => '&#092;', "'" => '&apos;');
+		$text = str_replace(array_keys($replace), array_values($replace), $text);
+		$text = trim($text);
+
+		$lines = explode("\n", $text);
+		$first_line = array_shift($lines);
+		if (!$first_line) {
+			return array('success' => false);
+		}
+
+		if (preg_match('/^.{200}/ui', $first_line, $result)) {
+			$header = $result[0];
+		} elseif (!empty($lines)) {
+			$header = $first_line;
+		} else {
+			$header = '';
+		}
+
+		Database::insert('note', array(
+			'id_draft' => $room,
+			'id_user' => $user,
+			'text' => $text,
+			'header' => $header,
+		));
+
+		return array('success' => true);
+	}
+
+	protected function do_delete_note($data) {
+		if (!isset($data['id']) || !is_numeric($data['id']) || !User::get('id')) {
+			return array('success' => false);
+		}
+
+		$user = User::get('id');
+		$id = $data['id'];
+
+		Database::delete('note', 'id_user = ? and id = ?', array($user, $id));
+
 		return array('success' => true);
 	}
 

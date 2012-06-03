@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 
 {% block content %}
+	<div class="left">
+		<button class="btn btn-danger info" rel="#overlay">
+			<i class="icon-question-sign icon-white"></i>
+			<span>Информация</span>
+		</button>
+	</div>
 	<div class="right">
 		<button class="btn btn-info faq">
 			<span>Частые вопросы</span>
@@ -131,4 +137,5 @@
 	</div>
 	<script type="text/javascript">var Chat = {room: 0, freq: 3000};</script>
 	{% include 'chat.html' %}
+	<div id="overlay"><div class="overlay_content"></div></div>
 {% endblock %}

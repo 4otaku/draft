@@ -1,0 +1,25 @@
+
+{% for item in note %}
+	<div class="note">
+		<h4 class="note_time">{{item.time}}</h4>
+		<h4 style="color: #{{item.color}};">{{item.login}}</h4>
+		{% if item.header %}
+			<div class="note_header">
+				{{item.header}}
+				<a href="#" class="note_more" title="Показать полностью.">...</a>
+			</div>
+			<div class="note_text hidden">{{item.text}}</div>
+		{% else %}
+			<div class="note_text">{{item.text}}</div>
+		{% endif %}
+		{% if item.id_user == user.id %}
+			<div class="clear"></div>
+			<a class="note_remove" rel="{{item.id}}" href="#">Удалить.</a>
+			<div class="clear"></div>
+		{% endif %}
+	</div>
+{% endfor %}
+
+<textarea></textarea>
+<div class="clear"></div>
+<button class="btn add_note">Добавить заметку.</button>

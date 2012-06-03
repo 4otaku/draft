@@ -26,19 +26,48 @@ function format_time(seconds) {
 }
 
 $(document).ready(function(){
-	$(".faq").click(function(){
+	$("button.faq").click(function(){
 		document.location.href = '/faq/';
 	});
 
-	$(".index").click(function(){
+	$("button.index").click(function(){
 		document.location.href = '/';
 	});
 
-	$(".todo").click(function(){
+	$("button.todo").click(function(){
 		document.location.href = '/todo/';
 	});
 
-	$(".exit").click(function(){
+	$("button.info").overlay({
+		mask: '#688A08',
+		onBeforeLoad: function() {
+			var room = document.location.href.split('/')[4] || 0;
+			$('#overlay .overlay_content').load('/info/' + room);
+		},
+		onLoad: function(){
+			$('#overlay .overlay_content .add_note').click(function(){
+				var room = document.location.href.split('/')[4] || 0;
+				$.post('/ajax/add_note',
+					{room: room, text: 	$('#overlay .overlay_content textarea').val()},
+					function(response){
+						if (response.success) {
+							$('#overlay .close').click();
+						}
+				});
+			});
+			$('.note_more').click(function(){
+				var parent = $(this).parents('.note');
+				parent.find('.note_header').hide();
+				parent.find('.note_text').show();
+			});
+			$('.note_remove').click(function(){
+				$.get('/ajax/delete_note', {id: $(this).attr('rel')});
+				$(this).parents('.note').remove();
+			});
+		}
+    });
+
+	$("button.exit").click(function(){
 		$.cookie("user", null, {path: '/'});
 		document.location.reload();
 	});

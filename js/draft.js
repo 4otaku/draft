@@ -353,8 +353,10 @@ function switch_display(type, counter) {
 	if (counter) {
 		counter_init(counter);
 		$('#counter').show();
+		$('.info').hide();
 	} else {
 		$('#counter').hide();
+		$('.info').show();
 	}
 
 	$('.draft_base:not(.draft_info):not(.draft_'+type+')').hide();
