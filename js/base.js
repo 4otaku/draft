@@ -34,6 +34,10 @@ $(document).ready(function(){
 		document.location.href = '/';
 	});
 
+	$(".todo").click(function(){
+		document.location.href = '/todo/';
+	});
+
 	$(".exit").click(function(){
 		$.cookie("user", null, {path: '/'});
 		document.location.reload();
