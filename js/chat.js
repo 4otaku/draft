@@ -80,11 +80,14 @@ function redo_user_list() {
 	$.each(Chat.users, function(key, value) {
 		if (value.present) {
 			html += '<span class="chat_user"><span class="chat_user_color" style="color: #'
-				+ value.color + ';">&#9632;</span><span class="chat_user_name">' + value.name + '</span></span>';
+				+ value.color + ';">&#9632;</span>' +
+				'<span class="chat_user_name">' + value.name + '</span>' +
+				'</span> ';
 		}
 	});
 
 	$(".chat_user_list").html(html);
+	set_sizes();
 }
 
 function send_message() {

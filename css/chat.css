@@ -13,10 +13,6 @@
 	border: 2px solid #999;
 }
 
-.chat_users {
-	height: 30px;
-}
-
 .chat_user {
 	margin: 0 7px;
 }
@@ -38,6 +34,7 @@
 .chat hr {
 	border-color: inherit;
 	margin-bottom: 0px;
+	margin-top: 5px;
 }
 
 .chat_messages {
