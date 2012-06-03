@@ -171,7 +171,7 @@ $('.chat_form button').click(function(){
 	send_message();
 });
 
-$('.chat .message_name').live('click', function(){
+$('.chat .message_name, .chat .chat_user_name').live('click', function(){
 	$('.chat_form textarea').val($('.chat_form textarea').val() + $(this).html());
 });
 
