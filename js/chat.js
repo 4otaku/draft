@@ -32,18 +32,27 @@ function add_user(name, id, silent) {
 	}
 }
 
-function add_message(text, id_user, id) {
+function add_message(text, id_user, id, time) {
 	var chat = $(".chat_messages");
 
-	text = '<span class="message_name" style="color: #' +
+	time = time ? new Date(time * 1000) : new Date();
+
+	text = '<span style="color: #' +
 		Chat.users[id_user].color+';">' +
-		Chat.users[id_user].name + ':</span> ' + text;
+		'<span class="message_time">(' + time.format('HH:MM:ss') + ')</span> ' +
+		'<span class="message_name">' + Chat.users[id_user].name + '</span>' +
+		':</span> ' + text;
 
 	var message = $('<div class="message_default">' +
 		text + '</div>');
 
 	chat.append(message);
 	chat.animate({scrollTop: chat.prop('scrollHeight')}, 200);
+
+	if (Chat.inactive) {
+		Chat.count_new++;
+		$('title').html('*' + Chat.count_new + ' ' + Chat.title);
+	}
 
 	if (!id) {
 		var temp_id = $.md5(((1+Math.random())*0x10000)|0);
@@ -112,6 +121,11 @@ function send_message() {
 function get_chat_data(params) {
 	params = params || {};
 
+	if (params.first_load) {
+		Chat.title = $('title').html();
+		Chat.count_new = 0;
+	}
+
 	$.get('/ajax/get_messages', $.extend(params, {
 		room: Chat.room
 	}), function(response) {
@@ -144,7 +158,7 @@ function get_chat_data(params) {
 					if (!Chat.users[item.id_user]) {
 						add_user(item.login, item.id_user, true);
 					}
-					add_message(item.text, item.id_user, item.id);
+					add_message(item.text, item.id_user, item.id, item.time);
 				}
 			});
 
@@ -155,6 +169,10 @@ function get_chat_data(params) {
 
 $('.chat_form button').click(function(){
 	send_message();
+});
+
+$('.chat .message_name').live('click', function(){
+	$('.chat_form textarea').val($('.chat_form textarea').val() + $(this).html());
 });
 
 $('.chat_form textarea').keydown(function(e){
@@ -176,3 +194,12 @@ $('.chat').everyTime(Chat.freq, function(){
 
 get_chat_data({first_load: true});
 
+$(document).focus(function(){
+	$('title').html(Chat.title);
+	Chat.count_new = 0;
+	Chat.inactive = false;
+});
+
+$(document).focusout(function(){
+	Chat.inactive = true;
+});
