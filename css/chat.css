@@ -46,7 +46,7 @@
 	font-style: italic;
 }
 
-.chat_messages .message_name {
+.chat_messages .message_name, .chat_user_name {
 	cursor: pointer;
 }
 
