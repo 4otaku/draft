@@ -9,7 +9,9 @@ class Module_Info extends Module_Abstract_Authorized
 	public function __construct($url) {
 		parent::__construct($url);
 
-		if (is_numeric($url[2]) && Database::get_count('draft', $url[2])) {
+		if (isset($url[2]) && is_numeric($url[2]) &&
+			Database::get_count('draft', $url[2])) {
+
 			$this->draft = $url[2];
 		}
 	}
