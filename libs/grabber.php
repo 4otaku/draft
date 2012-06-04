@@ -65,9 +65,9 @@ class Grabber
 				foreach($elements as $element) {
 					$insert = array('mana_cost' => '');
 
-					$class = $element->getAttribute('class');
-					$class = explode(' ', $class);
-					$insert['color'] = str_replace('Color', '', $class[0]);
+//					$class = $element->getAttribute('class');
+//					$class = explode(' ', $class);
+//					$insert['color'] = str_replace('Color', '', $class[0]);
 
 					$rarity = $xpath->query(self::$queryRarity,
 						$element)->item(0);
@@ -91,9 +91,23 @@ class Grabber
 					$insert['image'] = str_replace('_small/', '/', $insert['image']);
 					$manas = $xpath->query(self::$queryMana,
 						$element);
+
+					$colors = '';
 					foreach ($manas as $mana) {
-						$insert['mana_cost'] .=
-							'(' . $mana->getAttribute('alt') . ')';
+						$mana_symbol = $mana->getAttribute('alt');
+						$insert['mana_cost'] .= '(' . $mana_symbol . ')';
+						$colors .= preg_replace('/[^WUBRG]/u', '', $mana_symbol);
+					}
+					$colors = array_filter(array_unique(str_split($colors)));
+
+					if (count($colors) > 1) {
+						$insert['color'] = 'M';
+					} elseif (!trim($insert['mana_cost'])) {
+						$insert['color'] = 'L';
+					} elseif (!empty($colors)) {
+						$insert['color'] = reset($colors);
+					} else {
+						$insert['color'] = 'A';
 					}
 
 					Database::insert('card', $insert);
