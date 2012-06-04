@@ -203,6 +203,6 @@ $(document).focus(function(){
 	Chat.inactive = false;
 });
 
-$(document).focusout(function(){
+$(document).blur(function(){
 	Chat.inactive = true;
 });
