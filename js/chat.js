@@ -15,6 +15,9 @@ function add_user(name, id, silent) {
 		var parts = [md5[0] + md5[1], md5[2] + md5[3], md5[4] + md5[5]];
 		$.each(parts, function(key, value) {
 			value = Math.floor((parseInt(value, 16) / 2)).toString(16);
+			if (value.length == 1) {
+				value = 0 + value;
+			}
 			parts[key] = value;
 		});
 

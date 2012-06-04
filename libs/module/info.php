@@ -28,6 +28,9 @@ class Module_Info extends Module_Abstract_Authorized
 			$parts = array(hexdec($md5{0}.$md5{1}), hexdec($md5{2}.$md5{3}), hexdec($md5{4}.$md5{5}));
 			foreach ($parts as &$part) {
 				$part = dechex(ceil($part / 2));
+				if (strlen($part) == 1) {
+					$part = '0' . $part;
+				}
 			}
 			$note['color'] = implode($parts);
 		}
