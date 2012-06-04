@@ -197,12 +197,12 @@ $('.chat').everyTime(Chat.freq, function(){
 
 get_chat_data({first_load: true});
 
-$(document).focus(function(){
+$(window).focus(function(){
 	$('title').html(Chat.title);
 	Chat.count_new = 0;
 	Chat.inactive = false;
 });
 
-$(document).blur(function(){
+$(window).blur(function(){
 	Chat.inactive = true;
 });
