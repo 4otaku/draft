@@ -25,6 +25,27 @@ function format_time(seconds) {
 	return minutes + ' минуты';
 }
 
+$('#overlay .overlay_content .add_note').live('click', function(){
+	var room = document.location.href.split('/')[4] || 0;
+	$.post('/ajax/add_note',
+		{room: room, text: 	$('#overlay .overlay_content textarea').val()},
+		function(response){
+			if (response.success) {
+				$('#overlay .close').click();
+				$('#overlay .overlay_content').html();
+			}
+	});
+});
+$('.note_more').live('click', function(){
+	var parent = $(this).parents('.note');
+	parent.find('.note_header').hide();
+	parent.find('.note_text').show();
+});
+$('.note_remove').live('click', function(){
+	$.get('/ajax/delete_note', {id: $(this).attr('rel')});
+	$(this).parents('.note').remove();
+});
+
 $(document).ready(function(){
 	$("button.faq").click(function(){
 		document.location.href = '/faq/';
@@ -43,27 +64,6 @@ $(document).ready(function(){
 		onBeforeLoad: function() {
 			var room = document.location.href.split('/')[4] || 0;
 			$('#overlay .overlay_content').load('/info/' + room);
-		},
-		onLoad: function(){
-			$('#overlay .overlay_content .add_note').click(function(){
-				var room = document.location.href.split('/')[4] || 0;
-				$.post('/ajax/add_note',
-					{room: room, text: 	$('#overlay .overlay_content textarea').val()},
-					function(response){
-						if (response.success) {
-							$('#overlay .close').click();
-						}
-				});
-			});
-			$('.note_more').click(function(){
-				var parent = $(this).parents('.note');
-				parent.find('.note_header').hide();
-				parent.find('.note_text').show();
-			});
-			$('.note_remove').click(function(){
-				$.get('/ajax/delete_note', {id: $(this).attr('rel')});
-				$(this).parents('.note').remove();
-			});
 		}
     });
 

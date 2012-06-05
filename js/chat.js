@@ -127,6 +127,14 @@ function send_message() {
 function get_chat_data(params) {
 	params = params || {};
 
+	if (Chat.getting) {
+		return;
+	}
+	Chat.getting = true;
+	setTimeout(function(){
+		Chat.getting = false;
+	}, 10000);
+
 	if (params.first_load) {
 		Chat.title = $('title').html();
 		Chat.count_new = 0;
@@ -135,6 +143,7 @@ function get_chat_data(params) {
 	$.get('/ajax/get_messages', $.extend(params, {
 		room: Chat.room
 	}), function(response) {
+		Chat.getting = false;
 		if (response.success) {
 			var ids = {};
 			$.each(response.presense, function(key, item) {

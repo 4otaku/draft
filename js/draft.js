@@ -29,7 +29,15 @@ $('.draft_start_button').click(function(){
 });
 
 function get_draft_data() {
+	if (Draft.getting) {
+		return;
+	}
+	Draft.getting = true;
+	setTimeout(function(){
+		Draft.getting = false;
+	}, 10000);
 	$.get('/ajax/get_draft_data', {id: Draft.id}, function(response) {
+		Draft.getting = false;
 		if (!response.success) {
 			return;
 		}
