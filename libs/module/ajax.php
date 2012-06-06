@@ -265,8 +265,7 @@ class Module_Ajax extends Module_Abstract
 
 		return array(
 			'success' => true,
-			'data' => $data,
-			'debug' => Database::debug()
+			'data' => $data
 		);
 	}
 
