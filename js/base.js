@@ -25,6 +25,33 @@ function format_time(seconds) {
 	return minutes + ' минуты';
 }
 
+function set_remove_splash_condition() {
+	Splash = {};
+	$.each(arguments, function(key, value) {
+		Splash[value] = false;
+	});
+}
+
+function remove_splash(value) {
+	if (typeof Splash == 'undefined') {
+		return;
+	}
+
+	Splash[value] = true;
+	var remove = true;
+	$.each(Splash, function(key, value) {
+		if (!value) {
+			remove = false;
+			return false;
+		}
+	});
+
+	if (remove) {
+		$('#splash').remove();
+		delete Splash;
+	}
+}
+
 $('#overlay .overlay_content .add_note').live('click', function(){
 	var room = document.location.href.split('/')[4] || 0;
 	$.post('/ajax/add_note',

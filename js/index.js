@@ -1,4 +1,5 @@
 init_sizes();
+set_remove_splash_condition('chat', 'draft');
 
 var Draft = {
 	last_time: null
@@ -84,6 +85,7 @@ function do_get_draft(callback, scope) {
 		});
 
 		callback.call(scope);
+		remove_splash('draft');
 	});
 }
 

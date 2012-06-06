@@ -1,4 +1,5 @@
 init_sizes();
+set_remove_splash_condition('chat', 'draft_data', 'draft_user', 'draft_card');
 
 $('.draft_info .pick_time').html(format_time(Draft.pick_time));
 $('.draft_info .pause_time').html(format_time(Draft.pause_time));
@@ -122,6 +123,8 @@ function get_draft_data() {
 		} else {
 			display_pick(time, type.replace('pick_', '') - 0);
 		}
+
+		remove_splash('draft_data');
 	});
 }
 
@@ -338,6 +341,7 @@ function get_base_data(callback) {
 		}
 
 		$(".participants").html('Участвуют: ' + users.join(', ') + '.');
+		remove_splash('draft_user');
 	});
 
 	$.get('/ajax/get_draft_card', {id: Draft.id}, function(response) {
@@ -354,6 +358,7 @@ function get_base_data(callback) {
 		});
 
 		callback.call(this);
+		remove_splash('draft_card');
 	});
 }
 
