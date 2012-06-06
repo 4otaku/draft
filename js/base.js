@@ -37,6 +37,10 @@ function remove_splash(value) {
 		return;
 	}
 
+	if (Splash[value] == false) {
+		$('#splash h2').append('.');
+	}
+
 	Splash[value] = true;
 	var remove = true;
 	$.each(Splash, function(key, value) {
