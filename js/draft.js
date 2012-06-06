@@ -1,5 +1,5 @@
 init_sizes();
-set_remove_splash_condition('chat', 'draft_data', 'draft_user', 'draft_card');
+set_remove_splash_condition('chat', 'draft_user', 'draft_card');
 
 $('.draft_info .pick_time').html(format_time(Draft.pick_time));
 $('.draft_info .pause_time').html(format_time(Draft.pause_time));
@@ -123,8 +123,6 @@ function get_draft_data() {
 		} else {
 			display_pick(time, type.replace('pick_', '') - 0);
 		}
-
-		remove_splash('draft_data');
 	});
 }
 
