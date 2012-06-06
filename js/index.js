@@ -69,7 +69,7 @@ function do_get_draft(callback, scope) {
 						});
 					}
 				} else if (item.state == 1) {
-					if (item.presence > 0) {
+					if (item.presense > 0) {
 						object.find('.join_going').show();
 					} else {
 						object.find('.join_going').hide();
