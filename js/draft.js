@@ -323,14 +323,19 @@ function get_base_data(callback) {
 
 			Draft.users[user.id] = user;
 
-			var md5 = $.md5(user.login);
+			if (user.signed_out == '0') {
+				var md5 = $.md5(user.login);
 
-			var parts = [md5[0] + md5[1], md5[2] + md5[3], md5[4] + md5[5]];
-			$.each(parts, function(key, value) {
-				value = Math.floor((parseInt(value, 16) / 2)).toString(16);
-				parts[key] = value;
-			});
-			users.push('<span style="color: #'+ parts.join('') + ';" ' +
+				var parts = [md5[0] + md5[1], md5[2] + md5[3], md5[4] + md5[5]];
+				$.each(parts, function(key, value) {
+					value = Math.floor((parseInt(value, 16) / 2)).toString(16);
+					parts[key] = value;
+				});
+				var color = parts.join('');
+			} else {
+				var color = 'BBBBBB';
+			}
+			users.push('<span style="color: #'+ color + ';" ' +
 				'class="draft_user draft_user_' + user.id + '">' + user.login + '</span>');
 		});
 		if (!found) {

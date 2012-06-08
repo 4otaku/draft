@@ -248,7 +248,7 @@ class Module_Ajax extends Module_Abstract
 
 		$data = Database::join('draft_set', 'ds.id_draft = d.id')
 			->join('user', 'u.id = d.id_user')
-			->join('draft_user', 'd.id = du.id_draft and du.id_user = ' . User::get('id'))
+			->join('draft_user', 'd.id = du.id_draft and du.signed_out = 0 and du.id_user = ' . User::get('id'))
 			->join('set', 'ds.id_set = s.id')->group('d.id')
 			->get_table('draft', array('d.id, d.id_user, d.state, u.login, d.pick_time, d.update,
 				d.pause_time', 'group_concat(s.name) as booster', 'du.id_user as presense'),
@@ -267,6 +267,24 @@ class Module_Ajax extends Module_Abstract
 			'success' => true,
 			'data' => $data
 		);
+	}
+
+	protected function do_leave_draft ($get) {
+		if (!isset($get['id']) || !is_numeric($get['id']) || !User::get('id') ||
+			Database::get_count('draft_user', 'id_user = ? and id = ?',
+				array(User::get('id'), $get['id']))) {
+
+			return array('success' => false);
+		}
+
+		Database::update('draft_user', array('signed_out' => 1),
+			'id_user = ? and id_draft = ?', array(User::get('id'), $get['id']));
+
+		if (Database::get_count('draft_user', 'signed_out = 0 and id_draft = ?', $get['id']) < 2) {
+			Database::update('draft', array('state' => 4), $get['id']);
+		}
+
+		return array('success' => true);
 	}
 
 	protected function do_delete_draft ($get) {
@@ -490,7 +508,7 @@ class Module_Ajax extends Module_Abstract
 		return array('success' => true,
 			'user' => Database::join('user', 'u.id = du.id_user')->
 				order('du.order', 'asc')->get_table('draft_user',
-				'u.id, u.login, u.avatar', 'du.id_draft = ?', $get['id']));
+				'u.id, u.login, u.avatar, du.signed_out', 'du.id_draft = ?', $get['id']));
 	}
 
 	protected function do_get_draft_card ($get) {

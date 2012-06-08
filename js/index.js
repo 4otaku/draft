@@ -38,6 +38,12 @@ function do_get_draft(callback, scope) {
 			object.find('.pick_time').html(format_time(item.pick_time));
 			object.find('.pause_time').html(format_time(item.pause_time));
 			object.find('.join').attr('href', '/draft/' + item.id);
+			object.find('.unjoin_going').click(function(){
+				if (confirm('Вы уверены, что хотите отказаться от дальнейшего участия в этом драфте?')) {
+					$.get('/ajax/leave_draft', {id: item.id});
+					object.remove();
+				}
+			});
 			object.prependTo('.left_wrapper').slideDown(1500)
 				.removeClass('draft_example');
 
@@ -71,8 +77,10 @@ function do_get_draft(callback, scope) {
 				} else if (item.state == 1) {
 					if (item.presense > 0) {
 						object.find('.join_going').show();
+						object.find('.unjoin_going').show();
 					} else {
 						object.find('.join_going').hide();
+						object.find('.unjoin_going').hide();
 					}
 				}
 

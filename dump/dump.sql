@@ -128,6 +128,7 @@ CREATE TABLE IF NOT EXISTS `draft_user` (
   PRIMARY KEY (`id_draft`,`id_user`),
   UNIQUE KEY `order` (`id_draft`,`order`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ALTER TABLE  `draft_user` ADD  `signed_out` TINYINT UNSIGNED NOT NULL DEFAULT  '0';
 
 -- --------------------------------------------------------
 
