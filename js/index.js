@@ -1,5 +1,4 @@
 init_sizes();
-set_remove_splash_condition('chat', 'draft');
 
 var Draft = {
 	last_time: null
@@ -85,7 +84,6 @@ function do_get_draft(callback, scope) {
 		});
 
 		callback.call(scope);
-		remove_splash('draft');
 	});
 }
 
@@ -98,12 +96,12 @@ function hide_draft_loader() {
 $(document).ready(function(){
 
 	$('body').bind('draft_change', function(e, time){
-		time = new Date(time * 1000);
+		time = time ? new Date(time * 1000) : new Date();
 		if (!Draft.last_time || Draft.last_time < time) {
 			Draft.last_time = time;
 			do_get_draft();
 		}
-	});
+	}).trigger('draft_change');
 
 	$('.draft_add .btn-large').click(function(){
 		$(this).hide();

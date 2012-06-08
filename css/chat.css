@@ -1,3 +1,15 @@
+.chat_loader {
+	background: rgb(0, 0, 0);
+	background: rgba(0, 0, 0, 0.7);
+	background-image: url(/images/ajax-loader2.gif);
+	background-position: center center;
+	background-repeat: no-repeat;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	margin: 10px 0;
+}
+
 .chat_wrapper {
 	margin-left: 670px;
 	margin-right: 10px;

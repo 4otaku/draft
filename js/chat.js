@@ -179,7 +179,10 @@ function get_chat_data(params) {
 
 			$('body').trigger('draft_change', response.last_draft_change);
 
-			remove_splash('chat');
+			if (params.first_load) {
+				$('.chat_loader').remove();
+				$('.chat').show();
+			}
 		}
 	});
 }
