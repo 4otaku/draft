@@ -5,6 +5,7 @@ include 'framework/init.php';
 Autoload::init(array(LIBS, EXTERNAL, FRAMEWORK_LIBS, FRAMEWORK_EXTERNAL), CACHE);
 
 Config::parse('define.ini', true);
+Cache::$base_prefix = Config::get('cache', 'prefix');
 
 $url = explode('/', preg_replace('/\?[^\/]+$/', '', $_SERVER['REQUEST_URI']));
 $url = array_filter($url);

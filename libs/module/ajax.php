@@ -142,27 +142,37 @@ class Module_Ajax extends Module_Abstract
 			return array('success' => false);
 		}
 
-		Database::replace('presense', array(
-			'id_draft' => $get['room'],
-			'id_user' => User::get('id'),
-			'time' => NULL
-		), array('room', 'user'));
+		Cache::$prefix = 'message' . (!empty($get['first_load']) ? '_first_' : '_');
+		$data = Cache::get($get['room']);
 
-		$time = date('Y-m-d G:i:s', time() - Config::get('chat', 'loadtime'));
-		$message_time = empty($get['first_load']) ? $time :
-			date('Y-m-d G:i:s', time() - Config::get('chat', 'firsttime'));
+		if (!$data) {
+			Database::replace('presense', array(
+				'id_draft' => $get['room'],
+				'id_user' => User::get('id'),
+				'time' => NULL
+			), array('room', 'user'));
 
-		return array(
-			'success' => true,
-			'presense' => Database::join('user', 'u.id = p.id_user')->
-				get_table('presense', 'u.id, u.login', 'p.time > ? and id_draft = ?',
-				array($time, $get['room'])),
-			'message' => Database::join('user', 'u.id = m.id_user')->
-				get_table('message', 'm.id, m.id_user, m.text, unix_timestamp(m.time) as time, u.login',
-					'm.time > ? and m.id_draft = ?', array($message_time, $get['room'])),
-			'last_draft_change' => strtotime(Database::order('update')
-				->get_field('draft', 'update'))
-		);
+			$time = date('Y-m-d G:i:s', time() - Config::get('chat', 'loadtime'));
+			$message_time = empty($get['first_load']) ? $time :
+				date('Y-m-d G:i:s', time() - Config::get('chat', 'firsttime'));
+
+			$data = array(
+				'success' => true,
+				'presense' => Database::join('user', 'u.id = p.id_user')->
+					get_table('presense', 'u.id, u.login', 'p.time > ? and id_draft = ?',
+					array($time, $get['room'])),
+				'message' => Database::join('user', 'u.id = m.id_user')->
+					get_table('message', 'm.id, m.id_user, m.text, unix_timestamp(m.time) as time, u.login',
+						'm.time > ? and m.id_draft = ?', array($message_time, $get['room'])),
+				'last_draft_change' => strtotime(Database::order('update')
+					->get_field('draft', 'update'))
+			);
+
+			Cache::set($get['room'], $data, (!empty($get['first_load']) ?
+				Config::get('chat', 'firsttime') : Config::get('chat', 'loadtime')));
+		}
+
+		return $data;
 	}
 
 	protected function do_add_message ($get) {
@@ -183,6 +193,11 @@ class Module_Ajax extends Module_Abstract
 			'id_user' => User::get('id'),
 			'text' => $get['text']
 		));
+
+		Cache::$prefix = 'message_';
+		Cache::delete($get['room']);
+		Cache::$prefix = 'message_first_';
+		Cache::delete($get['room']);
 
 		return array(
 			'success' => true,
