@@ -143,9 +143,9 @@ class Module_Ajax extends Module_Abstract
 		}
 
 		Cache::$prefix = 'message' . (!empty($get['first_load']) ? '_first_' : '_');
-		$data = Cache::get($get['room']);
+//		$data = Cache::get($get['room']);
 
-		if (!$data) {
+//		if (!$data) {
 			Database::replace('presense', array(
 				'id_draft' => $get['room'],
 				'id_user' => User::get('id'),
@@ -170,7 +170,7 @@ class Module_Ajax extends Module_Abstract
 
 			Cache::set($get['room'], $data, (!empty($get['first_load']) ?
 				Config::get('chat', 'firsttime') : Config::get('chat', 'loadtime')));
-		}
+//		}
 
 		return $data;
 	}
