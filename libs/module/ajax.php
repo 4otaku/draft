@@ -200,6 +200,12 @@ class Module_Ajax extends Module_Abstract
 			return array('success' => false);
 		}
 
+		if (!empty($get['start'])) {
+			$start = date('Y-m-d G:i:s', strtotime($get['start']));
+		} else {
+			$start = '';
+		}
+
 		$sets = array();
 		foreach ($get['set'] as $set) {
 			if (preg_match('/[^-\d\.a-z]/ui', $set)) {
@@ -224,7 +230,8 @@ class Module_Ajax extends Module_Abstract
 		Database::insert('draft', array(
 			'id_user' => User::get('id'),
 			'pick_time' => $get['pick_time'],
-			'pause_time' => $get['pause_time']
+			'pause_time' => $get['pause_time'],
+			'start' => $start
 		));
 
 		$id_draft = Database::last_id();
@@ -253,7 +260,7 @@ class Module_Ajax extends Module_Abstract
 			->join('draft_user', 'd.id = du.id_draft and du.signed_out = 0 and du.id_user = ' . User::get('id'))
 			->join('set', 'ds.id_set = s.id')->group('d.id')
 			->get_table('draft', array('d.id, d.id_user, d.state, u.login, d.pick_time, d.update,
-				d.pause_time', 'group_concat(s.name) as booster', 'du.id_user as presense'),
+				d.pause_time', 'd.start', 'group_concat(s.name) as booster', 'du.id_user as presense'),
 				'd.state != ? and d.update > ?', array(4, date('Y-m-d G:i:s', time() - 864000)));
 
 		$date_missed = time() - 7200;

@@ -50,6 +50,7 @@ CREATE TABLE IF NOT EXISTS `draft` (
   `state` smallint(5) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+ALTER TABLE  `draft` ADD  `start` DATETIME NULL DEFAULT NULL;
 
 -- --------------------------------------------------------
 

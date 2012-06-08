@@ -55,6 +55,11 @@ body {
 	margin-left: 20px;
 }
 
+dt {
+	font-weight: normal;
+	line-height: inherit;
+}
+
 .left_wrapper {
 	width: 640px;
 	float: left;

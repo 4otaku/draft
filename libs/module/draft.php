@@ -2,9 +2,9 @@
 
 class Module_Draft extends Module_Abstract_Authorized
 {
-	protected $css = array('external/countdown' , 'chat', 'draft');
+	protected $css = array('external/countdown', 'chat', 'draft');
 	protected $js = array('external/cookie', 'external/md5', 'external/dateformat',
-		'external/timer', 'external/countdown', 'external/draggable', 'chat', 'draft');
+		'external/timer', 'external/countdown', 'external/ui', 'chat', 'draft');
 	protected $redirect_location = '/';
 
 	protected $draft = array();

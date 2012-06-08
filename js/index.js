@@ -29,6 +29,11 @@ function do_get_draft(callback, scope) {
 			if (booster[0]) {
 				object.find('.booster_1').html(booster[0]);
 			}
+			if (item.start != null) {
+				object.find('.timestart').html(item.start);
+			} else {
+				object.find('.start').hide();
+			}
 			if (booster[1]) {
 				object.find('.booster_2').html(booster[1]);
 			}
@@ -111,6 +116,8 @@ $(document).ready(function(){
 		}
 	}).trigger('draft_change');
 
+	$('#timestart').timepicker();
+
 	$('.draft_add .btn-large').click(function(){
 		$(this).hide();
 		$(this).parent().children('.form-horizontal').show();
@@ -126,7 +133,7 @@ $(document).ready(function(){
 
 	$('.draft_add .draft_create').click(function(){
 		var parent = $(this).parents('.draft_add'),
-			request = parent.children('.form-horizontal').find('select').serialize();
+			request = parent.children('.form-horizontal').find('select, input[type=text]').serialize();
 
 		parent.find('.draft-actions button').hide();
 		parent.find('.draft-actions .loader').show();
