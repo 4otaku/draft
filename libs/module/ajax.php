@@ -254,7 +254,7 @@ class Module_Ajax extends Module_Abstract
 				d.pause_time', 'group_concat(s.name) as booster', 'du.id_user as presense'),
 				'd.state != ? and d.update > ?', array(4, date('Y-m-d G:i:s', time() - 864000)));
 
-		$date_missed = time() - 43200;
+		$date_missed = time() - 7200;
 		foreach ($data as $key => $item) {
 			if ($item['state'] > 0 && empty($item['presense'])
 				&& strtotime($item['update']) < $date_missed) {
