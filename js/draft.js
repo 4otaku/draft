@@ -8,24 +8,32 @@ $('.draft_start_button').click(function(){
 		return;
 	}
 
-	var ids = '', draft_users = {}, me = this;
+	var ids = '', ask = '', count = 0, draft_users = {}, me = this;
 	$.each(Chat.users, function(key, value){
-		ids += key + ',';
-		draft_users[key] = value;
-	});
-	$('.draft_start_button img').show();
-	$('.draft_start_button').addClass('disabled');
-	this.starting = true;
-
-	$.get('/ajax/start_draft', {id: Draft.id, user: ids}, function(response) {
-		$('.draft_start_button img').hide();
-		$('.draft_start_button').removeClass('disabled');
-		me.starting = false;
-
-		if (response.success) {
-			Draft.users = draft_users;
+		if (value.present) {
+			count++;
+			ids += key + ',';
+			ask += value.name + ', ';
+			draft_users[key] = value;
 		}
 	});
+	var confirm_text = 'Вы хотите начать драфт следующим составом: ' +
+		ask.substring(0, ask.length - 2) + ' (участников: ' + count + ')?';
+	if (confirm(confirm_text)) {
+		$('.draft_start_button img').show();
+		$('.draft_start_button').addClass('disabled');
+		this.starting = true;
+
+		$.get('/ajax/start_draft', {id: Draft.id, user: ids}, function(response) {
+			$('.draft_start_button img').hide();
+			$('.draft_start_button').removeClass('disabled');
+			me.starting = false;
+
+			if (response.success) {
+				Draft.users = draft_users;
+			}
+		});
+	}
 });
 
 function get_draft_data() {
