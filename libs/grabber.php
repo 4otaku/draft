@@ -3,10 +3,10 @@
 class Grabber
 {
 	protected static $queryCard =
-		'//descendant::table[@id="MAIN"]/descendant::td[position()=2]/child::div[position()=1]/child::div[@id][@class]';
+		'//descendant::table[@id="MAIN"]/descendant::td[position()=2]/child::div[position()=1]/descendant::table[@class]';
 	protected static $queryImg = 'descendant::img[@title][position()=2]';
-	protected static $queryMana = 'child::table[position()=2]/descendant::td[position()=1]/descendant::img';
-	protected static $queryRarity = 'child::table[position()=2]/descendant::td[position()=4]/descendant::img';
+	protected static $queryMana = 'descendant::table[position()=2]/descendant::tr[position()=2]/descendant::td[position()=1]/descendant::div[position()=1]/descendant::img';
+	protected static $queryRarity = 'descendant::table[position()=2]/descendant::tr[position()=2]/descendant::td[position()=1]/descendant::div[position()=3]/descendant::img';
 	protected static $queryLast = '//descendant::span[@class="split-pages"]/descendant::span[position()=last()]';
 
 	protected static $rarity = array(
@@ -61,8 +61,8 @@ class Grabber
 				@$doc->loadHTMLFile($url);
 				$xpath = new DOMXpath($doc);
 
-				$elements = $xpath->query(self::$queryCard);
-				foreach($elements as $element) {
+				$elements = $xpath->query(self::$queryCard);				
+				foreach($elements as $element) {	
 					$insert = array('mana_cost' => '');
 
 //					$class = $element->getAttribute('class');
@@ -80,7 +80,13 @@ class Grabber
 					}
 
 					$name = $element->getElementsByTagName('h2')
-						->item(0)->C14N();
+						->item(0);
+
+					if (empty($name)) {
+						continue;
+					} else {
+						$name = $name->C14N();
+					}
 
 					preg_match('/.*?<h2>(.+?)(?:<\/h2>\s*$|\/\s*<wbr)/sui', $name, $name);
 					$insert['name'] = trim($name[1]);
@@ -92,7 +98,7 @@ class Grabber
 					$manas = $xpath->query(self::$queryMana,
 						$element);
 
-					$colors = '';
+					$colors = '';  
 					foreach ($manas as $mana) {
 						$mana_symbol = $mana->getAttribute('alt');
 						$insert['mana_cost'] .= '(' . $mana_symbol . ')';
