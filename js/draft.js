@@ -1,3 +1,7 @@
+var Time = {
+	diff: 0
+};
+
 init_sizes();
 
 $('.draft_info .pick_time').html(format_time(Draft.pick_time));
@@ -134,7 +138,7 @@ function get_draft_data() {
 }
 
 function display_start(time) {
-	switch_display('start', Math.ceil((time.getTime() - (new Date()).getTime()) / 1000));
+	switch_display('start', Math.ceil((time.getTime() - (new Date()).getTime() + Time.diff) / 1000));
 
 	get_base_data();
 }
@@ -149,7 +153,7 @@ function display_pick(time, number) {
 	$('.draft_pick .cards').removeClass('picking').removeClass('picked');
 	$('.draft_pick .cards img').removeClass('picking').removeClass('picked');
 
-	switch_display('pick', Math.ceil((time.getTime() - (new Date()).getTime()) / 1000));
+	switch_display('pick', Math.ceil((time.getTime() - (new Date()).getTime() + Time.diff) / 1000));
 	Draft.picking = false;
 
 	$.get('/ajax/get_draft_pick', {id: Draft.id, number: number}, function(response){
@@ -175,7 +179,7 @@ function display_look(time, build) {
 	$('.draft_look .drafted').hide().children(':not(h2)').remove();
 
 	if (!build) {
-		switch_display('look', Math.ceil((time.getTime() - (new Date()).getTime()) / 1000));
+		switch_display('look', Math.ceil((time.getTime() - (new Date()).getTime() + Time.diff) / 1000));
 	} else {
 		switch_display('look');
 	}
@@ -317,6 +321,10 @@ function insert_deck(data) {
 
 function get_base_data(callback) {
 	callback = callback || function(){};
+
+	$.get('/time.php', function(response) {
+		Time.diff = new Date().getTime() - new Date(response.time * 1000).getTime();
+	});
 
 	$.get('/ajax/get_draft_user', {id: Draft.id}, function(response) {
 		if (!response.success || !response.user) {
