@@ -79,7 +79,7 @@ function get_draft_data() {
 		}
 
 		$.each(response.forced, function(key, value) {
-			var key = value.id_user + '-' + value.pick;
+			var key = value.id_user + '-' + value.pick + '-' + value.order;
 
 			if (Draft.forced[key]) {
 				return;

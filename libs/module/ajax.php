@@ -270,6 +270,9 @@ class Module_Ajax extends Module_Abstract
 
 				unset($data[$key]);
 			}
+			if ($item['start'] == '0000-00-00 00:00:00') {
+				unset($data[$key]['start']);
+			}
 		}
 
 		return array(
@@ -512,6 +515,7 @@ class Module_Ajax extends Module_Abstract
 			if ($item['id_user'] != User::get('id')) {
 				unset($item['id_card']);
 			}
+			$item['pick'] = $item['pick'] % 15;
 		}
 
 		return array('success' => true, 'action' => $action, 'forced' => $forced);
@@ -624,7 +628,7 @@ class Module_Ajax extends Module_Abstract
 				continue;
 			}
 
-			unset($needed[$card['id_user']][$card['pick']]);
+			unset($needed[$card['id_user']][$card['pick'] % 15]);
 		}
 
 		$max = Database::get_field('draft_user', 'max(`order`)', 'id_draft = ?', $draft);
@@ -633,7 +637,7 @@ class Module_Ajax extends Module_Abstract
 				'id_user = ? and id_draft = ?', array($user, $draft));
 
 			foreach ($picks as $pick => $null) {
-				$order = ($order + $pick) % ($max + 1);
+				$order = ($order + ($max + 1) * 15 + $pick * ($set % 2 ? 1 : -1)) % ($max + 1);
 				$booster_user = Database::get_field('draft_user', 'id_user',
 					'`order` = ? and id_draft = ?', array($order, $draft));
 
@@ -644,6 +648,8 @@ class Module_Ajax extends Module_Abstract
 						array($draft, $set, 0, $booster_user));
 
 				$card = array_rand($cards);
+
+				$pick = $pick + ($set - 1) * 15;
 				Database::update('draft_booster_card', array(
 					'id_user' => $user,
 					'pick' => $pick,
