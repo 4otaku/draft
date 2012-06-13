@@ -61,8 +61,8 @@ class Grabber
 				@$doc->loadHTMLFile($url);
 				$xpath = new DOMXpath($doc);
 
-				$elements = $xpath->query(self::$queryCard);				
-				foreach($elements as $element) {	
+				$elements = $xpath->query(self::$queryCard);
+				foreach($elements as $element) {
 					$insert = array('mana_cost' => '');
 
 //					$class = $element->getAttribute('class');
@@ -98,7 +98,7 @@ class Grabber
 					$manas = $xpath->query(self::$queryMana,
 						$element);
 
-					$colors = '';  
+					$colors = '';
 					foreach ($manas as $mana) {
 						$mana_symbol = $mana->getAttribute('alt');
 						$insert['mana_cost'] .= '(' . $mana_symbol . ')';
@@ -151,7 +151,7 @@ class Grabber
 
 			$got = false; $i = 0;
 			while (!$got && (++$i < 15)) {
-				usleep(500000);
+				usleep(200000);
 
 				$handle = curl_init($url);
 				curl_setopt($handle,  CURLOPT_RETURNTRANSFER, 1);

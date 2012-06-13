@@ -457,6 +457,13 @@ class Module_Ajax extends Module_Abstract
 			}
 		}
 
+		if (Database::get_count('draft_step', 'id_draft = ? and type = ?',
+			array($get['id'], 'build'))) {
+			// Какой-то процесс успел раньше нас, откатываемся.
+			Database::rollback();
+			return array('success' => false);
+		}
+
 		Database::insert('draft_step', array(
 			'id_draft' => $get['id'],
 			'type' => 'build',
