@@ -196,8 +196,13 @@ $('.chat .message_name, .chat .chat_user_name').live('click', function(){
 });
 
 $('.chat_form textarea').keydown(function(e){
-	if (e.keyCode == 13 && e.ctrlKey) {
-		send_message();
+	if (e.keyCode == 13) {
+		if (!e.ctrlKey) {
+			send_message();
+			return false;
+		} else {
+			$('.chat_form textarea').val($('.chat_form textarea').val() + '\n');
+		}
 	}
 });
 
