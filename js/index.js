@@ -30,9 +30,8 @@ function do_get_draft(callback, scope) {
 				object.find('.booster_1').html(booster[0]);
 			}
 			if (item.start != null) {
-				var utc_start = new Date(item.start * 1000);
-				object.find('.timestart').html(utc_start.toLocaleDateString() +
-					 ' ' + utc_start.toLocaleTimeString());
+				var start = new Date(item.start * 1000);
+				object.find('.timestart').html(start.format('dd.mm.yyyy HH:MM'));
 			} else {
 				object.find('.start').hide();
 			}

@@ -8,9 +8,8 @@ $('.draft_info .pick_time').html(format_time(Draft.pick_time));
 $('.draft_info .pause_time').html(format_time(Draft.pause_time));
 
 if (Draft.start > 0) {
-	var utc_start = new Date(Draft.start * 1000);
-	$('.draft_info .utc_date').html(utc_start.toLocaleDateString() + ' '
-		+ utc_start.toLocaleTimeString());
+	var start = new Date(Draft.start * 1000);
+	$('.draft_info .utc_date').html(start.format('dd.mm.yyyy HH:MM'));
 } else {
 	$('.draft_info .utc_date').html('Не указано');
 }
