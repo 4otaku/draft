@@ -36,6 +36,10 @@ class Module_Draft extends Module_Abstract_Authorized
 			$booster['name'] = str_replace("'", '&apos;', $booster['name']);
 		}
 
+		if (empty($this->draft['start']) || $this->draft['start'] == '0000-00-00 00:00:00') {
+			$this->draft['start'] = 'Не указано';
+		}
+
 		$data['draft'] = $this->draft;
 
 		return $data;
