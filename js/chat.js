@@ -57,6 +57,8 @@ function add_message(text, id_user, id, time) {
 		$('title').html('*' + Chat.count_new + ' ' + Chat.title);
 	}
 
+	$('.chat_messages').trigger('message_add');
+
 	if (!id) {
 		var temp_id = $.md5(((1+Math.random())*0x10000)|0);
 		Chat.messages.temp[temp_id] = message;
@@ -182,6 +184,7 @@ function get_chat_data(params) {
 			if (params.first_load) {
 				$('.chat_loader').remove();
 				$('.chat').show();
+				set_sizes();
 			}
 		}
 	});

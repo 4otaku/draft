@@ -15,6 +15,7 @@ function set_sizes() {
 function init_sizes() {
 	$(window).resize(set_sizes);
 	$(document).ready(set_sizes);
+	$('.chat_messages').bind('message_add', set_sizes);
 }
 
 function format_time(seconds) {
