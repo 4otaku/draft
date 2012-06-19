@@ -271,6 +271,7 @@ class Module_Ajax extends Module_Abstract
 				&& strtotime($item['update']) < $date_missed) {
 
 				unset($data[$key]);
+				continue;
 			}
 			if (empty($item['start']) || $item['start'] == '0000-00-00 00:00:00') {
 				unset($data[$key]['start']);
