@@ -37,7 +37,9 @@ class Module_Draft extends Module_Abstract_Authorized
 		}
 
 		if (empty($this->draft['start']) || $this->draft['start'] == '0000-00-00 00:00:00') {
-			$this->draft['start'] = 'Не указано';
+			$this->draft['start'] = 0;
+		} else {
+			$this->draft['start'] = strtotime($this->draft['start']);
 		}
 
 		$data['draft'] = $this->draft;

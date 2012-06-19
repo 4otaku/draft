@@ -30,7 +30,9 @@ function do_get_draft(callback, scope) {
 				object.find('.booster_1').html(booster[0]);
 			}
 			if (item.start != null) {
-				object.find('.timestart').html(item.start);
+				var utc_start = new Date(item.start * 1000);
+				object.find('.timestart').html(utc_start.toLocaleDateString() +
+					 ' ' + utc_start.toLocaleTimeString());
 			} else {
 				object.find('.start').hide();
 			}
@@ -137,6 +139,9 @@ $(document).ready(function(){
 
 		parent.find('.draft-actions button').hide();
 		parent.find('.draft-actions .loader').show();
+
+		var date = new Date();
+		request += '&utc=' + date.getTimezoneOffset();
 
 		$.get('/ajax/add_draft?' + request, function(response) {
 			do_get_draft(hide_draft_loader, parent);

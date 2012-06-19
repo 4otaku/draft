@@ -201,7 +201,9 @@ class Module_Ajax extends Module_Abstract
 		}
 
 		if (!empty($get['start'])) {
-			$start = date('Y-m-d G:i:s', strtotime($get['start']));
+			$utc = $get['utc'] + 240;
+
+			$start = date('Y-m-d G:i:s', strtotime($get['start']) + $utc * 60);
 		} else {
 			$start = '';
 		}
@@ -270,8 +272,10 @@ class Module_Ajax extends Module_Abstract
 
 				unset($data[$key]);
 			}
-			if ($item['start'] == '0000-00-00 00:00:00') {
+			if (empty($item['start']) || $item['start'] == '0000-00-00 00:00:00') {
 				unset($data[$key]['start']);
+			} else {
+				$data[$key]['start'] = strtotime($item['start']);
 			}
 		}
 
