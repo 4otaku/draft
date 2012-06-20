@@ -573,7 +573,7 @@ class Module_Ajax extends Module_Abstract
 			return array('success' => false);
 		}
 
-		$this->force_picks($get['id'], $set, $shift);
+		$this->test_force_picks($get['id'], $set, $shift);
 
 		$order = ($order + ($max + 1) * 15 + $shift * ($set % 2 ? 1 : -1)) % ($max + 1);
 		$user = Database::get_field('draft_user', 'id_user', '`order` = ? and id_draft = ?',
@@ -592,7 +592,7 @@ class Module_Ajax extends Module_Abstract
 		return array('success' => true, 'cards' => $cards);
 	}
 
-	protected function force_picks($draft, $set, $shift) {
+	protected function test_force_picks($draft, $set, $shift) {
 		if ($shift == 0) {
 			return;
 		}
@@ -614,8 +614,12 @@ class Module_Ajax extends Module_Abstract
 			return;
 		}
 
-		$needed = array();
 		$users = Database::get_vector('draft_user', 'id_user', 'id_draft = ?', $draft);
+		$this->force_picks($users, $draft, $set, $shift);
+	}
+
+	protected function force_picks($users, $draft, $set, $shift) {
+		$needed = array();
 		foreach ($users as $user) {
 			$needed[$user] = array();
 			for ($i = 0; $i < $shift; $i++) {
@@ -636,13 +640,17 @@ class Module_Ajax extends Module_Abstract
 			unset($needed[$card['id_user']][$card['pick'] % 15]);
 		}
 
+		$needed = array_filter($needed);
 		$max = Database::get_field('draft_user', 'max(`order`)', 'id_draft = ?', $draft);
 		foreach ($needed as $user => $picks) {
-			$order = Database::get_field('draft_user', 'order',
+			$user_data = Database::get_row('draft_user', array('order', 'force_picks'),
+				'id_user = ? and id_draft = ?', array($user, $draft));
+
+			Database::update('draft_user', array('force_picks' => 1),
 				'id_user = ? and id_draft = ?', array($user, $draft));
 
 			foreach ($picks as $pick => $null) {
-				$order = ($order + ($max + 1) * 15 + $pick * ($set % 2 ? 1 : -1)) % ($max + 1);
+				$order = ($user_data['order'] + ($max + 1) * 15 + $pick * ($set % 2 ? 1 : -1)) % ($max + 1);
 				$booster_user = Database::get_field('draft_user', 'id_user',
 					'`order` = ? and id_draft = ?', array($order, $draft));
 
@@ -683,10 +691,10 @@ class Module_Ajax extends Module_Abstract
 		$shift = ($get['number'] - 1) % 15;
 		$card = $get['card'];
 
-		$order = Database::get_field('draft_user', 'order',
+		$user_data = Database::get_row('draft_user', array('order', 'force_picks'),
 			'id_user = ? and id_draft = ?', array($user, $draft));
 		$max = Database::get_field('draft_user', 'max(`order`)', 'id_draft = ?', $draft);
-		$order = ($order + ($max + 1) * 15 + $shift * ($set % 2 ? 1 : -1)) % ($max + 1);
+		$order = ($user_data['order'] + ($max + 1) * 15 + $shift * ($set % 2 ? 1 : -1)) % ($max + 1);
 		$user_booster = Database::get_field('draft_user', 'id_user', '`order` = ? and id_draft = ?',
 			array($order, $draft));
 		$id_booster = Database::join('draft_set', 'ds.id = db.id_draft_set')->
@@ -703,6 +711,18 @@ class Module_Ajax extends Module_Abstract
 		array($card, $id_booster, $shift));
 
 		$success = Database::count_affected() > 0;
+
+		if ($user_data['force_picks']) {
+			Database::update('draft_user', array('force_picks' => 0),
+				'id_user = ? and id_draft = ?', array($user, $draft));
+		}
+
+		$force_users = Database::get_vector('draft_user', 'id_user',
+			'id_draft = ? and force_picks = ?', array($draft, 1));
+
+		if (!empty($force_users)) {
+			$this->force_picks($force_users, $draft, $set, $shift + 1);
+		}
 
 		if ($success &&
 			Database::join('draft_booster', 'db.id_draft_set = ds.id')
