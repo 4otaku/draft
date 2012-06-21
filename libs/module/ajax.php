@@ -600,7 +600,7 @@ class Module_Ajax extends Module_Abstract
 				'ds.id_draft = ? and ds.order = ? and dbc.id_user = ? and db.id_user = ?',
 				array($get['id'], $set, 0, $user));
 		$log[] = 'cards: ' . (microtime(true) - $time);
-		file_put_contents('/tmp/get_pick_' . $get['id'] . '_' . $get['number'] . '_' . User::get('id'), implode("\n", $log));
+		file_put_contents(CACHE . SL . 'get_pick_' . $get['id'] . '_' . $get['number'] . '_' . User::get('id'), implode("\n", $log));
 
 		return array('success' => true, 'cards' => $cards);
 	}
@@ -634,7 +634,7 @@ class Module_Ajax extends Module_Abstract
 		$log[] = 'users: ' . (microtime(true) - $time);
 		$this->force_picks($users, $draft, $set, $shift);
 		$log[] = 'done: ' . (microtime(true) - $time);
-		file_put_contents('/tmp/test_force_' .  $draft . '_' . $set . '_' . $shift . '_' . User::get('id'), implode("\n", $log));
+		file_put_contents(CACHE . SL . 'test_force_' .  $draft . '_' . $set . '_' . $shift . '_' . User::get('id'), implode("\n", $log));
 	}
 
 	protected function force_picks($users, $draft, $set, $shift) {
@@ -702,7 +702,7 @@ class Module_Ajax extends Module_Abstract
 			}
 		}
 
-		file_put_contents('/tmp/force_' .  $draft . '_' . $set . '_' . $shift . '_' . count($users) . '_' . User::get('id'), implode("\n", $log));
+		file_put_contents(CACHE . SL . 'force_' .  $draft . '_' . $set . '_' . $shift . '_' . count($users) . '_' . User::get('id'), implode("\n", $log));
 	}
 
 	protected function do_draft_pick($get) {
@@ -777,7 +777,7 @@ class Module_Ajax extends Module_Abstract
 			$log[] = 'shift performed: ' . (microtime(true) - $time);
 		}
 
-		file_put_contents('/tmp/do_pick_' . $get['id'] . '_' . $get['number'] . '_' . User::get('id'), implode("\n", $log));
+		file_put_contents(CACHE . SL . 'do_pick_' . $get['id'] . '_' . $get['number'] . '_' . User::get('id'), implode("\n", $log));
 		return array('success' => $success);
 	}
 
