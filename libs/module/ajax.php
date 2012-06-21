@@ -541,16 +541,19 @@ class Module_Ajax extends Module_Abstract
 			return array('success' => false);
 		}
 
-		$lands = Database::get_table('card',
+		$lands = Database::get_vector('card',
 			array('id', 'name', 'image', 'color'), 'id <= 5');
 
 		$cards = Database::join('draft_booster', 'db.id_draft_set = ds.id')
 			->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
-			->join('card', 'c.id = dbc.id_card')->group('c.id')->order('c.id')
-			->get_table('draft_set', array('c.id', 'c.name', 'c.image', 'c.color'),
+			->join('card', 'c.id = dbc.id_card')->get_vector('draft_set',
+				array('c.id', 'c.name', 'c.image', 'c.color'),
 				'ds.id_draft = ?', $get['id']);
 
-		return array('success' => true, 'cards' => array_merge($lands, $cards));
+		$cards = $cards + $lands;
+		ksort($cards);
+
+		return array('success' => true, 'cards' => $cards);
 	}
 
 	protected function do_get_draft_pick ($get) {

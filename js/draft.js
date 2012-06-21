@@ -373,12 +373,12 @@ function get_base_data(callback) {
 			return;
 		}
 
-		$.each(response.cards, function(nul, card){
-			Draft.card[card.id] = card;
-			Draft.card[card.id].small = new Image();
-			Draft.card[card.id].full = new Image();
-			Draft.card[card.id].small.src = '/images/small' + card.image;
-			Draft.card[card.id].full.src = '/images/full' + card.image;
+		$.each(response.cards, function(id, card){
+			Draft.card[id] = card;
+			Draft.card[id].small = new Image();
+			Draft.card[id].full = new Image();
+			Draft.card[id].small.src = '/images/small' + card.image;
+			Draft.card[id].full.src = '/images/full' + card.image;
 		});
 
 		callback.call(this);
