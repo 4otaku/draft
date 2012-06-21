@@ -374,6 +374,7 @@ function get_base_data(callback) {
 		}
 
 		$.each(response.cards, function(id, card){
+			card.id = id;
 			Draft.card[id] = card;
 			Draft.card[id].small = new Image();
 			Draft.card[id].full = new Image();
