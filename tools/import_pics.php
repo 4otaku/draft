@@ -49,7 +49,7 @@ $import = array();
 foreach ($images as $image) {
 	$compare = str_replace($folder, '', $image);
 	$compare = str_replace('.full.jpg', '.jpg', $compare);
-	$compare = preg_replace('/[^a-zA-Z\.\/\d]|\.(?!jpg$)/sui', '', $compare);
+	$compare = preg_replace('/[^a-zA-Z\.\/\d\-]|\.(?!jpg$)/sui', '', $compare);
 
 	foreach ($cards as $id => $card) {
 		if ($compare == $card['image']) {
