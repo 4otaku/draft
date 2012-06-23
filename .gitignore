@@ -6,6 +6,8 @@ images/small/*
 images/full/*
 !images/full/Land/
 !images/full/.gitignore
+images/import/*
+!images/import/.gitignore
 
 cache/*
 !cache/.gitignore
