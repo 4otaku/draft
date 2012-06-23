@@ -70,10 +70,15 @@ if (!empty($cards)) {
 clear_dir(IMAGES . SL . 'full' . SL . $set['id']);
 clear_dir(IMAGES . SL . 'small' . SL . $set['id']);
 
+$i = 0;
 foreach ($import as $from => $to) {
 	$worker = new Transform_Upload_Mtg($from, $to);
 
 	try {
 		$worker->process_file();
 	} catch (Error_Upload $e) {}
+
+	echo ++$i . '/' . count($import) . "\n";
+	ob_flush();
+	flush();
 }
