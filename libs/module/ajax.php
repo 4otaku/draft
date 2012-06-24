@@ -697,7 +697,7 @@ class Module_Ajax extends Module_Abstract
 				), 'id = ? and id_user = 0 and not exists
 					(select 1 from (select * from `draft_booster_card` where id_draft_booster = ?) as t
 					where t.pick = ? and t.id_user > 0)',
-				array($cards[$card]['id'], $cards[$card]['id_draft_booster'], $pick));
+				array($card, $cards[$card], $pick));
 				$log[] = 'set: ' . (microtime(true) - $time);
 			}
 		}
