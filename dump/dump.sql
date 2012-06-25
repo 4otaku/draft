@@ -135,6 +135,18 @@ ALTER TABLE  `draft_user` ADD  `force_picks` TINYINT UNSIGNED NOT NULL DEFAULT  
 -- --------------------------------------------------------
 
 --
+-- Структура таблицы `draft_user_possible`
+--
+
+CREATE TABLE IF NOT EXISTS `draft_user_possible` (
+  `id_draft` int(10) unsigned NOT NULL,
+  `id_user` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id_draft`,`id_user`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Структура таблицы `message`
 --
 

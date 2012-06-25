@@ -1,7 +1,3 @@
-var Time = {
-	diff: 0
-};
-
 init_sizes();
 
 $('.draft_info .pick_time').html(format_time(Draft.pick_time));
@@ -328,10 +324,6 @@ function insert_deck(data) {
 
 function get_base_data(callback) {
 	callback = callback || function(){};
-
-	$.get('/time.php', function(response) {
-		Time.diff = new Date().getTime() - new Date(response.time * 1000).getTime();
-	});
 
 	$.get('/ajax/get_draft_user', {id: Draft.id}, function(response) {
 		if (!response.success || !response.user) {

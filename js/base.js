@@ -1,3 +1,11 @@
+var Time = {
+	diff: 0
+};
+
+$.get('/time.php', function(response) {
+	Time.diff = new Date().getTime() - new Date(response.time * 1000).getTime();
+});
+
 $(".disabled").live('click', function(e){
 	e.preventDefault();
 });

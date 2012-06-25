@@ -32,6 +32,15 @@ function do_get_draft(callback, scope) {
 			if (item.start != null) {
 				var start = new Date(item.start * 1000);
 				object.find('.timestart').html(start.format('dd.mm.yyyy HH:MM'));
+				if (start.getTime() - (new Date()).getTime() + Time.diff > 1800000) {
+					object.find('.join').hide();
+					if (Draft[item.id][User.id]) {
+						object.find('.join_possible').show();
+					} else {
+						object.find('.unjoin_possible').show();
+					}
+					object.data('start', start);
+				}
 			} else {
 				object.find('.start').hide();
 			}
@@ -44,6 +53,18 @@ function do_get_draft(callback, scope) {
 			object.find('.pick_time').html(format_time(item.pick_time));
 			object.find('.pause_time').html(format_time(item.pause_time));
 			object.find('.join').attr('href', '/draft/' + item.id);
+			object.find('.join_possible').click(function(){
+				$.get('/ajax/join_possible', {id: item.id});
+				Draft[item.id].possible[User.id] = true;
+				$(this).trigger('show_possible');
+			});
+			object.find('.unjoin_possible').click(function(){
+				$.get('/ajax/unjoin_possible', {id: item.id});
+				if (Draft[item.id].possible[User.id]) {
+					delete Draft[item.id].possible[User.id];
+				}
+				$(this).trigger('show_possible');
+			});
 			object.find('.unjoin_going').click(function(){
 				if (confirm('Вы уверены, что хотите отказаться от дальнейшего участия в этом драфте?')) {
 					$.get('/ajax/leave_draft', {id: item.id});
@@ -52,6 +73,16 @@ function do_get_draft(callback, scope) {
 			});
 			object.prependTo('.left_wrapper').slideDown(1500)
 				.removeClass('draft_example');
+
+			object.everyTime(60000, function(){
+				if ($(this).data('start') &&
+					$(this).data('start').getTime() - (new Date()).getTime() + Time.diff < 1800000) {
+
+					$(this).find('.join').show();
+					$(this).find('.join_possible').hide();
+					$(this).find('.unjoin_possible').hide();
+				}
+			});
 
 			$('body').trigger('message', 'Драфт №' +
 				item.id + ' (' + booster.join(', ') +') добавлен.');
