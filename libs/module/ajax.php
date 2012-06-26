@@ -761,7 +761,7 @@ class Module_Ajax extends Module_Abstract
 			$picked_count = Database::join('draft_booster', 'db.id_draft_set = ds.id')
 				->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
 				->get_count('draft_set', 'ds.id_draft = ? and ds.order = ? and dbc.pick = ? and dbc.id_user > 0',
-					array($draft, $set, $shift));
+					array($draft, $set, $pick));
 			$log[] = 'pciked count: ' . (microtime(true) - $time);
 			$force_users = Database::get_vector('draft_user', 'id_user',
 				'id_draft = ? and force_picks = ?', array($draft, 1));
