@@ -33,6 +33,11 @@
 	margin: 5px 0 0 10px;
 }
 
+.skype {
+	float: right;
+	margin: 0 5px 0 0;
+}
+
 .chat_user_list span.chat_user_color {
 	font-size: 16px;
 	position: relative;
