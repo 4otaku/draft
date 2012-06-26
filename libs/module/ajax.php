@@ -739,9 +739,10 @@ class Module_Ajax extends Module_Abstract
 			array($set, $draft, $user_booster));
 		$log[] = 'id_booster: ' . (microtime(true) - $time);
 
+		$pick = $shift + ($set - 1) * 15;
 		Database::update('draft_booster_card', array(
 			'id_user' => $user,
-			'pick' => $shift,
+			'pick' => $pick,
 			'forced' => 0
 		), 'id = ? and id_user = 0 and not exists
 			(select 1 from (select * from `draft_booster_card` where id_draft_booster = ?) as t
@@ -756,25 +757,28 @@ class Module_Ajax extends Module_Abstract
 				'id_user = ? and id_draft = ?', array($user, $draft));
 		}
 
-		$force_users = Database::get_vector('draft_user', 'id_user',
-			'id_draft = ? and force_picks = ?', array($draft, 1));
-		$log[] = 'force users: ' . (microtime(true) - $time);
-
-		if (!empty($force_users)) {
-			$this->force_picks($force_users, $draft, $set, $shift);
-			$log[] = 'force: ' . (microtime(true) - $time);
-		}
-
-		if ($success &&
-			Database::join('draft_booster', 'db.id_draft_set = ds.id')
+		if ($success) {
+			$picked_count = Database::join('draft_booster', 'db.id_draft_set = ds.id')
 				->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
-				->get_count('draft_set',
-					'ds.id_draft = ? and ds.order = ? and dbc.pick = ? and dbc.id_user > 0',
-					array($draft, $set, $shift)) >= Database::get_count('draft_user', 'id_draft = ?', $draft)) {
+				->get_count('draft_set', 'ds.id_draft = ? and ds.order = ? and dbc.pick = ? and dbc.id_user > 0',
+					array($draft, $set, $shift));
+			$log[] = 'pciked count: ' . (microtime(true) - $time);
+			$force_users = Database::get_vector('draft_user', 'id_user',
+				'id_draft = ? and force_picks = ?', array($draft, 1));
+			$log[] = 'force users: ' . (microtime(true) - $time);
 
-			$log[] = 'last tested: ' . (microtime(true) - $time);
-			$this->shift_draft_steps($draft, $get['number']);
-			$log[] = 'shift performed: ' . (microtime(true) - $time);
+			if (count($force_users) + $picked_count >=
+				Database::get_count('draft_user', 'id_draft = ?', $draft)) {
+
+				if (!empty($force_users)) {
+					$this->force_picks($force_users, $draft, $set, $shift);
+					$log[] = 'force: ' . (microtime(true) - $time);
+				}
+
+				$log[] = 'last tested: ' . (microtime(true) - $time);
+				$this->shift_draft_steps($draft, $get['number']);
+				$log[] = 'shift performed: ' . (microtime(true) - $time);
+			}
 		}
 
 		file_put_contents(CACHE . SL . 'do_pick_' . $get['id'] . '_' . $get['number'] . '_' . User::get('id'), implode("\n", $log));
