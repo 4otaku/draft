@@ -761,7 +761,7 @@ class Module_Ajax extends Module_Abstract
 		$log[] = 'force users: ' . (microtime(true) - $time);
 
 		if (!empty($force_users)) {
-			$this->force_picks($force_users, $draft, $set, $shift + 1);
+//			$this->force_picks($force_users, $draft, $set, $shift + 1);
 			$log[] = 'force: ' . (microtime(true) - $time);
 		}
 
