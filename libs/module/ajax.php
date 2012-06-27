@@ -160,6 +160,7 @@ class Module_Ajax extends Module_Abstract
 					'm.time > ? and m.id_draft = ?', array($message_time, $get['room']));
 			$messages = array_reverse($messages);
 		}
+		$time = date('Y-m-d G:i:s', time() - Config::get('chat', 'loadtime'));
 
 		$data = array(
 			'success' => true,
