@@ -565,9 +565,6 @@ class Module_Ajax extends Module_Abstract
 	}
 
 	protected function do_get_draft_pick ($get) {
-		$log = array('start get pick ' . $get['id'] . ' ' . $get['number'] . ' ' . User::get('id'));
-		$time = microtime(true);
-
 		if (!isset($get['id']) || !is_numeric($get['id']) ||
 			!isset($get['number']) || !is_numeric($get['number']) ||
 				($get['number'] > 1 &&
@@ -576,27 +573,22 @@ class Module_Ajax extends Module_Abstract
 
 			return array('success' => false);
 		}
-		$log[] = 'test: ' . (microtime(true) - $time);
 
 		$set = ceil($get['number'] / 15);
 		$shift = ($get['number'] - 1) % 15;
 		$order = Database::get_field('draft_user', 'order', 'id_user = ? and id_draft = ?',
 			array(User::get('id'), $get['id']));
-		$log[] = 'order: ' . (microtime(true) - $time);
 		$max = Database::get_field('draft_user', 'max(`order`)', 'id_draft = ?', $get['id']);
-		$log[] = 'max: ' . (microtime(true) - $time);
 
 		if ($order === false || $max === false) {
 			return array('success' => false);
 		}
 
 		$this->test_force_picks($get['id'], $set, $shift);
-		$log[] = 'force: ' . (microtime(true) - $time);
 
 		$order = ($order + ($max + 1) * 15 + $shift * ($set % 2 ? 1 : -1)) % ($max + 1);
 		$user = Database::get_field('draft_user', 'id_user', '`order` = ? and id_draft = ?',
 			array($order, $get['id']));
-		$log[] = 'user: ' . (microtime(true) - $time);
 
 		if ($user === false) {
 			return array('success' => false);
@@ -607,8 +599,6 @@ class Module_Ajax extends Module_Abstract
 			->get_table('draft_set', array('dbc.id', 'dbc.id_card'),
 				'ds.id_draft = ? and ds.order = ? and dbc.id_user = ? and db.id_user = ?',
 				array($get['id'], $set, 0, $user));
-		$log[] = 'cards: ' . (microtime(true) - $time);
-		file_put_contents(CACHE . SL . 'get_pick_' . $get['id'] . '_' . $get['number'] . '_' . User::get('id'), implode("\n", $log));
 
 		return array('success' => true, 'cards' => $cards);
 	}
@@ -617,14 +607,11 @@ class Module_Ajax extends Module_Abstract
 		if ($shift == 0) {
 			return;
 		}
-		$log = array('test force ' . $draft . ' ' . $set . ' ' . $shift);
-		$time = microtime(true);
 
 		$test = Database::join('draft_booster', 'db.id_draft_set = ds.id')
 			->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
 			->group('db.id_user')->get_table('draft_set', 'count(*) as count',
 				'ds.id_draft = ? and ds.order = ? and dbc.id_user = ?', array($draft, $set, 0));
-		$log[] = 'test: ' . (microtime(true) - $time);
 
 		$need_force = false;
 		foreach ($test as $item) {
@@ -639,16 +626,10 @@ class Module_Ajax extends Module_Abstract
 		}
 
 		$users = Database::get_vector('draft_user', 'id_user', 'id_draft = ?', $draft);
-		$log[] = 'users: ' . (microtime(true) - $time);
 		$this->force_picks($users, $draft, $set, $shift);
-		$log[] = 'done: ' . (microtime(true) - $time);
-		file_put_contents(CACHE . SL . 'test_force_' .  $draft . '_' . $set . '_' . $shift . '_' . User::get('id'), implode("\n", $log));
 	}
 
 	protected function force_picks($users, $draft, $set, $shift) {
-		$log = array('start force ' . $draft . ' ' . $set . ' ' . $shift . ' ' . count($users));
-		$time = microtime(true);
-
 		$needed = array();
 		foreach ($users as $user) {
 			$needed[$user] = array();
@@ -661,7 +642,6 @@ class Module_Ajax extends Module_Abstract
 			->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
 			->get_full_table('draft_set', 'ds.id_draft = ? and ds.order = ?',
 			array($draft, $set));
-		$log[] = 'data: ' . (microtime(true) - $time);
 
 		foreach ($data as $card) {
 			if ($card['id_user'] == 0) {
@@ -673,27 +653,22 @@ class Module_Ajax extends Module_Abstract
 
 		$needed = array_filter($needed);
 		$max = Database::get_field('draft_user', 'max(`order`)', 'id_draft = ?', $draft);
-		$log[] = 'max: ' . (microtime(true) - $time);
 		foreach ($needed as $user => $picks) {
 			$user_data = Database::get_row('draft_user', array('order', 'force_picks'),
 				'id_user = ? and id_draft = ?', array($user, $draft));
-			$log[] = 'user data: ' . (microtime(true) - $time);
 			Database::update('draft_user', array('force_picks' => '++'),
 				'id_user = ? and id_draft = ?', array($user, $draft));
-			$log[] = 'set force: ' . (microtime(true) - $time);
 
 			foreach ($picks as $pick => $null) {
 				$order = ($user_data['order'] + ($max + 1) * 15 + $pick * ($set % 2 ? 1 : -1)) % ($max + 1);
 				$booster_user = Database::get_field('draft_user', 'id_user',
 					'`order` = ? and id_draft = ?', array($order, $draft));
-				$log[] = 'booster: ' . (microtime(true) - $time);
 
 				$cards = Database::join('draft_booster', 'db.id_draft_set = ds.id')
 					->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
 					->get_vector('draft_set', array('dbc.id', 'dbc.id_draft_booster'),
 						'ds.id_draft = ? and ds.order = ? and dbc.id_user = ? and db.id_user = ?',
 						array($draft, $set, 0, $booster_user));
-				$log[] = 'choice: ' . (microtime(true) - $time);
 
 				$card = array_rand($cards);
 
@@ -706,16 +681,11 @@ class Module_Ajax extends Module_Abstract
 					(select 1 from (select * from `draft_booster_card` where id_draft_booster = ?) as t
 					where t.pick = ? and t.id_user > 0)',
 				array($card, $cards[$card], $pick));
-				$log[] = 'set: ' . (microtime(true) - $time);
 			}
 		}
-
-		file_put_contents(CACHE . SL . 'force_' .  $draft . '_' . $set . '_' . $shift . '_' . count($users) . '_' . User::get('id'), implode("\n", $log));
 	}
 
 	protected function do_draft_pick($get) {
-		$log = array('start do pick ' . $get['id'] . ' ' . $get['number'] . ' ' . User::get('id'));
-		$time = microtime(true);
 
 		if (!isset($get['id']) || !is_numeric($get['id']) ||
 			!isset($get['number']) || !is_numeric($get['number']) ||
@@ -725,7 +695,6 @@ class Module_Ajax extends Module_Abstract
 
 			return array('success' => false);
 		}
-		$log[] = 'test: ' . (microtime(true) - $time);
 
 		$user = User::get('id');
 		$draft = $get['id'];
@@ -735,17 +704,13 @@ class Module_Ajax extends Module_Abstract
 
 		$user_data = Database::get_row('draft_user', array('order', 'force_picks'),
 			'id_user = ? and id_draft = ?', array($user, $draft));
-		$log[] = 'user: ' . (microtime(true) - $time);
 		$max = Database::get_field('draft_user', 'max(`order`)', 'id_draft = ?', $draft);
-		$log[] = 'max: ' . (microtime(true) - $time);
 		$order = ($user_data['order'] + ($max + 1) * 15 + $shift * ($set % 2 ? 1 : -1)) % ($max + 1);
 		$user_booster = Database::get_field('draft_user', 'id_user', '`order` = ? and id_draft = ?',
 			array($order, $draft));
-		$log[] = 'booster: ' . (microtime(true) - $time);
 		$id_booster = Database::join('draft_set', 'ds.id = db.id_draft_set')->
 			get_field('draft_booster', 'db.`id`', 'ds.`order` = ? and ds.id_draft = ? and db.id_user = ?',
 			array($set, $draft, $user_booster));
-		$log[] = 'id_booster: ' . (microtime(true) - $time);
 
 		$pick = $shift + ($set - 1) * 15;
 		Database::update('draft_booster_card', array(
@@ -756,7 +721,6 @@ class Module_Ajax extends Module_Abstract
 			(select 1 from (select * from `draft_booster_card` where id_draft_booster = ?) as t
 			where t.pick = ? and t.id_user > 0)',
 		array($card, $id_booster, $shift));
-		$log[] = 'do pick: ' . (microtime(true) - $time);
 
 		$success = Database::count_affected() > 0;
 
@@ -770,26 +734,20 @@ class Module_Ajax extends Module_Abstract
 				->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
 				->get_count('draft_set', 'ds.id_draft = ? and ds.order = ? and dbc.pick = ? and dbc.id_user > 0',
 					array($draft, $set, $pick));
-			$log[] = 'pciked count: ' . (microtime(true) - $time);
 			$force_users = Database::get_vector('draft_user', 'id_user',
 				'id_draft = ? and force_picks > ?', array($draft, 1));
-			$log[] = 'force users: ' . (microtime(true) - $time);
 
 			if (count($force_users) + $picked_count >=
 				Database::get_count('draft_user', 'id_draft = ?', $draft)) {
 
 				if (!empty($force_users)) {
 					$this->force_picks($force_users, $draft, $set, $shift);
-					$log[] = 'force: ' . (microtime(true) - $time);
 				}
 
-				$log[] = 'last tested: ' . (microtime(true) - $time);
 				$this->shift_draft_steps($draft, $get['number']);
-				$log[] = 'shift performed: ' . (microtime(true) - $time);
 			}
 		}
 
-		file_put_contents(CACHE . SL . 'do_pick_' . $get['id'] . '_' . $get['number'] . '_' . User::get('id'), implode("\n", $log));
 		return array('success' => $success);
 	}
 
