@@ -148,18 +148,25 @@ class Module_Ajax extends Module_Abstract
 			'time' => NULL
 		), array('room', 'user'));
 
-		$time = date('Y-m-d G:i:s', time() - Config::get('chat', 'loadtime'));
-		$message_time = empty($get['first_load']) ? $time :
-			date('Y-m-d G:i:s', time() - Config::get('chat', 'firsttime'));
+		if (empty($get['first_load'])) {
+			$time = date('Y-m-d G:i:s', time() - Config::get('chat', 'loadtime'));
+			$messages = Database::join('user', 'u.id = m.id_user')->order('m.time', 'ASC')->
+				get_table('message', 'm.id, m.id_user, m.text, unix_timestamp(m.time) as time, u.login',
+					'm.time > ? and m.id_draft = ?', array($time, $get['room']));
+		} else {
+			$time = date('Y-m-d G:i:s', time() - Config::get('chat', 'firsttime'));
+			$messages = Database::join('user', 'u.id = m.id_user')->limit(50)->order('m.time')->
+				get_table('message', 'm.id, m.id_user, m.text, unix_timestamp(m.time) as time, u.login',
+					'm.time > ? and m.id_draft = ?', array($time, $get['room']));
+			$messages = array_reverse($messages);
+		}
 
 		$data = array(
 			'success' => true,
 			'presense' => Database::join('user', 'u.id = p.id_user')->
 				get_table('presense', 'u.id, u.login', 'p.time > ? and id_draft = ?',
 				array($time, $get['room'])),
-			'message' => Database::join('user', 'u.id = m.id_user')->limit(50)->
-				get_table('message', 'm.id, m.id_user, m.text, unix_timestamp(m.time) as time, u.login',
-					'm.time > ? and m.id_draft = ?', array($message_time, $get['room'])),
+			'message' => $messages,
 			'last_draft_change' => strtotime(Database::order('update')
 				->get_field('draft', 'update'))
 		);
