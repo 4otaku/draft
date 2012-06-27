@@ -47,7 +47,7 @@ function add_message(text, id_user, id, time) {
 		':</span> ' + text;
 
 	var message = $('<div class="message_default">' +
-		text + '</div>');
+		url_to_link(text) + '</div>');
 
 	chat.append(message);
 	chat.prop('scrollTop', chat.prop('scrollHeight'));
@@ -77,6 +77,11 @@ function add_system_message(text) {
 	chat.append('<div class="message_system">' +
 		text + '</div>');
 	chat.prop('scrollTop', chat.prop('scrollHeight'));
+}
+
+function url_to_link(text) {
+	var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+	return text.replace(exp,"<a href='$1'>$1</a>");
 }
 
 function redo_user_list() {
