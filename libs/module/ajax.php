@@ -149,15 +149,15 @@ class Module_Ajax extends Module_Abstract
 		), array('room', 'user'));
 
 		if (empty($get['first_load'])) {
-			$time = date('Y-m-d G:i:s', time() - Config::get('chat', 'loadtime'));
+			$message_time = date('Y-m-d G:i:s', time() - Config::get('chat', 'loadtime'));
 			$messages = Database::join('user', 'u.id = m.id_user')->order('m.time', 'ASC')->
 				get_table('message', 'm.id, m.id_user, m.text, unix_timestamp(m.time) as time, u.login',
-					'm.time > ? and m.id_draft = ?', array($time, $get['room']));
+					'm.time > ? and m.id_draft = ?', array($message_time, $get['room']));
 		} else {
-			$time = date('Y-m-d G:i:s', time() - Config::get('chat', 'firsttime'));
+			$message_time = date('Y-m-d G:i:s', time() - Config::get('chat', 'firsttime'));
 			$messages = Database::join('user', 'u.id = m.id_user')->limit(50)->order('m.time')->
 				get_table('message', 'm.id, m.id_user, m.text, unix_timestamp(m.time) as time, u.login',
-					'm.time > ? and m.id_draft = ?', array($time, $get['room']));
+					'm.time > ? and m.id_draft = ?', array($message_time, $get['room']));
 			$messages = array_reverse($messages);
 		}
 
