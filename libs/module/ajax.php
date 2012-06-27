@@ -157,7 +157,7 @@ class Module_Ajax extends Module_Abstract
 			'presense' => Database::join('user', 'u.id = p.id_user')->
 				get_table('presense', 'u.id, u.login', 'p.time > ? and id_draft = ?',
 				array($time, $get['room'])),
-			'message' => Database::join('user', 'u.id = m.id_user')->
+			'message' => Database::join('user', 'u.id = m.id_user')->limit(50)->
 				get_table('message', 'm.id, m.id_user, m.text, unix_timestamp(m.time) as time, u.login',
 					'm.time > ? and m.id_draft = ?', array($message_time, $get['room'])),
 			'last_draft_change' => strtotime(Database::order('update')
@@ -506,7 +506,7 @@ class Module_Ajax extends Module_Abstract
 					->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
 					->get_table('draft_set', 'dbc.id_user',
 						'ds.id_draft = ? and ds.order = ? and dbc.pick = ? and dbc.id_user > 0',
-						array($get['id'], $set, $shift));
+						array($get['id'], $set, $shift + ($set - 1) * 15));
 			}
 		}
 
