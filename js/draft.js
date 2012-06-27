@@ -52,94 +52,98 @@ function get_draft_data() {
 		return;
 	}
 	Draft.getting = true;
-	setTimeout(function(){
-		Draft.getting = false;
-	}, 10000);
-	$.get('/ajax/get_draft_data', {id: Draft.id}, function(response) {
-		Draft.getting = false;
-		if (!response.success) {
-			return;
-		}
-
-		if (response.ready) {
-			var need_opponents_refresh = false;
-			$.each(response.users, function(key, value){
-				var user = value.id_user;
-				if (Draft.opponents[user]) {
-					return;
-				}
-
-				Draft.opponents[user] = Draft.users[user];
-				$('body').trigger('message', Draft.opponents[user].login +
-					' собрал колоду и готов играть.');
-				need_opponents_refresh = true;
-			});
-
-			if (need_opponents_refresh) {
-				refresh_opponents();
-			}
-
-			if (!Draft.deck) {
-				build_deck(response.deck);
-				display_ready();
-			}
-		}
-
-		if (!response.action || !response.forced) {
-			return;
-		}
-
-		$.each(response.forced, function(key, value) {
-			var key = value.id_user + '-' + value.pick + '-' + value.order;
-
-			if (Draft.forced[key]) {
+	$.ajax({
+		url: '/ajax/get_draft_data',
+		data: {id: Draft.id},
+		failure: function(response) {
+			Draft.getting = false;
+		},
+		success: function(response) {
+			Draft.getting = false;
+			if (!response.success) {
 				return;
 			}
 
-			Draft.forced[key] = value;
+			if (response.ready) {
+				var need_opponents_refresh = false;
+				$.each(response.users, function(key, value){
+					var user = value.id_user;
+					if (Draft.opponents[user]) {
+						return;
+					}
 
-			if (value.id_card) {
-				var msg = 'Вы зазевались на ' + (parseInt(value.pick) + 1) + ' пике ';
-				msg += value.order + '-го бустера, и схватили случайную карту. ';
-				msg += 'Вам достался "'+Draft.card[value.id_card].name+'".';
-			} else {
-				var msg = Draft.users[value.id_user].login + ' зазевался на ';
-				msg += (parseInt(value.pick) + 1) + ' пике ' + value.order;
-				msg += '-го бустера, и схватил случайную карту.';
+					Draft.opponents[user] = Draft.users[user];
+					$('body').trigger('message', Draft.opponents[user].login +
+						' собрал колоду и готов играть.');
+					need_opponents_refresh = true;
+				});
+
+				if (need_opponents_refresh) {
+					refresh_opponents();
+				}
+
+				if (!Draft.deck) {
+					build_deck(response.deck);
+					display_ready();
+				}
 			}
 
-			$('body').trigger('message', msg);
-		});
+			if (!response.action || !response.forced) {
+				return;
+			}
 
-		var picked = response.action.picked;
-		$('.draft_user').css('text-decoration', 'none');
+			$.each(response.forced, function(key, value) {
+				var key = value.id_user + '-' + value.pick + '-' + value.order;
 
-		if (picked) {
-			$.each(picked, function(key, value){
-				$('.draft_user_' + value.id_user).css('text-decoration', 'underline');
+				if (Draft.forced[key]) {
+					return;
+				}
+
+				Draft.forced[key] = value;
+
+				if (value.id_card) {
+					var msg = 'Вы зазевались на ' + (parseInt(value.pick) + 1) + ' пике ';
+					msg += value.order + '-го бустера, и схватили случайную карту. ';
+					msg += 'Вам достался "'+Draft.card[value.id_card].name+'".';
+				} else {
+					var msg = Draft.users[value.id_user].login + ' зазевался на ';
+					msg += (parseInt(value.pick) + 1) + ' пике ' + value.order;
+					msg += '-го бустера, и схватил случайную карту.';
+				}
+
+				$('body').trigger('message', msg);
 			});
-		}
 
-		var type = response.action.type;
-		var time = new Date(response.action.time * 1000);
+			var picked = response.action.picked;
+			$('.draft_user').css('text-decoration', 'none');
 
-		if (type == Draft.current_action &&
-			time.getTime() == Draft.current_action_time.getTime()) {
+			if (picked) {
+				$.each(picked, function(key, value){
+					$('.draft_user_' + value.id_user).css('text-decoration', 'underline');
+				});
+			}
 
-			return;
-		}
+			var type = response.action.type;
+			var time = new Date(response.action.time * 1000);
 
-		Draft.current_action = type;
-		Draft.current_action_time = time;
+			if (type == Draft.current_action &&
+				time.getTime() == Draft.current_action_time.getTime()) {
 
-		if (type == 'start') {
-			display_start(time);
-		} else if (type == 'look') {
-			display_look(time, 0);
-		} else if (type == 'build') {
-			display_look(time, 1);
-		} else {
-			display_pick(time, type.replace('pick_', '') - 0);
+				return;
+			}
+
+			Draft.current_action = type;
+			Draft.current_action_time = time;
+
+			if (type == 'start') {
+				display_start(time);
+			} else if (type == 'look') {
+				display_look(time, 0);
+			} else if (type == 'build') {
+				display_look(time, 1);
+			} else {
+				display_pick(time, type.replace('pick_', '') - 0);
+			}
 		}
 	});
 }

@@ -138,58 +138,62 @@ function get_chat_data(params) {
 		return;
 	}
 	Chat.getting = true;
-	setTimeout(function(){
-		Chat.getting = false;
-	}, 10000);
 
 	if (params.first_load) {
 		Chat.title = $('title').html();
 		Chat.count_new = 0;
 	}
 
-	$.get('/ajax/get_messages', $.extend(params, {
-		room: Chat.room
-	}), function(response) {
-		Chat.getting = false;
-		if (response.success) {
-			var ids = {};
-			$.each(response.presense, function(key, item) {
-				if (!Chat.users[item.id] || !Chat.users[item.id].present) {
-					add_user(item.login, item.id);
-					add_system_message(item.login + ' вошел в комнату.');
-				}
-				ids[item.id] = true;
-			});
-			$.each(Chat.users, function(key, item) {
-				if (item.present && !ids[key] && key != User.id) {
-					Chat.users[key].present = false;
-					redo_user_list();
-					add_system_message(item.name + ' покинул комнату.');
-				}
-			});
+	$.ajax({
+		url: '/ajax/get_messages',
+		data: $.extend(params, {
+			room: Chat.room
+		}),
+		failure: function(response) {
+			Chat.getting = false;
+		},
+		success: function(response) {
+			Chat.getting = false;
+			if (response.success) {
+				var ids = {};
+				$.each(response.presense, function(key, item) {
+					if (!Chat.users[item.id] || !Chat.users[item.id].present) {
+						add_user(item.login, item.id);
+						add_system_message(item.login + ' вошел в комнату.');
+					}
+					ids[item.id] = true;
+				});
+				$.each(Chat.users, function(key, item) {
+					if (item.present && !ids[key] && key != User.id) {
+						Chat.users[key].present = false;
+						redo_user_list();
+						add_system_message(item.name + ' покинул комнату.');
+					}
+				});
 
-			$.each(response.message, function(key, item) {
-				if (!Chat.messages[item.id]) {
-					if (item.id_user == User.id) {
-						for (key in Chat.messages.temp) {
-							if (Chat.messages.temp.hasOwnProperty(key)) {
-								return;
+				$.each(response.message, function(key, item) {
+					if (!Chat.messages[item.id]) {
+						if (item.id_user == User.id) {
+							for (key in Chat.messages.temp) {
+								if (Chat.messages.temp.hasOwnProperty(key)) {
+									return;
+								}
 							}
 						}
+						if (!Chat.users[item.id_user]) {
+							add_user(item.login, item.id_user, true);
+						}
+						add_message(item.text, item.id_user, item.id, item.time);
 					}
-					if (!Chat.users[item.id_user]) {
-						add_user(item.login, item.id_user, true);
-					}
-					add_message(item.text, item.id_user, item.id, item.time);
+				});
+
+				$('body').trigger('draft_change', response.last_draft_change);
+
+				if (params.first_load) {
+					$('.chat_loader').remove();
+					$('.chat').show();
+					set_sizes();
 				}
-			});
-
-			$('body').trigger('draft_change', response.last_draft_change);
-
-			if (params.first_load) {
-				$('.chat_loader').remove();
-				$('.chat').show();
-				set_sizes();
 			}
 		}
 	});
