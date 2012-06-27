@@ -670,7 +670,7 @@ class Module_Ajax extends Module_Abstract
 			$user_data = Database::get_row('draft_user', array('order', 'force_picks'),
 				'id_user = ? and id_draft = ?', array($user, $draft));
 			$log[] = 'user data: ' . (microtime(true) - $time);
-			Database::update('draft_user', array('force_picks' => 1),
+			Database::update('draft_user', array('force_picks' => '++'),
 				'id_user = ? and id_draft = ?', array($user, $draft));
 			$log[] = 'set force: ' . (microtime(true) - $time);
 
@@ -764,7 +764,7 @@ class Module_Ajax extends Module_Abstract
 					array($draft, $set, $pick));
 			$log[] = 'pciked count: ' . (microtime(true) - $time);
 			$force_users = Database::get_vector('draft_user', 'id_user',
-				'id_draft = ? and force_picks = ?', array($draft, 1));
+				'id_draft = ? and force_picks > ?', array($draft, 1));
 			$log[] = 'force users: ' . (microtime(true) - $time);
 
 			if (count($force_users) + $picked_count >=
