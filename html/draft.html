@@ -40,18 +40,36 @@
 	<div class="left_wrapper">
 		<div class="draft_info draft_base">
 			<table>
-				<tr><td>
-					<h3>Владелец: <span>{{draft.login}}</span></h3>
-				</td></tr>
-				<tr><td>
-					<h5 class="start">Время начала: <span class="utc_date"></span></h5>
-					<h5>Время на выбор карты: <span class="pick_time"></span></h5>
-					<h5>Пауза между бустерами: <span class="pause_time"></span></h5>
-				</td><td>
-					<h5>Первый бустер: <span>{{draft.booster.0.name}}</span></h5>
-					<h5>Второй бустер: <span>{{draft.booster.1.name}}</span></h5>
-					<h5>Третий бустер: <span>{{draft.booster.2.name}}</span></h5>
-				</td></tr>
+				{% if draft.is_sealed %}
+					<tr><td colspan="2">
+						<h4 class="start" style="float:right;">
+							Начало: <span class="utc_date"></span>
+						</h4>
+						<h4>Владелец: <span>{{draft.login}}</span></h4>
+					</td></tr>
+					<tr><td>
+						<h5>Первый бустер: <span>{{draft.booster.0.name}}</span></h5>
+						<h5>Второй бустер: <span>{{draft.booster.1.name}}</span></h5>
+						<h5>Третий бустер: <span>{{draft.booster.2.name}}</span></h5>
+					</td><td>
+						<h5>Четвертый бустер: <span>{{draft.booster.3.name}}</span></h5>
+						<h5>Пятый бустер: <span>{{draft.booster.4.name}}</span></h5>
+						<h5>Шестой бустер: <span>{{draft.booster.5.name}}</span></h5>
+					</td></tr>
+				{% else %}
+					<tr><td colspan="2">
+						<h4>Владелец: <span>{{draft.login}}</span></h4>
+					</td></tr>
+					<tr><td>
+						<h5 class="start">Время начала: <span class="utc_date"></span></h5>
+						<h5>Время на выбор карты: <span class="pick_time"></span></h5>
+						<h5>Пауза между бустерами: <span class="pause_time"></span></h5>
+					</td><td>
+						<h5>Первый бустер: <span>{{draft.booster.0.name}}</span></h5>
+						<h5>Второй бустер: <span>{{draft.booster.1.name}}</span></h5>
+						<h5>Третий бустер: <span>{{draft.booster.2.name}}</span></h5>
+					</td></tr>
+				{% endif %}
 				<tr><td colspan="2" class="participants">
 				</td></tr>
 			</table>

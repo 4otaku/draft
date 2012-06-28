@@ -138,9 +138,17 @@ function get_draft_data() {
 			if (type == 'start') {
 				display_start(time);
 			} else if (type == 'look') {
-				display_look(time, 0);
+				if (Draft.got_cards) {
+					display_look(time, 0);
+				} else {
+					get_base_data(function(){display_look(time, 0);});
+				}
 			} else if (type == 'build') {
-				display_look(time, 1);
+				if (Draft.got_cards) {
+					display_look(time, 1);
+				} else {
+					get_base_data(function(){display_look(time, 1);});
+				}
 			} else {
 				display_pick(time, type.replace('pick_', '') - 0);
 			}
@@ -385,6 +393,8 @@ function get_base_data(callback) {
 			Draft.card[id].small.src = '/images/small' + card.image;
 			Draft.card[id].full.src = '/images/full' + card.image;
 		});
+
+		Draft.got_cards = true;
 
 		callback.call(this);
 	});

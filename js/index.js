@@ -23,7 +23,8 @@ function do_get_draft(callback, scope) {
 
 			Draft[item.id] = item;
 			Draft[item.id].update_state = true;
-			var object = $('.draft_example').clone().attr('id', 'draft-' + item.id);
+			var selector = item.is_sealed == 1 ? '.sealed_example' : '.draft_example';
+			var object = $(selector).clone().attr('id', 'draft-' + item.id);
 			var booster = item.booster.split(',');
 			object.find('.name').html(item.login);
 			if (booster[0]) {
@@ -41,6 +42,15 @@ function do_get_draft(callback, scope) {
 			if (booster[2]) {
 				object.find('.booster_3').html(booster[2]);
 			}
+			if (booster[3]) {
+				object.find('.booster_4').html(booster[3]);
+			}
+			if (booster[4]) {
+				object.find('.booster_5').html(booster[4]);
+			}
+			if (booster[5]) {
+				object.find('.booster_6').html(booster[5]);
+			}
 			object.find('.pick_time').html(format_time(item.pick_time));
 			object.find('.pause_time').html(format_time(item.pause_time));
 			object.find('.join').attr('href', '/draft/' + item.id);
@@ -51,7 +61,7 @@ function do_get_draft(callback, scope) {
 				}
 			});
 			object.prependTo('.left_wrapper').slideDown(1500)
-				.removeClass('draft_example');
+				.removeClass('draft_example').removeClass('sealed_example');
 
 			$('body').trigger('message', 'Драфт №' +
 				item.id + ' (' + booster.join(', ') +') добавлен.');
@@ -107,6 +117,21 @@ function hide_draft_loader() {
 	this.find('.draft_cancel').click();
 }
 
+function send_create_data(button, selector) {
+	var parent = button.parents('.draft_add'),
+		request = parent.children(selector).find('select, input[type=text], input[type=hidden]').serialize();
+
+	parent.find('.draft-actions button').hide();
+	parent.find('.draft-actions .loader').show();
+
+	var date = new Date();
+	request += '&utc=' + date.getTimezoneOffset();
+
+	$.get('/ajax/add_draft?' + request, function(response) {
+		do_get_draft(hide_draft_loader, parent);
+	});
+}
+
 $(document).ready(function(){
 
 	$('body').bind('draft_change', function(e, time){
@@ -117,14 +142,22 @@ $(document).ready(function(){
 		}
 	}).trigger('draft_change');
 
-	$('#timestart').timepicker();
+	$('#timestart_draft').timepicker();
+	$('#timestart_sealed').timepicker();
 
-	$('.draft_add .btn-large').click(function(){
-		$(this).hide();
-		$(this).parent().children('.form-horizontal').show();
+	$('.draft_add .btn-large.draft_form_show').click(function(){
+		var parent = $(this).parents('.draft_add');
+		parent.children('.btn-large').hide();
+		parent.children('.draft_form').show();
 	});
 
-	$('.draft_add .draft_cancel').click(function(){
+	$('.draft_add .btn-large.sealed_form_show').click(function(){
+		var parent = $(this).parents('.draft_add');
+		parent.children('.btn-large').hide();
+		parent.children('.sealed_form').show();
+	});
+
+	$('.draft_add .draft_cancel, .draft_add .sealed_cancel').click(function(){
 		var parent = $(this).parents('.draft_add');
 		parent.children('.form-horizontal').hide();
 		parent.children('.btn-large').show();
@@ -133,17 +166,9 @@ $(document).ready(function(){
 	$('.selected').attr('selected', 'selected');
 
 	$('.draft_add .draft_create').click(function(){
-		var parent = $(this).parents('.draft_add'),
-			request = parent.children('.form-horizontal').find('select, input[type=text]').serialize();
-
-		parent.find('.draft-actions button').hide();
-		parent.find('.draft-actions .loader').show();
-
-		var date = new Date();
-		request += '&utc=' + date.getTimezoneOffset();
-
-		$.get('/ajax/add_draft?' + request, function(response) {
-			do_get_draft(hide_draft_loader, parent);
-		});
+		send_create_data($(this), '.draft_form');
+	});
+	$('.draft_add .sealed_create').click(function(){
+		send_create_data($(this), '.sealed_form');
 	});
 });

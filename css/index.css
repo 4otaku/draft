@@ -6,7 +6,7 @@
 	width: 600px;
 }
 
-.draft_example {
+.draft_example, .sealed_example {
 	display: none;
 }
 
@@ -44,13 +44,17 @@
 
 .draft_add {
 	text-align: center;
-	height: 260px;
+	height: 280px;
 	display: table-cell;
 	vertical-align: middle;
 	border: 10px solid #999;
 	border-radius: 20px;
 	-moz-border-radius: 20px;
 	-webkit-border-radius: 20px;
+}
+
+.draft_add .draft_form_show {
+	margin-right: 30px;
 }
 
 .draft_add .form-horizontal {

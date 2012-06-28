@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS `draft` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 ALTER TABLE  `draft` ADD  `start` DATETIME NULL DEFAULT NULL;
+ALTER TABLE  `draft` ADD  `is_sealed` TINYINT UNSIGNED NOT NULL DEFAULT  '0';
 
 -- --------------------------------------------------------
 

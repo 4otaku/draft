@@ -201,9 +201,13 @@ class Module_Ajax extends Module_Abstract
 	}
 
 	protected function do_add_draft ($get) {
-		if (!isset($get['pick_time']) || !is_numeric($get['pick_time']) ||
-			!isset($get['pause_time']) || !is_numeric($get['pause_time']) ||
-			!isset($get['set']) || !is_array($get['set']) || !User::get('id')) {
+		if (!isset($get['set']) || !is_array($get['set']) || !User::get('id')) {
+			return array('success' => false);
+		}
+
+		if ((!isset($get['pick_time']) || !is_numeric($get['pick_time']) ||
+			!isset($get['pause_time']) || !is_numeric($get['pause_time'])) &&
+			!isset($get['is_sealed'])) {
 
 			return array('success' => false);
 		}
@@ -239,8 +243,9 @@ class Module_Ajax extends Module_Abstract
 
 		Database::insert('draft', array(
 			'id_user' => User::get('id'),
-			'pick_time' => $get['pick_time'],
-			'pause_time' => $get['pause_time'],
+			'pick_time' => isset($get['pick_time']) ? $get['pick_time'] : 0,
+			'pause_time' => isset($get['pause_time']) ? $get['pause_time'] : 0,
+			'is_sealed' => isset($get['is_sealed']) ? $get['is_sealed'] : 0,
 			'start' => $start
 		));
 
@@ -270,7 +275,7 @@ class Module_Ajax extends Module_Abstract
 			->join('draft_user', 'd.id = du.id_draft and du.signed_out = 0 and du.id_user = ' . User::get('id'))
 			->join('set', 'ds.id_set = s.id')->group('d.id')
 			->get_table('draft', array('d.id, d.id_user, d.state, u.login, d.pick_time, d.update,
-				d.pause_time', 'd.start', 'group_concat(s.name) as booster', 'du.id_user as presense'),
+				d.pause_time, d.start, d.is_sealed', 'group_concat(s.name) as booster', 'du.id_user as presense'),
 				'd.state != ? and d.update > ?', array(4, date('Y-m-d G:i:s', time() - 864000)));
 
 		$date_missed = time() - 7200;
@@ -342,8 +347,9 @@ class Module_Ajax extends Module_Abstract
 
 		Database::begin();
 
-		Database::update('draft', array('state' => 1),
-			'id_user = ? and id = ?', array(User::get('id'), $get['id']));
+		$is_sealed = (bool) Database::get_field('draft', 'is_sealed', $get['id']);
+
+		Database::update('draft', array('state' => 1), $get['id']);
 
 		$order = 0;
 		foreach ($users as $user) {
@@ -410,7 +416,8 @@ class Module_Ajax extends Module_Abstract
 						$id_card = $tmp[$key];
 						Database::insert('draft_booster_card', array(
 							'id_draft_booster' => $id_booster,
-							'id_card' => $id_card
+							'id_card' => $id_card,
+							'id_user' => $is_sealed ? $user : 0
 						));
 						$ids[] = $id_card;
 						unset($tmp[$key]);
@@ -444,32 +451,34 @@ class Module_Ajax extends Module_Abstract
 		$opts = Database::get_row('draft', array('pause_time', 'pick_time'), $get['id']);
 		$start = time() + $opts['pause_time'];
 
-		foreach ($sets as $set_number => $set) {
+		if (!$is_sealed) {
+			foreach ($sets as $set_number => $set) {
 
-			$set_start = $start +
-				15 * $set_number * $opts['pick_time'] +
-				$opts['pause_time'] * $set_number;
+				$set_start = $start +
+					15 * $set_number * $opts['pick_time'] +
+					$opts['pause_time'] * $set_number;
 
-			if (!$set_number) {
-				Database::insert('draft_step', array(
-					'id_draft' => $get['id'],
-					'type' => 'start',
-					'time' => date('Y-m-d G:i:s', $set_start)
-				));
-			} else {
-				Database::insert('draft_step', array(
-					'id_draft' => $get['id'],
-					'type' => 'look',
-					'time' => date('Y-m-d G:i:s', $set_start)
-				));
-			}
+				if (!$set_number) {
+					Database::insert('draft_step', array(
+						'id_draft' => $get['id'],
+						'type' => 'start',
+						'time' => date('Y-m-d G:i:s', $set_start)
+					));
+				} else {
+					Database::insert('draft_step', array(
+						'id_draft' => $get['id'],
+						'type' => 'look',
+						'time' => date('Y-m-d G:i:s', $set_start)
+					));
+				}
 
-			for ($i = 1; $i <= 15; $i++) {
-				Database::insert('draft_step', array(
-					'id_draft' => $get['id'],
-					'type' => 'pick_' . (15 * $set_number + $i),
-					'time' => date('Y-m-d G:i:s', $set_start + $i * $opts['pick_time'])
-				));
+				for ($i = 1; $i <= 15; $i++) {
+					Database::insert('draft_step', array(
+						'id_draft' => $get['id'],
+						'type' => 'pick_' . (15 * $set_number + $i),
+						'time' => date('Y-m-d G:i:s', $set_start + $i * $opts['pick_time'])
+					));
+				}
 			}
 		}
 
