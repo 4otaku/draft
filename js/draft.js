@@ -55,7 +55,7 @@ function get_draft_data() {
 	$.ajax({
 		url: '/ajax/get_draft_data',
 		data: {id: Draft.id},
-		failure: function(response) {
+		error: function(response) {
 			Draft.getting = false;
 		},
 		success: function(response) {

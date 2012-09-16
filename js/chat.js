@@ -1,5 +1,6 @@
 $.extend(Chat, {
 	users: {},
+	error_count: 0,
 	messages: {
 		temp: {},
 		broken: {}
@@ -149,12 +150,17 @@ function get_chat_data(params) {
 		data: $.extend(params, {
 			room: Chat.room
 		}),
-		failure: function(response) {
+		error: function(response) {
 			Chat.getting = false;
+			display_chat_error();
 		},
-		success: function(response) {
+		success: function(response, status, info) {
 			Chat.getting = false;
-			if (response.success) {
+			if (info.status == 200 && response.success) {
+				if (Chat.error_count > 0) {
+					add_system_message('Связь с сервером восстановлена.');
+					Chat.error_count = 0;
+				}
 				var ids = {};
 				$.each(response.presense, function(key, item) {
 					if (!Chat.users[item.id] || !Chat.users[item.id].present) {
@@ -194,9 +200,18 @@ function get_chat_data(params) {
 					$('.chat').show();
 					set_sizes();
 				}
+			} else {
+				display_chat_error();
 			}
 		}
 	});
+}
+
+function display_chat_error() {
+	if (Chat.error_count < 4) {
+		add_system_message('Не удалось связаться с сервером.');
+	}
+	Chat.error_count++;
 }
 
 $('.chat_form button').click(function(){
