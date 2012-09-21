@@ -792,7 +792,7 @@ class Module_Ajax extends Module_Abstract
 				->join('draft_booster_card', 'dbc.id_draft_booster = db.id')
 				->get_count('draft_set', 'ds.id_draft = ? and dbc.id_user = ?', array($draft, $user));
 
-			if ($count < 100) {
+			if ($count <= 15 * Database::get_count('draft_set', 'id_draft = ?', $draft)) {
 
 				$id_booster = Database::join('draft_booster', 'db.id_draft_set = ds.id')
 					->get_field('draft_set', 'db.id', 'ds.id_draft = ?', $draft);
