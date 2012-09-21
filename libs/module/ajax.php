@@ -547,10 +547,29 @@ class Module_Ajax extends Module_Abstract
 		if (!isset($get['id']) || !is_numeric($get['id'])) {
 			return array('success' => false);
 		}
-		return array('success' => true,
-			'user' => Database::join('user', 'u.id = du.id_user')->
-				order('du.order', 'asc')->get_table('draft_user',
-				'u.id, u.login, u.avatar, du.signed_out', 'du.id_draft = ?', $get['id']));
+
+		$users = Database::join('user', 'u.id = du.id_user')->
+			order('du.order', 'asc')->get_table('draft_user',
+			'u.id, u.login, u.avatar, du.signed_out', 'du.id_draft = ?', $get['id']);
+		foreach ($users as &$user) {
+			$user['nickname'] = $this->latinize($user['login']);
+		}
+
+		return array('success' => true, 'user' => $users);
+	}
+
+	protected function latinize ($string) {
+		$table= array('а'=>'a', 'б'=>'b', 'в'=>'v', 'г'=>'g', 'д'=>'d', 'е'=>'e',
+			'ж'=>'g', 'з'=>'z', 'и'=>'i', 'й'=>'y', 'к'=>'k', 'л'=>'l', 'м'=>'m', 'н'=>'n',
+			'о'=>'o', 'п'=>'p', 'р'=>'r', 'с'=>'s', 'т'=>'t', 'у'=>'u', 'ф'=>'f', 'ы'=>'i',
+			'э'=>'e', 'А'=>'A', 'Б'=>'B', 'В'=>'V', 'Г'=>'G', 'Д'=>'D', 'Е'=>'E', 'Ж'=>'G',
+			'З'=>'Z', 'И'=>'I', 'Й'=>'Y', 'К'=>'K', 'Л'=>'L', 'М'=>'M', 'Н'=>'N', 'О'=>'O',
+			'П'=>'P', 'Р'=>'R', 'С'=>'S', 'Т'=>'T', 'У'=>'U', 'Ф'=>'F', 'Ы'=>'I', 'Э'=>'E',
+			'ё'=>"yo", 'х'=>"h", 'ц'=>"ts", 'ч'=>"ch", 'ш'=>"sh", 'щ'=>"shch", 'ъ'=>"", 'ь'=>"",
+			'ю'=>"yu", 'я'=>"ya", 'Ё'=>"YO", 'Х'=>"H", 'Ц'=>"TS", 'Ч'=>"CH", 'Ш'=>"SH", 'Щ'=>"SHCH",
+			'Ъ'=>"", 'Ь'=>"", 'Ю'=>"YU", 'Я'=>"YA");
+		$string = strtr($string, $table);
+		return preg_replace('/[^a-z_\d\s]/ui', '_', $string);
 	}
 
 	protected function do_get_draft_card ($get) {

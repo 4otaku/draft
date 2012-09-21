@@ -573,9 +573,9 @@ $('.challenge button').click(function(){
 			'</head>' +
 		'<body onLoad="document.getElementById(\'form\').submit()">' +
 			'<form action="http://www.mtg.ru/play/start.phtml" method="POST" id="form">' +
-				'<input type="hidden" name="Player" value="' + User.name + '">' +
+				'<input type="hidden" name="Player" value="' + Draft.users[User.id].nickname + '">' +
 				'<input type="hidden" name="Player_Avatar" value="http://mtgdraft.ru/images/avatar/' + User.avatar + '.jpg">' +
-				'<input type="hidden" name="Oponent" value="' + Draft.users[opponent].login + '">' +
+				'<input type="hidden" name="Oponent" value="' + Draft.users[opponent].nickname + '">' +
 				'<input type="hidden" name="Oponent_Avatar" value="http://mtgdraft.ru/images/avatar/' + Draft.users[opponent].avatar + '.jpg">' +
 				'<input type="hidden" name="Lang" value="EN">' +
 				'<textarea style="display:none;" name="Deck">' + Draft.decklist + '</textarea>' +
