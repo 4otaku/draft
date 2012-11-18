@@ -23,7 +23,7 @@
 		<button class="btn music_on hidden" title="Звук отключен">
 			<i class="icon-volume-off"></i>
 		</button>
-		<button class="btn settings" title="Настройки">
+		<button class="btn settings" title="Настройки" rel="#settings">
 			<i class="icon-cog"></i>
 		</button>
 	</div>
@@ -161,6 +161,7 @@
 	<script type="text/javascript">
 		var Draft = {
 			id: {{draft.id}},
+			is_sealed: {{draft.is_sealed}},
 			id_owner: {{draft.id_user}},
 			state: {{draft.state}},
 			owner: '{{draft.login}}',

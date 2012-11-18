@@ -203,6 +203,7 @@ function display_look(time, build) {
 		switch_display('look', Math.ceil((time.getTime() - (new Date()).getTime() + Time.diff) / 1000));
 	} else {
 		switch_display('look');
+		if (Draft.is_sealed) play_sound('draft_start');
 	}
 
 	$.get('/ajax/get_draft_deck', {id: Draft.id, add_land: build}, function(response){
