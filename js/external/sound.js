@@ -11,7 +11,6 @@
 	$.extend({
 		playSound: function(){
 			var volume = (typeof User != 'undefined') ? User.settings.volume : 50;
-			console.log(volume);
 			$('#playSound').html("<embed src='"+arguments[0]+"' volume='" + volume +
 				"' hidden='true' autostart='true' loop='false'>");
 		}
