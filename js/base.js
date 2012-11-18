@@ -147,4 +147,9 @@ $(document).ready(function(){
 			}
 		});
 	}
+
+	// Костыль для совместимости rangeinput и draggable
+	document.ondragstart = function () {
+		return !!$('.ui-draggable').length;
+	};
 });
