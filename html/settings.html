@@ -1,0 +1,57 @@
+<div class="setting_content">
+	<div class="setting_header">
+		Проигрывать звук при:
+	</div>
+	<div class="setting_group">
+		<div class="setting">
+			Новом сообщении в общей комнате:
+			<input type="checkbox" name="play_on_message"
+			   class="{% if user.settings.play_on_message %}checked{%else%}not_checked{% endif %}" />
+		</div>
+		<div class="setting">
+			Пользователь заходит в общую комнату:
+			<input type="checkbox" name="play_on_user_enter"
+			   class="{% if user.settings.play_on_user_enter %}checked{%else%}not_checked{% endif %}" />
+		</div>
+		<div class="setting">
+			Пользователь покидает общую комнату:
+			<input type="checkbox" name="play_on_user_leave"
+			   class="{% if user.settings.play_on_user_leave %}checked{%else%}not_checked{% endif %}" />
+		</div>
+		<div class="setting">
+			К вам обращаются или вас упомянули:
+			<input type="checkbox" name="play_on_highlight"
+			   class="{% if user.settings.play_on_highlight %}checked{%else%}not_checked{% endif %}" />
+		</div>
+		<div class="setting">
+			Новом сообщении в драфте:
+			<input type="checkbox" name="play_on_draft_message"
+			   class="{% if user.settings.play_on_draft_message %}checked{%else%}not_checked{% endif %}" />
+		</div>
+		<div class="setting">
+			Пользователь заходит в драфт:
+			<input type="checkbox" name="play_on_user_draft_enter"
+			   class="{% if user.settings.play_on_user_draft_enter %}checked{%else%}not_checked{% endif %}" />
+		</div>
+		<div class="setting">
+			Пользователь покидает драфт:
+			<input type="checkbox" name="play_on_user_draft_leave"
+			   class="{% if user.settings.play_on_user_draft_leave %}checked{%else%}not_checked{% endif %}" />
+		</div>
+		<div class="setting">
+			Начале драфта:
+			<input type="checkbox" name="play_on_draft_start"
+			   class="{% if user.settings.play_on_draft_start %}checked{%else%}not_checked{% endif %}" />
+		</div>
+		<div class="setting">
+			Открытии нового бустера:
+			<input type="checkbox" name="play_on_booster_start"
+				class="{% if user.settings.play_on_booster_start %}checked{%else%}not_checked{% endif %}" />
+		</div>
+		<div class="setting">
+			Передаче бустера:
+			<input type="checkbox" name="play_on_booster_pass"
+			    class="{% if user.settings.play_on_booster_pass %}checked{%else%}not_checked{% endif %}" />
+		</div>
+	</div>
+</div>

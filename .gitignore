@@ -1,3 +1,4 @@
+.idea/*
 images/avatar/*
 !images/avatar/.gitignore
 images/small/*

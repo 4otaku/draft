@@ -916,6 +916,30 @@ class Module_Ajax extends Module_Abstract
 		return array('success' => true);
 	}
 
+	protected function do_set_setting($data) {
+		if (!isset($data['setting']) || !preg_match('/^[a-z_]+$/uis', $data['setting']) ||
+			!isset($data['value']) || !is_numeric($data['value'])) {
+
+			return array('success' => false);
+		}
+
+		$setting = Database::get_field('setting', 'id', 'setting = ?', $data['setting']);
+
+		if (empty($setting)) {
+			return array('success' => false);
+		}
+
+		$user = User::get('id');
+
+		Database::replace('user_setting', array(
+			'id_user' => $user,
+			'id_setting' => $setting,
+			'value' => $data['value'],
+		), array('id_user', 'id_setting'));
+
+		return array('success' => true);
+	}
+
 	protected function do_delete_note($data) {
 		if (!isset($data['id']) || !is_numeric($data['id']) || !User::get('id')) {
 			return array('success' => false);

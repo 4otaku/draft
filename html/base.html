@@ -23,7 +23,13 @@
 				var User = {
 					name: "{{user.login}}",
 					avatar: "{{user.avatar}}",
-					id: {{user.id}}
+					id: {{user.id}},
+					settings: {
+						{% for name, value in user.settings %}
+							{{name}}: {{value}}{% if not loop.last %},{% endif %}
+						{% endfor %}
+					},
+					is_highlighted: /\b{{user.login}}\b/
 				};
 			</script>
 		{% endif %}

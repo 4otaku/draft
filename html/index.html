@@ -6,6 +6,15 @@
 			<i class="icon-question-sign icon-white"></i>
 			<span>Объявления</span>
 		</button>
+		<button class="btn music_off hidden" title="Звуковые эффекты включены">
+			<i class="icon-music"></i>
+		</button>
+		<button class="btn music_on hidden" title="Звук отключен">
+			<i class="icon-volume-off"></i>
+		</button>
+		<button class="btn settings" title="Настройки" rel="#settings">
+			<i class="icon-cog"></i>
+		</button>
 	</div>
 	<div class="right">
 		<a class="btn btn-info" href="/faq/">
@@ -257,4 +266,5 @@
 	<script type="text/javascript">var Chat = {room: 0, freq: 3000};</script>
 	{% include 'chat.html' %}
 	<div id="overlay"><div class="overlay_content"></div></div>
+	<div id="settings">{% include 'settings.html' %}</div>
 {% endblock %}

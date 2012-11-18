@@ -158,11 +158,13 @@ function get_draft_data() {
 
 function display_start(time) {
 	switch_display('start', Math.ceil((time.getTime() - (new Date()).getTime() + Time.diff) / 1000));
+	play_sound('draft_start');
 
 	get_base_data();
 }
 
 function display_pick(time, number) {
+	play_sound(number % 15 == 1 ? 'booster_start' : 'booster_pass');
 
 	Draft.pick = number;
 
@@ -404,10 +406,11 @@ function switch_display(type, counter) {
 	if (counter) {
 		counter_init(counter);
 		$('#counter').show();
-		$('.info').hide();
+		$('.left button').hide();
 	} else {
 		$('#counter').hide();
-		$('.info').show();
+		$('.left button').show();
+		sync_on_off_music_button();
 	}
 
 	$('.draft_base:not(.draft_info):not(.draft_'+type+')').hide();

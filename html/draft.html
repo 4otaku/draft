@@ -17,6 +17,15 @@
 			<i class="icon-question-sign icon-white"></i>
 			<span>Результаты</span>
 		</button>
+		<button class="btn music_off hidden" title="Звуковые эффекты включены">
+			<i class="icon-music"></i>
+		</button>
+		<button class="btn music_on hidden" title="Звук отключен">
+			<i class="icon-volume-off"></i>
+		</button>
+		<button class="btn settings" title="Настройки">
+			<i class="icon-cog"></i>
+		</button>
 	</div>
 	<div class="right">
 		<a class="btn btn-primary" href="/">
@@ -177,4 +186,5 @@
 	{% include 'chat.html' %}
 	<div class="display_card"><img /></div>
 	<div id="overlay"><div class="overlay_content"></div></div>
+	<div id="settings">{% include 'settings.html' %}</div>
 {% endblock %}

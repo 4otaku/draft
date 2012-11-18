@@ -161,19 +161,23 @@ function get_chat_data(params) {
 					add_system_message('Связь с сервером восстановлена.');
 					Chat.error_count = 0;
 				}
-				var ids = {};
+				var ids = {}, play_enter = false, play_leave = false,
+					play_message = false, play_highlight = false;
 				$.each(response.presense, function(key, item) {
 					if (!Chat.users[item.id] || !Chat.users[item.id].present) {
 						add_user(item.login, item.id);
 						add_system_message(item.login + ' вошел в комнату.');
+						play_enter = true;
 					}
 					ids[item.id] = true;
+
 				});
 				$.each(Chat.users, function(key, item) {
 					if (item.present && !ids[key] && key != User.id) {
 						Chat.users[key].present = false;
 						redo_user_list();
 						add_system_message(item.name + ' покинул комнату.');
+						play_leave = true;
 					}
 				});
 
@@ -190,8 +194,18 @@ function get_chat_data(params) {
 							add_user(item.login, item.id_user, true);
 						}
 						add_message(item.text, item.id_user, item.id, item.time);
+						play_message = true;
+						if (item.text.match(User.is_highlighted)) {
+							play_highlight = true;
+						}
 					}
 				});
+
+				var played = false;
+				if (play_highlight) played = play_sound('highlight');
+				if (!played && play_enter) played = play_sound(Chat.room ? 'user_draft_enter' : 'user_enter');
+				if (!played && play_message) played = play_sound(Chat.room ? 'draft_message' : 'message');
+				if (!played && play_leave) played = play_sound(Chat.room ? 'user_draft_leave' : 'user_leave');
 
 				$('body').trigger('draft_change', response.last_draft_change);
 

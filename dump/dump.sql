@@ -206,6 +206,51 @@ CREATE TABLE IF NOT EXISTS `user` (
   UNIQUE KEY `login` (`login`,`cookie`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `setting`
+--
+
+CREATE TABLE IF NOT EXISTS `setting` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `setting` varchar(40) NOT NULL,
+  `default` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `setting` (`setting`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=11 ;
+
+--
+-- Дамп данных таблицы `setting`
+--
+
+INSERT INTO `setting` (`id`, `setting`, `default`) VALUES
+(1, 'play_music', 0),
+(2, 'play_on_message', 0),
+(3, 'play_on_draft_message', 1),
+(4, 'play_on_highlight', 1),
+(5, 'play_on_booster_start', 1),
+(6, 'play_on_booster_pass', 1),
+(7, 'play_on_user_enter', 0),
+(8, 'play_on_user_leave', 0),
+(9, 'play_on_user_draft_enter', 1),
+(10, 'play_on_user_draft_leave', 0);
+INSERT INTO `draft`.`setting` (`id`, `setting`, `default`) VALUES (NULL, 'play_on_draft_start', '1');
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблицы `user_setting`
+--
+
+CREATE TABLE IF NOT EXISTS `user_setting` (
+  `id_user` int(10) unsigned NOT NULL,
+  `id_setting` int(10) unsigned NOT NULL,
+  `value` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id_user`,`is_setting`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

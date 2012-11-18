@@ -18,6 +18,50 @@ function init_sizes() {
 	$('.chat_messages').bind('message_add', set_sizes);
 }
 
+function play_sound(sound) {
+	var setting = 'play_on_' + sound;
+	if (!User.settings.play_music || !User.settings[setting]) {
+		return false;
+	}
+
+	var soundsMap = {
+		message: 'message',
+		user_enter: 'enter',
+		user_leave: 'leave',
+		highlight: 'highlight',
+		draft_message: 'message',
+		user_draft_enter: 'enter',
+		user_draft_leave: 'leave',
+		draft_start: 'start',
+		booster_start: 'booster',
+		booster_pass: 'booster'
+	};
+
+	if (soundsMap[sound]) {
+		$.playSound('/sound/' + soundsMap[sound] + '.wav');
+		return true;
+	}
+
+	return false;
+}
+
+function sync_on_off_music_button() {
+	if (typeof User == 'undefined') return;
+
+	if (User.settings.play_music) {
+		$('.music_on').hide();
+		$('.music_off').show();
+	} else {
+		$('.music_on').show();
+		$('.music_off').hide();
+	}
+}
+
+function write_setting(setting) {
+	var value = User.settings[setting];
+	$.post('/ajax/set_setting', {setting: setting, value: value});
+}
+
 function format_time(seconds) {
 	if (seconds < 120) {
 		return seconds + ' секунд';
@@ -68,9 +112,30 @@ $(document).ready(function(){
 			$('#overlay .overlay_content').load('/info/' + room);
 		}
     });
+	$("button.settings").overlay({
+		mask: '#688A08'
+    });
 
 	$("button.exit").click(function(){
 		$.cookie("user", null, {path: '/'});
 		document.location.reload();
 	});
+
+	$('.music_on, .music_off').click(function(){
+		User.settings.play_music = 1 - User.settings.play_music;
+		write_setting('play_music');
+		sync_on_off_music_button();
+	});
+
+	sync_on_off_music_button();
+
+	$('.setting input').change(function() {
+		var value =  $(this).is(':checked') - 0;
+		var name = $(this).attr('name');
+		User.settings[name] = value;
+		write_setting(name);
+	});
+
+	$(".checked").attr('checked', true);
+	$(".not_checked").attr('checked', false);
 });
