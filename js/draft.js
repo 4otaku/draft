@@ -300,6 +300,7 @@ function insert_deck(data) {
 			var item = $(this).data('item');
 			$(this).html('<span class="drag_card">' + item.count + ' x ' + item.name + '</span>' +
 				' <span class="remove_card">&#9746;</span>');
+
 			if (item.count == 0) {
 				$(this).appendTo('.buffer');
 			} else if (display) {
