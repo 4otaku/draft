@@ -54,4 +54,11 @@
 			    class="{% if user.settings.play_on_booster_pass %}checked{%else%}not_checked{% endif %}" />
 		</div>
 	</div>
+	<div class="setting_header">
+		Громкость оповещений:
+	</div>
+	<div class="setting_group">
+		<input type="range" name="volume" min="0" max="100" value="{{user.settings.volume}}" class="volume" />
+		<div class="clear"></div>
+	</div>
 </div>

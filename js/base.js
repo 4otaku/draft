@@ -138,4 +138,13 @@ $(document).ready(function(){
 
 	$(".checked").attr('checked', true);
 	$(".not_checked").attr('checked', false);
+
+	if ($(".volume").length) {
+		$(".volume").rangeinput({
+			change: function(e, i) {
+				User.settings.volume = i;
+				write_setting('volume');
+			}
+		});
+	}
 });

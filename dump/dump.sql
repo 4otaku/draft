@@ -236,6 +236,7 @@ INSERT INTO `setting` (`id`, `setting`, `default`) VALUES
 (9, 'play_on_user_draft_enter', 1),
 (10, 'play_on_user_draft_leave', 0);
 INSERT INTO `draft`.`setting` (`id`, `setting`, `default`) VALUES (NULL, 'play_on_draft_start', '1');
+INSERT INTO `draft`.`setting` (`id`, `setting`, `default`) VALUES (NULL, 'volume', '50');
 
 -- --------------------------------------------------------
 

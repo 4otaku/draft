@@ -3,8 +3,8 @@
 class Module_Index extends Module_Abstract_Authorized
 {
 	protected $css = array('external/ui', 'external/timepicker', 'chat', 'index');
-	protected $js = array('external/cookie', 'external/ui', 'external/sound', 'external/md5',
-		'external/dateformat', 'external/timer', 'external/timepicker', 'chat', 'index');
+	protected $js = array('external/cookie', 'external/ui', 'external/sound', 'external/rangeinput',
+		'external/md5', 'external/dateformat', 'external/timer', 'external/timepicker', 'chat', 'index');
 
 	protected function get_data() {
 		$data = parent::get_data();
