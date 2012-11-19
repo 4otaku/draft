@@ -63,7 +63,7 @@ function do_get_draft(callback, scope) {
 			object.prependTo('.left_wrapper').slideDown(1500)
 				.removeClass('draft_example').removeClass('sealed_example');
 
-			$('body').trigger('message', 'Драфт №' +
+			$('body').trigger('message', (item.is_sealed == '1' ? 'Силед' : 'Драфт') + ' №' +
 				item.id + ' (' + booster.join(', ') +') добавлен.');
 		});
 
