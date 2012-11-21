@@ -8,7 +8,7 @@ function do_get_draft(callback, scope) {
 	callback = callback || function(){};
 	scope = scope || this;
 
-	$.get('/ajax/get_draft', function(response) {
+	$.get('/ajax_draft_list/get', function(response) {
 		var ids = {};
 		$.each(response.data, function(key, item){
 			ids[item.id] = true;
@@ -56,7 +56,7 @@ function do_get_draft(callback, scope) {
 			object.find('.join').attr('href', '/draft/' + item.id);
 			object.find('.unjoin_going').click(function(){
 				if (confirm('Вы уверены, что хотите отказаться от дальнейшего участия в этом драфте?')) {
-					$.get('/ajax/leave_draft', {id: item.id});
+					$.get('/ajax_draft_list/leave', {id: item.id});
 					object.remove();
 				}
 			});
@@ -86,7 +86,7 @@ function do_get_draft(callback, scope) {
 						object.find('.delete').show().click(function(){
 							if (confirm('Вы уверены, что хотите удалить драфт?')) {
 								object.slideUp(1500);
-								$.get('/ajax/delete_draft', {id: item.id});
+								$.get('/ajax_draft_list/delete', {id: item.id});
 							}
 						});
 					}
@@ -127,7 +127,7 @@ function send_create_data(button, selector) {
 	var date = new Date();
 	request += '&utc=' + date.getTimezoneOffset();
 
-	$.get('/ajax/add_draft?' + request, function(response) {
+	$.get('/ajax_draft_list/add?' + request, function(response) {
 		do_get_draft(hide_draft_loader, parent);
 	});
 }

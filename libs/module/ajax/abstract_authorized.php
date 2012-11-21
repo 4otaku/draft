@@ -11,6 +11,6 @@ abstract class Module_Ajax_Abstract_Authorized extends Module_Ajax_Abstract
 
 		$this->user = User::get('id');
 
-		return true;
+		return parent::get_base_params($data);
 	}
 }

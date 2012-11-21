@@ -59,7 +59,7 @@ function sync_on_off_music_button() {
 
 function write_setting(setting) {
 	var value = User.settings[setting];
-	$.post('/ajax/set_setting', {setting: setting, value: value});
+	$.post('/ajax_setting/set', {setting: setting, value: value});
 }
 
 function format_time(seconds) {
@@ -73,7 +73,7 @@ function format_time(seconds) {
 
 $('#overlay .overlay_content .add_note').live('click', function(){
 	var room = document.location.href.split('/')[4] || 0;
-	$.post('/ajax/add_note',
+	$.post('/ajax_note/add',
 		{room: room, text: 	$('#overlay .overlay_content textarea').val()},
 		function(response){
 			if (response.success) {
@@ -88,7 +88,7 @@ $('.note_more').live('click', function(){
 	parent.find('.note_text').show();
 });
 $('.note_remove').live('click', function(){
-	$.get('/ajax/delete_note', {id: $(this).attr('rel')});
+	$.get('/ajax_note/delete', {id: $(this).attr('rel')});
 	$(this).parents('.note').remove();
 });
 

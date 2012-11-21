@@ -11,7 +11,7 @@ class Module_Ajax_Note extends Module_Ajax_Abstract_Authorized
 
 		$this->id = (int) $data['room'];
 
-		return true;
+		return parent::get_base_params($data);
 	}
 
 	protected function do_add ($data) {

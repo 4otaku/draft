@@ -116,7 +116,7 @@ function send_message() {
 	var id = add_message(val, User.id);
 	$('.chat_form textarea').val('');
 
-	$.get('/ajax/add_message', {
+	$.get('/ajax_chat/add', {
 		room: Chat.room,
 		text: val
 	}, function(response) {
@@ -146,7 +146,7 @@ function get_chat_data(params) {
 	}
 
 	$.ajax({
-		url: '/ajax/get_messages',
+		url: '/ajax_chat/get',
 		data: $.extend(params, {
 			room: Chat.room
 		}),

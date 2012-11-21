@@ -35,7 +35,7 @@ $('.draft_start_button').click(function(){
 		$('.draft_start_button').addClass('disabled');
 		this.starting = true;
 
-		$.get('/ajax/start_draft', {id: Draft.id, user: ids}, function(response) {
+		$.get('/ajax_draft/start', {id: Draft.id, user: ids}, function(response) {
 			$('.draft_start_button img').hide();
 			$('.draft_start_button').removeClass('disabled');
 			me.starting = false;
@@ -53,7 +53,7 @@ function get_draft_data() {
 	}
 	Draft.getting = true;
 	$.ajax({
-		url: '/ajax/get_draft_data',
+		url: '/ajax_draft/get_data',
 		data: {id: Draft.id},
 		error: function(response) {
 			Draft.getting = false;
@@ -177,7 +177,7 @@ function display_pick(time, number) {
 	switch_display('pick', Math.ceil((time.getTime() - (new Date()).getTime() + Time.diff) / 1000));
 	Draft.picking = false;
 
-	$.get('/ajax/get_draft_pick', {id: Draft.id, number: number}, function(response){
+	$.get('/ajax_draft/get_pick', {id: Draft.id, number: number}, function(response){
 		if (!response.success || !response.cards) {
 			return;
 		}
@@ -206,7 +206,7 @@ function display_look(time, build) {
 		if (Draft.is_sealed) play_sound('draft_start');
 	}
 
-	$.get('/ajax/get_draft_deck', {id: Draft.id, add_land: build}, function(response){
+	$.get('/ajax_draft/get_deck', {id: Draft.id, add_land: build}, function(response){
 		if (!response.success || !response.cards) {
 			return;
 		}
@@ -349,7 +349,7 @@ function get_base_data(callback) {
 		Time.diff = new Date().getTime() - new Date(response.time * 1000).getTime();
 	});
 
-	$.get('/ajax/get_draft_user', {id: Draft.id}, function(response) {
+	$.get('/ajax_draft/get_user', {id: Draft.id}, function(response) {
 		if (!response.success || !response.user) {
 			return;
 		}
@@ -384,7 +384,7 @@ function get_base_data(callback) {
 		$(".participants").html('Участвуют: ' + users.join(', ') + '.');
 	});
 
-	$.get('/ajax/get_draft_card', {id: Draft.id}, function(response) {
+	$.get('/ajax_draft/get_card', {id: Draft.id}, function(response) {
 		if (!response.success || !response.cards) {
 			return;
 		}
@@ -521,10 +521,10 @@ $('.draft_pick .cards img').click(function(){
 
 	var me = this;
 
-	$.get('/ajax/draft_pick',
+	$.get('/ajax_draft/pick',
 		{id: Draft.id, number: Draft.pick, card: $(this).data('id')},
 		function(response) {
-			if (!response.success ) {
+			if (!response.success) {
 				$(me).removeClass('picking');
 				$('.draft_pick .cards').removeClass('picking');
 				Draft.picking = false;
@@ -553,7 +553,7 @@ $('.deck_finish').click(function(){
 		}
 	});
 
-	$.get('/ajax/set_draft_deck', {id: Draft.id, c: cards}, function(response) {
+	$.get('/ajax_draft/set_deck', {id: Draft.id, c: cards}, function(response) {
 		if (!response.success) {
 			$('.draft_look .loader').hide();
 			$('.draft_look .drafted').show();

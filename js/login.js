@@ -130,7 +130,7 @@ $(document).ready(function(){
 		if (errors.length) {
 			display_register_error(errors.join('<br />'));
 		} else {
-			$.get('/ajax/register', {
+			$.get('/ajax_user/register', {
 				avatar: $('.ready-image input').val(),
 				login: $('#register input[name=login]').val(),
 				password: $('#register input[name=password]').val()
@@ -151,7 +151,7 @@ $(document).ready(function(){
 		if (errors.length) {
 			display_login_error(errors.join('<br />'));
 		} else {
-			$.get('/ajax/login', {
+			$.get('/ajax_user/login', {
 				login: $('#login input[name=login]').val(),
 				password: $('#login input[name=password]').val()
 			}, function(response) {
@@ -166,7 +166,7 @@ $(document).ready(function(){
 
 	image_upload = new qq.FileUploaderBasic({
 		button: document.getElementById('avatar'),
-		action: '/ajax/upload',
+		action: '/ajax_user/upload',
 		autoSubmit: true,
 		multiple: false,
 		allowedExtensions: ['jpg', 'jpeg', 'gif', 'png'],
