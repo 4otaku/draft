@@ -161,7 +161,7 @@
 	<script type="text/javascript">
 		var Draft = {
 			id: {{draft.id}},
-			is_sealed: {{draft.is_sealed}},
+			is_sealed: {% if draft.type == 2 %}1{% else %}0{% endif %},
 			id_owner: {{draft.id_user}},
 			state: {{draft.state}},
 			owner: '{{draft.login}}',

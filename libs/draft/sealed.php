@@ -1,6 +1,6 @@
 <?php
 
-class Draft_Sealed extends Draft
+class Draft_Sealed extends Draft_Abstract
 {
 
 }

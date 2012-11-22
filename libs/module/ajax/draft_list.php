@@ -7,13 +7,6 @@ class Module_Ajax_Draft_List extends Module_Ajax_Abstract_Authorized
 			return array('success' => false);
 		}
 
-		if ((!isset($data['pick_time']) || !is_numeric($data['pick_time']) ||
-			!isset($data['pause_time']) || !is_numeric($data['pause_time'])) &&
-			!isset($data['is_sealed'])) {
-
-			return array('success' => false);
-		}
-
 		if (!empty($data['start'])) {
 			$utc = $data['utc'] + 240;
 
@@ -47,7 +40,7 @@ class Module_Ajax_Draft_List extends Module_Ajax_Abstract_Authorized
 			'id_user' => $this->user,
 			'pick_time' => isset($data['pick_time']) ? $data['pick_time'] : 0,
 			'pause_time' => isset($data['pause_time']) ? $data['pause_time'] : 0,
-			'is_sealed' => isset($data['is_sealed']) ? $data['is_sealed'] : 0,
+			'type' => isset($data['type']) ? $data['type'] : 1,
 			'start' => $start
 		));
 
@@ -74,7 +67,7 @@ class Module_Ajax_Draft_List extends Module_Ajax_Abstract_Authorized
 			->join('draft_user', 'd.id = du.id_draft and du.signed_out = 0 and du.id_user = ' . $this->user)
 			->join('set', 'ds.id_set = s.id')->group('d.id')
 			->get_table('draft', array('d.id, d.id_user, d.state, u.login, d.pick_time, d.update,
-				d.pause_time, d.start, d.is_sealed', 'group_concat(s.name) as booster', 'du.id_user as presense'),
+				d.pause_time, d.start, d.type', 'group_concat(s.name) as booster', 'du.id_user as presense'),
 			'd.state != ? and d.update > ?', array(4, date('Y-m-d G:i:s', time() - 864000)));
 
 		$date_missed = time() - 7200;
