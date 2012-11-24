@@ -80,7 +80,7 @@ abstract class Draft_Abstract
 	}
 
 	protected function make_booster($id, $set, $user) {
-		return Booster::make_for_set($id, $set);
+		return Booster::make_for_set($set, $id);
 	}
 }
 

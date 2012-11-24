@@ -58,35 +58,16 @@ abstract class Booster_Abstract
 
 		$key = array_rand($this->pool[$rarity]);
 		$id = $this->pool[$rarity][$key];
+		$this->insert_card($id);
+		$this->ids[] = $id;
+		unset($this->pool[$rarity][$key]);
+	}
+
+	protected function insert_card($id) {
 		Database::insert('draft_booster_card', array(
 			'id_draft_booster' => $this->id,
 			'id_card' => $id,
 			'id_user' => $this->user
 		));
-		$this->ids[] = $id;
-		unset($this->pool[$rarity][$key]);
 	}
 }
-
-/*
-
-$mythic = mt_rand(0, 8) < 1;
-$foil = mt_rand(0, 4) < 1;
-$generate = array(1 => $foil ? 10 : 11, 2 => 0, 3 => 0, 4 => 0);
-
-if ($mythic && isset($cards[4])) {
-	$generate[4] += 1;
-} elseif (isset($cards[3])) {
-	$generate[3] += 1;
-} elseif (isset($cards[2])) {
-	$generate[2] += 1;
-} else {
-	$generate[1] += 1;
-}
-
-if (isset($cards[2])) {
-	$generate[2] += 3;
-} else {
-	$generate[1] += 3;
-}
-

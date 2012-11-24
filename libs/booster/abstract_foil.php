@@ -2,11 +2,16 @@
 
 abstract class Booster_Abstract_Foil extends Booster_Abstract
 {
-	public function generate() {
-		$is_foil = (mt_rand(0, 6) < 1);
+	protected $is_foil = false;
 
-		if ($is_foil) {
-			$rarity = mt_rand(0, 15);
+	public function __constructed($id) {
+		parent::__constructed($id);
+		$this->is_foil = (mt_rand(0, 6) < 1);
+	}
+
+	public function generate() {
+		if ($this->is_foil) {
+			$rarity = mt_rand(0, $this->rare + $this->uncommon + $this->common + $this->land);
 			if ($rarity < $this->rare) {
 				$rarity = 3;
 			} elseif ($rarity < $this->rare + $this->uncommon) {
@@ -21,7 +26,7 @@ abstract class Booster_Abstract_Foil extends Booster_Abstract
 
 		parent::generate();
 
-		if ($is_foil) {
+		if ($this->is_foil) {
 			$this->pool = $this->start_pool;
 			$this->add_card($rarity);
 		}

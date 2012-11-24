@@ -26,9 +26,7 @@ class Booster
 				$booster = new Booster_Timeshifted_Spiral($id); break;
 			case 'PC':
 				$booster = new Booster_Timeshifted_Chaos($id); break;
-			case 'FS':
-				$booster = new Booster_Timeshifted_Sight($id); break;
-			case 'LW':case 'MT':case 'SM':case 'ET':
+			case 'FS': case 'LW':case 'MT':case 'SM':case 'ET':
 				$booster = new Booster_New_Noland($id); break;
 			case '10E':
 				$booster = new Booster_New_Land($id); break;
@@ -38,26 +36,25 @@ class Booster
 				$booster = new Booster_Mythic($id); break;
 		}
 
-		if (!isset(self::$card_cache[$set])) {
-			self::$card_cache[$set] = self::get_cards($set);
-		}
-
-		$booster->set_pool(self::$card_cache[$set]);
+		$booster->set_pool(self::get_cards($set));
 
 		return $booster;
 	}
 
-	protected static function get_cards($set) {
-		$card_ids = Database::join('set_card', 'sc.id_card = c.id')
-			->group('sc.rarity')->get_table('card', array('sc.rarity',
-			'group_concat(c.`id`) as ids'), 'sc.id_set = ?', $set);
+	public static function get_cards($set) {
+		if (empty(self::$card_cache[$set])) {
+			$card_ids = Database::join('set_card', 'sc.id_card = c.id')
+				->group('sc.rarity')->get_table('card', array('sc.rarity',
+				'group_concat(c.`id`) as ids'), 'sc.id_set = ?', $set);
 
-		$cards = array();
-		foreach ($card_ids as $group) {
-			$cards[$group['rarity']] = explode(',', $group['ids']);
-			shuffle($cards[$group['rarity']]);
+			$cards = array();
+			foreach ($card_ids as $group) {
+				$cards[$group['rarity']] = explode(',', $group['ids']);
+			}
+
+			self::$card_cache[$set] = $cards;
 		}
 
-		return $cards;
+		return self::$card_cache[$set];
 	}
 }

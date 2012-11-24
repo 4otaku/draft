@@ -49,9 +49,11 @@ class Grabber
 		}
 	}
 
-	public static function get_set($set) {
+	public static function get_set($set, $transaction_started = false) {
 		try {
-			Database::begin();
+			if (!$transaction_started) {
+				Database::begin();
+			}
 			$count = 0;
 
 			while ($count < 2000) {
