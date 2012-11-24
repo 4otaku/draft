@@ -63,79 +63,24 @@ abstract class Draft_Abstract
 			->get_full_table('draft_set', 'id_draft = ?', $this->get_id());
 		$ids = array();
 		foreach ($sets as $set) {
-			$booster = Booster::factory($set['id_set']);
-
-			if (!isset($cards[1])) {
-				Database::rollback();
-				return array('success' => false);
-			}
-
 			foreach ($users as $user) {
-				$mythic = mt_rand(0, 8) < 1;
-				$foil = mt_rand(0, 4) < 1;
-				$generate = array(1 => $foil ? 10 : 11, 2 => 0, 3 => 0, 4 => 0);
-
-				if ($mythic && isset($cards[4])) {
-					$generate[4] += 1;
-				} elseif (isset($cards[3])) {
-					$generate[3] += 1;
-				} elseif (isset($cards[2])) {
-					$generate[2] += 1;
-				} else {
-					$generate[1] += 1;
-				}
-
-				if (isset($cards[2])) {
-					$generate[2] += 3;
-				} else {
-					$generate[1] += 3;
-				}
-
 				Database::insert('draft_booster', array(
 					'id_draft_set' => $set['id'],
 					'id_user' => $user
 				));
 
-				$id_booster = Database::last_id();
+				$booster = Database::last_id();
 
-				foreach ($generate as $rarity => $number) {
-					$tmp = $cards[$rarity];
-					for ($i = 0; $i < $number; $i++) {
-						$key = array_rand($tmp);
-						$id_card = $tmp[$key];
-						Database::insert('draft_booster_card', array(
-							'id_draft_booster' => $id_booster,
-							'id_card' => $id_card,
-							'id_user' => $is_sealed ? $user : 0
-						));
-						$ids[] = $id_card;
-						unset($tmp[$key]);
-					}
-				}
-
-				if ($foil) {
-					$foil_rarity = mt_rand(0, 120);
-					if ($foil_rarity < 1 && isset($cards[4])) {
-						$foil_rarity = 4;
-					} elseif ($foil_rarity < 8 && isset($cards[3])) {
-						$foil_rarity = 3;
-					} elseif ($foil_rarity < 32 && isset($cards[2])) {
-						$foil_rarity = 2;
-					} else {
-						$foil_rarity = 1;
-					}
-					$tmp = $cards[$foil_rarity];
-					$id_card = $tmp[array_rand($tmp)];
-					Database::insert('draft_booster_card', array(
-						'id_draft_booster' => $id_booster,
-						'id_card' => $id_card
-					));
-					$ids[] = $id_card;
-				}
+				$booster = $this->make_booster($booster, $set['id_set'], $user);
+				$ids = array_merge($ids, $booster->generate());
 			}
 		}
 
 		Grabber::get_images(array_unique($ids));
+	}
+
+	protected function make_booster($id, $set, $user) {
+		return Booster::make_for_set($id, $set);
 	}
 }
 

@@ -251,7 +251,7 @@ CREATE TABLE IF NOT EXISTS `user_setting` (
   `id_user` int(10) unsigned NOT NULL,
   `id_setting` int(10) unsigned NOT NULL,
   `value` int(10) unsigned NOT NULL,
-  PRIMARY KEY (`id_user`,`is_setting`)
+  PRIMARY KEY (`id_user`,`id_setting`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
