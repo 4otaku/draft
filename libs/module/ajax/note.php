@@ -23,8 +23,8 @@ class Module_Ajax_Note extends Module_Ajax_Abstract_Authorized
 		$room = $this->id;
 		$text = $data['text'];
 
-		if ($room > 0 && !Database::get_count('draft_user',
-			'id_draft = ? and id_user = ?', array($room, $user))) {
+		if ($room > 0 && !Database::get_count('game_user',
+			'id_game = ? and id_user = ?', array($room, $user))) {
 
 			return array('success' => false);
 		}
@@ -49,7 +49,7 @@ class Module_Ajax_Note extends Module_Ajax_Abstract_Authorized
 		}
 
 		Database::insert('note', array(
-			'id_draft' => $room,
+			'id_game' => $room,
 			'id_user' => $user,
 			'text' => $text,
 			'header' => $header,

@@ -1,6 +1,6 @@
 <?php
 
-class Module_Ajax_Draft_List extends Module_Ajax_Abstract_Authorized
+class Module_Ajax_Game_List extends Module_Ajax_Abstract_Authorized
 {
 	protected function do_add ($data) {
 		if (!isset($data['set']) || !is_array($data['set'])) {
@@ -36,7 +36,7 @@ class Module_Ajax_Draft_List extends Module_Ajax_Abstract_Authorized
 
 		Database::begin();
 
-		Database::insert('draft', array(
+		Database::insert('game', array(
 			'id_user' => $this->user,
 			'pick_time' => isset($data['pick_time']) ? $data['pick_time'] : 0,
 			'pause_time' => isset($data['pause_time']) ? $data['pause_time'] : 0,
@@ -44,12 +44,12 @@ class Module_Ajax_Draft_List extends Module_Ajax_Abstract_Authorized
 			'start' => $start
 		));
 
-		$id_draft = Database::last_id();
+		$id_game = Database::last_id();
 
 		$order = 0;
 		foreach ($sets as $set) {
-			Database::insert('draft_set', array(
-				'id_draft' => $id_draft,
+			Database::insert('game_set', array(
+				'id_game' => $id_game,
 				'order' => ++$order,
 				'id_set' => $set['id']
 			));
@@ -62,13 +62,13 @@ class Module_Ajax_Draft_List extends Module_Ajax_Abstract_Authorized
 
 	protected function do_get ($dev_null) {
 
-		$data = Database::join('draft_set', 'ds.id_draft = d.id')
-			->join('user', 'u.id = d.id_user')
-			->join('draft_user', 'd.id = du.id_draft and du.signed_out = 0 and du.id_user = ' . $this->user)
-			->join('set', 'ds.id_set = s.id')->group('d.id')
-			->get_table('draft', array('d.id, d.id_user, d.state, u.login, d.pick_time, d.update,
-				d.pause_time, d.start, d.type', 'group_concat(s.name) as booster', 'du.id_user as presense'),
-			'd.state != ? and d.update > ?', array(4, date('Y-m-d G:i:s', time() - 864000)));
+		$data = Database::join('game_set', 'gs.id_game = g.id')
+			->join('user', 'u.id = g.id_user')
+			->join('game_user', 'g.id = gu.id_game and gu.signed_out = 0 and gu.id_user = ' . $this->user)
+			->join('set', 'gs.id_set = s.id')->group('g.id')
+			->get_table('game', array('g.id, g.id_user, g.state, u.login, g.pick_time, g.update,
+				g.pause_time, g.start, g.type', 'group_concat(s.name) as booster', 'gu.id_user as presense'),
+			'g.state != ? and g.update > ?', array(4, date('Y-m-d G:i:s', time() - 864000)));
 
 		$date_missed = time() - 7200;
 		foreach ($data as $key => $item) {
@@ -93,17 +93,17 @@ class Module_Ajax_Draft_List extends Module_Ajax_Abstract_Authorized
 
 	protected function do_leave ($data) {
 		if (!isset($data['id']) || !is_numeric($data['id']) ||
-			Database::get_count('draft_user', 'id_user = ? and id = ?',
+			Database::get_count('game_user', 'id_user = ? and id = ?',
 				array($this->user, $data['id']))) {
 
 			return array('success' => false);
 		}
 
-		Database::update('draft_user', array('signed_out' => 1),
-			'id_user = ? and id_draft = ?', array($this->user, $data['id']));
+		Database::update('game_user', array('signed_out' => 1),
+			'id_user = ? and id_game = ?', array($this->user, $data['id']));
 
-		if (Database::get_count('draft_user', 'signed_out = 0 and id_draft = ?', $data['id']) < 2) {
-			Database::update('draft', array('state' => 4), $data['id']);
+		if (Database::get_count('game_user', 'signed_out = 0 and id_game = ?', $data['id']) < 2) {
+			Database::update('game', array('state' => 4), $data['id']);
 		}
 
 		return array('success' => true);
@@ -111,13 +111,13 @@ class Module_Ajax_Draft_List extends Module_Ajax_Abstract_Authorized
 
 	protected function do_delete ($data) {
 		if (!isset($data['id']) || !is_numeric($data['id']) ||
-			!Database::get_count('draft', 'id_user = ? and id = ? and state != ?',
+			!Database::get_count('game', 'id_user = ? and id = ? and state != ?',
 				array($this->user, $data['id'], 4))) {
 
 			return array('success' => false);
 		}
 
-		Database::update('draft', array('state' => 4),
+		Database::update('game', array('state' => 4),
 			'id_user = ? and id = ?', array($this->user, $data['id']));
 
 		return array('success' => true);

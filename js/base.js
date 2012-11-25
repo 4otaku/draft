@@ -29,10 +29,10 @@ function play_sound(sound) {
 		user_enter: 'enter',
 		user_leave: 'leave',
 		highlight: 'highlight',
-		draft_message: 'message',
-		user_draft_enter: 'enter',
-		user_draft_leave: 'leave',
-		draft_start: 'start',
+		game_message: 'message',
+		user_game_enter: 'enter',
+		user_game_leave: 'leave',
+		game_start: 'start',
 		booster_start: 'booster',
 		booster_pass: 'booster'
 	};

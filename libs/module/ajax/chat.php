@@ -22,12 +22,12 @@ class Module_Ajax_Chat extends Module_Ajax_Abstract_Authorized
 			$message_time = date('Y-m-d G:i:s', time() - Config::get('chat', 'loadtime'));
 			$messages = Database::join('user', 'u.id = m.id_user')->order('m.time', 'ASC')->
 				get_table('message', 'm.id, m.id_user, m.text, unix_timestamp(m.time) as time, u.login',
-				'm.time > ? and m.id_draft = ?', array($message_time, $this->id));
+				'm.time > ? and m.id_game = ?', array($message_time, $this->id));
 		} else {
 			$message_time = date('Y-m-d G:i:s', time() - Config::get('chat', 'firsttime'));
 			$messages = Database::join('user', 'u.id = m.id_user')->limit(50)->order('m.time')->
 				get_table('message', 'm.id, m.id_user, m.text, unix_timestamp(m.time) as time, u.login',
-				'm.time > ? and m.id_draft = ?', array($message_time, $this->id));
+				'm.time > ? and m.id_game = ?', array($message_time, $this->id));
 			$messages = array_reverse($messages);
 		}
 		$time = date('Y-m-d G:i:s', time() - Config::get('chat', 'loadtime'));
@@ -35,11 +35,11 @@ class Module_Ajax_Chat extends Module_Ajax_Abstract_Authorized
 		$data = array(
 			'success' => true,
 			'presense' => Database::join('user', 'u.id = p.id_user')->
-				get_table('presense', 'u.id, u.login', 'p.time > ? and id_draft = ?',
+				get_table('presense', 'u.id, u.login', 'p.time > ? and id_game = ?',
 				array($time, $this->id)),
 			'message' => $messages,
-			'last_draft_change' => strtotime(Database::order('update')
-				->get_field('draft', 'update'))
+			'last_game_change' => strtotime(Database::order('update')
+				->get_field('game', 'update'))
 		);
 
 		return $data;
@@ -48,7 +48,7 @@ class Module_Ajax_Chat extends Module_Ajax_Abstract_Authorized
 	protected function do_add ($data) {
 
 		$time = date('Y-m-d G:i:s', time() - Config::get('chat', 'loadtime'));
-		$presense = Database::get_count('presense',	'time > ? and id_user = ? and id_draft = ?',
+		$presense = Database::get_count('presense',	'time > ? and id_user = ? and id_game = ?',
 			array($time, $this->user, $this->id));
 
 		if (!isset($data['text']) || preg_match('/<>&\n\r/', $data['text']) || !$presense) {
@@ -56,7 +56,7 @@ class Module_Ajax_Chat extends Module_Ajax_Abstract_Authorized
 		}
 
 		Database::insert('message', array(
-			'id_draft' => $this->id,
+			'id_game' => $this->id,
 			'id_user' => $this->user,
 			'text' => $data['text']
 		));
@@ -69,7 +69,7 @@ class Module_Ajax_Chat extends Module_Ajax_Abstract_Authorized
 
 	protected function write_presense() {
 		Database::replace('presense', array(
-			'id_draft' => $this->id,
+			'id_game' => $this->id,
 			'id_user' => $this->user,
 			'time' => NULL
 		), array('room', 'user'));

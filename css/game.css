@@ -6,12 +6,12 @@
 	display: none;
 }
 
-.draft_base {
+.game_base {
 	width: 600px;
 	display: none;
 }
 
-.draft_info {
+.game_info {
 	padding: 7px;
 	border: 3px solid #999;
 	border-radius: 6px;
@@ -21,40 +21,40 @@
 	display: block;
 }
 
-.draft_info table {
+.game_info table {
 	width: 100%;
 }
 
-.draft_info table .participants {
+.game_info table .participants {
 	border-top: 1px solid #999;
 }
 
-.draft_info h3, .draft_info h5 {
+.game_info h3, .game_info h5 {
 	font-weight: normal;
 	white-space: nowrap;
 }
 
-.draft_info h3 span, .draft_info h5 span {
+.game_info h3 span, .game_info h5 span {
 	font-weight: bold;
 }
 
-.draft_waiting_start {
+.game_waiting_start {
 	text-align: center;
 }
 
-.draft_start_button {
+.game_start_button {
 	margin-top: 20px;
 }
 
-.draft_start_button img {
+.game_start_button img {
 	display: none;
 }
 
-.draft_start {
+.game_start {
 	text-align: center;
 }
 
-.draft_pick {
+.game_pick {
 	text-align: center;
 }
 
@@ -64,29 +64,29 @@
 	margin-right: auto;
 }
 
-.draft_pick .cards {
+.game_pick .cards {
 	border-collapse: collapse;
 }
 
-.draft_pick .cards td {
+.game_pick .cards td {
 	padding-right: 10px;
 	padding-top: 10px;
 }
 
-.draft_pick .cards img {
+.game_pick .cards img {
 	padding: 5px;
 	cursor: pointer;
 }
 
-.draft_pick .cards.picking img {
+.game_pick .cards.picking img {
 	cursor: progress;
 }
 
-.draft_pick .cards.picked img {
+.game_pick .cards.picked img {
 	cursor: default !important;
 }
 
-.draft_pick .cards img.picking {
+.game_pick .cards img.picking {
 	border: 3px solid #999;
 	border-radius: 6px;
 	-moz-border-radius: 6px;
@@ -94,7 +94,7 @@
 	padding: 2px;
 }
 
-.draft_pick .cards img.picked {
+.game_pick .cards img.picked {
 	border-color: #42A3B9 !important;
 }
 
@@ -106,7 +106,7 @@
 	z-index: 9001;
 }
 
-.draft_look {
+.game_look {
 	background: rgb(0, 0, 0);
 	background: rgba(0, 0, 0, 0.6);
 	border-radius: 10px;
@@ -117,31 +117,31 @@
 	text-align: center;
 }
 
-.draft_look .loader {
+.game_look .loader {
 	margin-top: 0px;
 }
 
-.draft_look .deck {
+.game_look .deck {
 	display: none;
 	text-align: left;
 }
 
-.draft_look .deck .count_cards {
+.game_look .deck .count_cards {
 	margin-left: 30px;
 	font-size: 50%;
 	position: relative;
 	bottom: 5px;
 }
 
-.draft_look .deck .deck_finish {
+.game_look .deck .deck_finish {
 	float: right;
 }
 
-.draft_look .deck .buffer {
+.game_look .deck .buffer {
 	display: none;
 }
 
-.draft_look .deck .slot {
+.game_look .deck .slot {
 	width: 189px;
 	float: left;
 	border-left: 1px solid #FFF;
@@ -149,57 +149,57 @@
 	min-height: 100px;
 }
 
-.draft_look .deck .slot:first-child {
+.game_look .deck .slot:first-child {
 	border-left: none;
 }
 
-.draft_look .deck .slot .drag_card {
+.game_look .deck .slot .drag_card {
 	cursor: move;
 }
 
-.draft_look .deck .slot .remove_card {
+.game_look .deck .slot .remove_card {
 	float: right;
 	font-size: 90%;
 	cursor: pointer;
 }
 
-.draft_look .drafted {
+.game_look .gameed {
 	text-align: left;
 }
 
-.draft_look .drafted h2 {
+.game_look .gameed h2 {
 	display: none;
 }
 
-.draft_look .drafted_color {
+.game_look .gameed_color {
 	float: left;
 	margin: 5px;
 	width: 190px;
 }
 
-.draft_look .drafted_color:nth-child(3n+2) {
+.game_look .gameed_color:nth-child(3n+2) {
 	clear: left;
 }
 
-.draft_look .drafted_color_header {
+.game_look .gameed_color_header {
 	text-decoration: underline;
 	font-weight: bold;
 	font-size: 120%;
 }
 
-.draft_look .drafted_row span {
+.game_look .gameed_row span {
 	cursor: pointer;
 }
 
-.draft_look .drafted_row span:hover {
+.game_look .gameed_row span:hover {
 	text-decoration: underline;
 }
 
-.draft_ready {
+.game_ready {
 	text-align: center;
 }
 
-.draft_ready .challenge{
+.game_ready .challenge{
 	background-color: inherit !important;
 	border: none !important;
 	border-radius: 0 0 0 0 !important;

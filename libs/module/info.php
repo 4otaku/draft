@@ -4,15 +4,15 @@ class Module_Info extends Module_Abstract_Authorized
 {
 	protected $redirect_location = '/';
 
-	protected $draft = 0;
+	protected $game = 0;
 
 	public function __construct($url) {
 		parent::__construct($url);
 
 		if (isset($url[2]) && is_numeric($url[2]) &&
-			Database::get_count('draft', $url[2])) {
+			Database::get_count('game', $url[2])) {
 
-			$this->draft = $url[2];
+			$this->game = $url[2];
 		}
 	}
 
@@ -20,7 +20,7 @@ class Module_Info extends Module_Abstract_Authorized
 		$data = parent::get_data();
 
 		$data['note'] = Database::order('n.time')->join('note', 'u.id = n.id_user')
-			->get_full_table('user', 'n.id_draft = ?', $this->draft);
+			->get_full_table('user', 'n.id_game = ?', $this->game);
 
 		foreach ($data['note'] as &$note) {
 			$note['text'] = nl2br($note['text']);

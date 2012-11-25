@@ -47,55 +47,55 @@
 	</div>
 	<div class="clear"></div>
 	<div class="left_wrapper">
-		<div class="draft_info draft_base">
+		<div class="game_info game_base">
 			<table>
-				{% if draft.is_sealed %}
+				{% if game.is_sealed %}
 					<tr><td colspan="2">
 						<h4 class="start" style="float:right;">
 							Начало: <span class="utc_date"></span>
 						</h4>
-						<h4>Владелец: <span>{{draft.login}}</span></h4>
+						<h4>Владелец: <span>{{game.login}}</span></h4>
 					</td></tr>
 					<tr><td>
-						<h5>Первый бустер: <span>{{draft.booster.0.name}}</span></h5>
-						<h5>Второй бустер: <span>{{draft.booster.1.name}}</span></h5>
-						<h5>Третий бустер: <span>{{draft.booster.2.name}}</span></h5>
+						<h5>Первый бустер: <span>{{game.booster.0.name}}</span></h5>
+						<h5>Второй бустер: <span>{{game.booster.1.name}}</span></h5>
+						<h5>Третий бустер: <span>{{game.booster.2.name}}</span></h5>
 					</td><td>
-						<h5>Четвертый бустер: <span>{{draft.booster.3.name}}</span></h5>
-						<h5>Пятый бустер: <span>{{draft.booster.4.name}}</span></h5>
-						<h5>Шестой бустер: <span>{{draft.booster.5.name}}</span></h5>
+						<h5>Четвертый бустер: <span>{{game.booster.3.name}}</span></h5>
+						<h5>Пятый бустер: <span>{{game.booster.4.name}}</span></h5>
+						<h5>Шестой бустер: <span>{{game.booster.5.name}}</span></h5>
 					</td></tr>
 				{% else %}
 					<tr><td colspan="2">
-						<h4>Владелец: <span>{{draft.login}}</span></h4>
+						<h4>Владелец: <span>{{game.login}}</span></h4>
 					</td></tr>
 					<tr><td>
 						<h5 class="start">Время начала: <span class="utc_date"></span></h5>
 						<h5>Время на выбор карты: <span class="pick_time"></span></h5>
 						<h5>Пауза между бустерами: <span class="pause_time"></span></h5>
 					</td><td>
-						<h5>Первый бустер: <span>{{draft.booster.0.name}}</span></h5>
-						<h5>Второй бустер: <span>{{draft.booster.1.name}}</span></h5>
-						<h5>Третий бустер: <span>{{draft.booster.2.name}}</span></h5>
+						<h5>Первый бустер: <span>{{game.booster.0.name}}</span></h5>
+						<h5>Второй бустер: <span>{{game.booster.1.name}}</span></h5>
+						<h5>Третий бустер: <span>{{game.booster.2.name}}</span></h5>
 					</td></tr>
 				{% endif %}
 				<tr><td colspan="2" class="participants">
 				</td></tr>
 			</table>
 		</div>
-		<div class="draft_waiting_start draft_base">
+		<div class="game_waiting_start game_base">
 			<h2>Ожидаем старта</h2>
-			{% if draft.id_user == user.id %}
-				<button class="btn btn-success btn-large draft_start_button">
+			{% if game.id_user == user.id %}
+				<button class="btn btn-success btn-large game_start_button">
 					Начать драфт c текущим составом
 					<img src="/images/loading.gif" />
 				</button>
 			{% endif %}
 		</div>
-		<div class="draft_start draft_base">
+		<div class="game_start game_base">
 			<h2>Отсчет до начала.</h2>
 		</div>
-		<div class="draft_pick draft_base">
+		<div class="game_pick game_base">
 			<img class="loader" src="/images/ajax-loader.gif" />
 			<div class="clear"></div>
 			<table class="cards">
@@ -122,7 +122,7 @@
 				</tr>
 			</table>
 		</div>
-		<div class="draft_look draft_base">
+		<div class="game_look game_base">
 			<img class="loader" src="/images/ajax-loader2.gif" />
 			<div class="deck">
 				<button class="btn disabled deck_finish">
@@ -138,12 +138,12 @@
 				<div class="buffer"></div>
 			</div>
 			<div class="clear"></div>
-			<div class="drafted">
+			<div class="gameed">
 				<h2>Сайдборд</h2>
 			</div>
 			<div class="clear"></div>
 		</div>
-		<div class="draft_ready draft_base">
+		<div class="game_ready game_base">
 			<!-- <button class="btn deck_side">
 				<span>Посайдиться</span>
 			</button>
@@ -159,23 +159,23 @@
 		</div>
 	</div>
 	<script type="text/javascript">
-		var Draft = {
-			id: {{draft.id}},
-			is_sealed: {% if draft.type == 2 %}1{% else %}0{% endif %},
-			id_owner: {{draft.id_user}},
-			state: {{draft.state}},
-			owner: '{{draft.login}}',
+		var Game = {
+			id: {{game.id}},
+			is_sealed: {% if game.type == 2 %}1{% else %}0{% endif %},
+			id_owner: {{game.id_user}},
+			state: {{game.state}},
+			owner: '{{game.login}}',
 			card: {},
 			forced: {},
 			users: {},
 			opponents: {},
-			pick_time: {{draft.pick_time}},
-			pause_time: {{draft.pause_time}},
-			start: {{draft.start}},
+			pick_time: {{game.pick_time}},
+			pause_time: {{game.pause_time}},
+			start: {{game.start}},
 			current_action: false,
 			current_action_time: false,
 			booster: [
-				{% for booster in draft.booster %}
+				{% for booster in game.booster %}
 					{id: '{{booster.id}}', name: '{{booster.name}}',
 						state: {{booster.state}}}
 					{% if not loop.last %},{% endif %}
@@ -183,7 +183,7 @@
 			]
 		};
 	</script>
-	<script type="text/javascript">var Chat = {room: {{draft.id}}, freq: 2000};</script>
+	<script type="text/javascript">var Chat = {room: {{game.id}}, freq: 2000};</script>
 	{% include 'chat.html' %}
 	<div class="display_card"><img /></div>
 	<div id="overlay"><div class="overlay_content"></div></div>

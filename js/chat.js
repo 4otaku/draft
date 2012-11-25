@@ -203,11 +203,11 @@ function get_chat_data(params) {
 
 				var played = false;
 				if (play_highlight) played = play_sound('highlight');
-				if (!played && play_enter) played = play_sound(Chat.room ? 'user_draft_enter' : 'user_enter');
-				if (!played && play_message) played = play_sound(Chat.room ? 'draft_message' : 'message');
-				if (!played && play_leave) played = play_sound(Chat.room ? 'user_draft_leave' : 'user_leave');
+				if (!played && play_enter) played = play_sound(Chat.room ? 'user_game_enter' : 'user_enter');
+				if (!played && play_message) played = play_sound(Chat.room ? 'game_message' : 'message');
+				if (!played && play_leave) played = play_sound(Chat.room ? 'user_game_leave' : 'user_leave');
 
-				$('body').trigger('draft_change', response.last_draft_change);
+				$('body').trigger('game_change', response.last_game_change);
 
 				if (params.first_load) {
 					$('.chat_loader').remove();

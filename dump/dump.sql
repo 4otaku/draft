@@ -55,6 +55,8 @@ ALTER TABLE  `draft` ADD  `is_sealed` TINYINT UNSIGNED NOT NULL DEFAULT  '0';
 ALTER TABLE  `draft` ADD  `type` TINYINT UNSIGNED NOT NULL DEFAULT  '1';
 update `draft` set `type` = 2 where is_sealed = 1;
 ALTER TABLE `draft` DROP `is_sealed`;
+RENAME TABLE  `draft` TO  `game` ;
+
 
 -- --------------------------------------------------------
 
@@ -69,6 +71,9 @@ CREATE TABLE IF NOT EXISTS `draft_booster` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `unique` (`id_draft_set`,`id_user`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+RENAME TABLE  `draft_booster` TO  `game_booster` ;
+ALTER TABLE  `game_booster` CHANGE  `id_draft_set`  `id_game_set` INT( 10 ) UNSIGNED NOT NULL;
+
 
 -- --------------------------------------------------------
 
@@ -87,6 +92,9 @@ CREATE TABLE IF NOT EXISTS `draft_booster_card` (
   `sided` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+RENAME TABLE  `draft_booster_card` TO  `game_booster_card` ;
+ALTER TABLE  `game_booster_card` CHANGE  `id_draft_booster`  `id_game_booster` INT( 10 ) UNSIGNED NOT NULL;
+
 
 -- --------------------------------------------------------
 
@@ -103,6 +111,8 @@ CREATE TABLE IF NOT EXISTS `draft_set` (
   PRIMARY KEY (`id`),
   KEY `selector` (`id_draft`,`order`,`state`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+RENAME TABLE  `draft_set` TO  `game_set` ;
+ALTER TABLE  `game_set` CHANGE  `id_draft`  `id_game` INT( 10 ) UNSIGNED NOT NULL;
 
 -- --------------------------------------------------------
 
@@ -118,6 +128,8 @@ CREATE TABLE IF NOT EXISTS `draft_step` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `selector` (`id_draft`,`time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+RENAME TABLE  `draft_step` TO  `game_step` ;
+ALTER TABLE  `game_step` CHANGE  `id_draft`  `id_game` INT( 10 ) UNSIGNED NOT NULL;
 
 -- --------------------------------------------------------
 
@@ -135,6 +147,8 @@ CREATE TABLE IF NOT EXISTS `draft_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ALTER TABLE  `draft_user` ADD  `signed_out` TINYINT UNSIGNED NOT NULL DEFAULT  '0';
 ALTER TABLE  `draft_user` ADD  `force_picks` TINYINT UNSIGNED NOT NULL DEFAULT  '0';
+RENAME TABLE  `draft_user` TO  `game_user` ;
+ALTER TABLE  `game_user` CHANGE  `id_draft`  `id_game` INT( 10 ) UNSIGNED NOT NULL;
 
 -- --------------------------------------------------------
 
@@ -151,6 +165,7 @@ CREATE TABLE IF NOT EXISTS `message` (
   PRIMARY KEY (`id`),
   KEY `selector` (`id_draft`,`time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+ALTER TABLE  `message` CHANGE  `id_draft`  `id_game` INT( 10 ) UNSIGNED NOT NULL;
 
 -- --------------------------------------------------------
 
@@ -165,6 +180,7 @@ CREATE TABLE IF NOT EXISTS `presense` (
   PRIMARY KEY (`id_draft`,`id_user`),
   KEY `selector` (`id_draft`,`time`,`id_user`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ALTER TABLE  `presense` CHANGE  `id_draft`  `id_game` INT( 10 ) UNSIGNED NOT NULL;
 
 -- --------------------------------------------------------
 
@@ -240,6 +256,7 @@ INSERT INTO `setting` (`id`, `setting`, `default`) VALUES
 (10, 'play_on_user_draft_leave', 0);
 INSERT INTO `draft`.`setting` (`id`, `setting`, `default`) VALUES (NULL, 'play_on_draft_start', '1');
 INSERT INTO `draft`.`setting` (`id`, `setting`, `default`) VALUES (NULL, 'volume', '50');
+update `setting` set setting = replace(setting, 'draft', 'game');
 
 -- --------------------------------------------------------
 

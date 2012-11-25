@@ -64,8 +64,8 @@ abstract class Booster_Abstract
 	}
 
 	protected function insert_card($id) {
-		Database::insert('draft_booster_card', array(
-			'id_draft_booster' => $this->id,
+		Database::insert('game_booster_card', array(
+			'id_game_booster' => $this->id,
 			'id_card' => $id,
 			'id_user' => $this->user
 		));

@@ -4,62 +4,62 @@ var Time = {
 
 init_sizes();
 
-$('.draft_info .pick_time').html(format_time(Draft.pick_time));
-$('.draft_info .pause_time').html(format_time(Draft.pause_time));
+$('.game_info .pick_time').html(format_time(Game.pick_time));
+$('.game_info .pause_time').html(format_time(Game.pause_time));
 
-if (Draft.start > 0) {
-	var start = new Date(Draft.start * 1000);
-	$('.draft_info .utc_date').html(start.format('dd.mm.yyyy HH:MM'));
+if (Game.start > 0) {
+	var start = new Date(Game.start * 1000);
+	$('.game_info .utc_date').html(start.format('dd.mm.yyyy HH:MM'));
 } else {
-	$('.draft_info .utc_date').html('Не указано');
+	$('.game_info .utc_date').html('Не указано');
 }
 
-$('.draft_start_button').click(function(){
+$('.game_start_button').click(function(){
 	if (this.starting) {
 		return;
 	}
 
-	var ids = '', ask = '', count = 0, draft_users = {}, me = this;
+	var ids = '', ask = '', count = 0, game_users = {}, me = this;
 	$.each(Chat.users, function(key, value){
 		if (value.present) {
 			count++;
 			ids += key + ',';
 			ask += value.name + ', ';
-			draft_users[key] = value;
+			game_users[key] = value;
 		}
 	});
 	var confirm_text = 'Вы хотите начать драфт следующим составом: ' +
 		ask.substring(0, ask.length - 2) + ' (участников: ' + count + ')?';
 	if (confirm(confirm_text)) {
-		$('.draft_start_button img').show();
-		$('.draft_start_button').addClass('disabled');
+		$('.game_start_button img').show();
+		$('.game_start_button').addClass('disabled');
 		this.starting = true;
 
-		$.get('/ajax_draft/start', {id: Draft.id, user: ids}, function(response) {
-			$('.draft_start_button img').hide();
-			$('.draft_start_button').removeClass('disabled');
+		$.get('/ajax_game/start', {id: Game.id, user: ids}, function(response) {
+			$('.game_start_button img').hide();
+			$('.game_start_button').removeClass('disabled');
 			me.starting = false;
 
 			if (response.success) {
-				Draft.users = draft_users;
+				Game.users = game_users;
 			}
 		});
 	}
 });
 
-function get_draft_data() {
-	if (Draft.getting) {
+function get_game_data() {
+	if (Game.getting) {
 		return;
 	}
-	Draft.getting = true;
+	Game.getting = true;
 	$.ajax({
-		url: '/ajax_draft/get_data',
-		data: {id: Draft.id},
+		url: '/ajax_game/get_data',
+		data: {id: Game.id},
 		error: function(response) {
-			Draft.getting = false;
+			Game.getting = false;
 		},
 		success: function(response) {
-			Draft.getting = false;
+			Game.getting = false;
 			if (!response.success) {
 				return;
 			}
@@ -68,12 +68,12 @@ function get_draft_data() {
 				var need_opponents_refresh = false;
 				$.each(response.users, function(key, value){
 					var user = value.id_user;
-					if (Draft.opponents[user]) {
+					if (Game.opponents[user]) {
 						return;
 					}
 
-					Draft.opponents[user] = Draft.users[user];
-					$('body').trigger('message', Draft.opponents[user].login +
+					Game.opponents[user] = Game.users[user];
+					$('body').trigger('message', Game.opponents[user].login +
 						' собрал колоду и готов играть.');
 					need_opponents_refresh = true;
 				});
@@ -82,7 +82,7 @@ function get_draft_data() {
 					refresh_opponents();
 				}
 
-				if (!Draft.deck) {
+				if (!Game.deck) {
 					build_deck(response.deck);
 					display_ready();
 				}
@@ -95,18 +95,18 @@ function get_draft_data() {
 			$.each(response.forced, function(key, value) {
 				var key = value.id_user + '-' + value.pick + '-' + value.order;
 
-				if (Draft.forced[key]) {
+				if (Game.forced[key]) {
 					return;
 				}
 
-				Draft.forced[key] = value;
+				Game.forced[key] = value;
 
 				if (value.id_card) {
 					var msg = 'Вы зазевались на ' + (parseInt(value.pick) + 1) + ' пике ';
 					msg += value.order + '-го бустера, и схватили случайную карту. ';
-					msg += 'Вам достался "'+Draft.card[value.id_card].name+'".';
+					msg += 'Вам достался "'+Game.card[value.id_card].name+'".';
 				} else {
-					var msg = Draft.users[value.id_user].login + ' зазевался на ';
+					var msg = Game.users[value.id_user].login + ' зазевался на ';
 					msg += (parseInt(value.pick) + 1) + ' пике ' + value.order;
 					msg += '-го бустера, и схватил случайную карту.';
 				}
@@ -115,36 +115,36 @@ function get_draft_data() {
 			});
 
 			var picked = response.action.picked;
-			$('.draft_user').css('text-decoration', 'none');
+			$('.game_user').css('text-decoration', 'none');
 
 			if (picked) {
 				$.each(picked, function(key, value){
-					$('.draft_user_' + value.id_user).css('text-decoration', 'underline');
+					$('.game_user_' + value.id_user).css('text-decoration', 'underline');
 				});
 			}
 
 			var type = response.action.type;
 			var time = new Date(response.action.time * 1000);
 
-			if (type == Draft.current_action &&
-				time.getTime() == Draft.current_action_time.getTime()) {
+			if (type == Game.current_action &&
+				time.getTime() == Game.current_action_time.getTime()) {
 
 				return;
 			}
 
-			Draft.current_action = type;
-			Draft.current_action_time = time;
+			Game.current_action = type;
+			Game.current_action_time = time;
 
 			if (type == 'start') {
 				display_start(time);
 			} else if (type == 'look') {
-				if (Draft.got_cards) {
+				if (Game.got_cards) {
 					display_look(time, 0);
 				} else {
 					get_base_data(function(){display_look(time, 0);});
 				}
 			} else if (type == 'build') {
-				if (Draft.got_cards) {
+				if (Game.got_cards) {
 					display_look(time, 1);
 				} else {
 					get_base_data(function(){display_look(time, 1);});
@@ -158,7 +158,7 @@ function get_draft_data() {
 
 function display_start(time) {
 	switch_display('start', Math.ceil((time.getTime() - (new Date()).getTime() + Time.diff) / 1000));
-	play_sound('draft_start');
+	play_sound('game_start');
 
 	get_base_data();
 }
@@ -166,71 +166,71 @@ function display_start(time) {
 function display_pick(time, number) {
 	play_sound(number % 15 == 1 ? 'booster_start' : 'booster_pass');
 
-	Draft.pick = number;
+	Game.pick = number;
 
-	$('.draft_pick .loader').show();
-	$('.draft_pick .cards').hide();
+	$('.game_pick .loader').show();
+	$('.game_pick .cards').hide();
 	$('.display_card').hide();
-	$('.draft_pick .cards').removeClass('picking').removeClass('picked');
-	$('.draft_pick .cards img').removeClass('picking').removeClass('picked');
+	$('.game_pick .cards').removeClass('picking').removeClass('picked');
+	$('.game_pick .cards img').removeClass('picking').removeClass('picked');
 
 	switch_display('pick', Math.ceil((time.getTime() - (new Date()).getTime() + Time.diff) / 1000));
-	Draft.picking = false;
+	Game.picking = false;
 
-	$.get('/ajax_draft/get_pick', {id: Draft.id, number: number}, function(response){
+	$.get('/ajax_game/get_pick', {id: Game.id, number: number}, function(response){
 		if (!response.success || !response.cards) {
 			return;
 		}
 
-		$('.draft_pick .cards img').attr('src', '');
-		$('.draft_pick .cards img').hide();
+		$('.game_pick .cards img').attr('src', '');
+		$('.game_pick .cards img').hide();
 		$.each(response.cards, function(id, card) {
-			$('.draft_pick .cards .card_' + (id + 1) + ' img')
-				.attr('src', Draft.card[card.id_card].small.src)
+			$('.game_pick .cards .card_' + (id + 1) + ' img')
+				.attr('src', Game.card[card.id_card].small.src)
 				.data('id', card.id).show();
 		});
 
-		$('.draft_pick .loader').hide();
-		$('.draft_pick .cards').fadeIn();
+		$('.game_pick .loader').hide();
+		$('.game_pick .cards').fadeIn();
 	});
 }
 
 function display_look(time, build) {
-	$('.draft_look .loader').show();
-	$('.draft_look .drafted').hide().children(':not(h2)').remove();
+	$('.game_look .loader').show();
+	$('.game_look .gameed').hide().children(':not(h2)').remove();
 
 	if (!build) {
 		switch_display('look', Math.ceil((time.getTime() - (new Date()).getTime() + Time.diff) / 1000));
 	} else {
 		switch_display('look');
-		if (Draft.is_sealed) play_sound('draft_start');
+		if (Game.is_sealed) play_sound('game_start');
 	}
 
-	$.get('/ajax_draft/get_deck', {id: Draft.id, add_land: build}, function(response){
+	$.get('/ajax_game/get_deck', {id: Game.id, add_land: build}, function(response){
 		if (!response.success || !response.cards) {
 			return;
 		}
 
-		var drafted = {};
+		var gameed = {};
 		var deck = [];
 
 		$.each(response.cards, function(id, card) {
 			var count = card.count;
-			var card = Draft.card[card.id_card];
+			var card = Game.card[card.id_card];
 
-			if (!drafted[card.color]) {
-				drafted[card.color] = [];
+			if (!gameed[card.color]) {
+				gameed[card.color] = [];
 			}
 
-			drafted[card.color].push({id: card.id, name: card.name,
+			gameed[card.color].push({id: card.id, name: card.name,
 				image: card.full, count: count});
 
 			deck.push({id: card.id, name: card.name,
 				image: card.full, count: 0});
 		});
 
-		$.each(drafted, function(id, dev_null) {
-			drafted[id].sort(function(a, b){
+		$.each(gameed, function(id, dev_null) {
+			gameed[id].sort(function(a, b){
 				if (a.count != b.count) {
 					return a.count < b.count;
 				}
@@ -239,31 +239,31 @@ function display_look(time, build) {
 			});
 		});
 
-		insert_drafted(drafted, 'M', 'Multicolor');
-		insert_drafted(drafted, 'W', 'White');
-		insert_drafted(drafted, 'G', 'Green');
-		insert_drafted(drafted, 'R', 'Red');
-		insert_drafted(drafted, 'B', 'Black');
-		insert_drafted(drafted, 'U', 'Blue');
-		insert_drafted(drafted, 'A', 'Artifact');
-		insert_drafted(drafted, 'L', 'Land');
+		insert_gameed(gameed, 'M', 'Multicolor');
+		insert_gameed(gameed, 'W', 'White');
+		insert_gameed(gameed, 'G', 'Green');
+		insert_gameed(gameed, 'R', 'Red');
+		insert_gameed(gameed, 'B', 'Black');
+		insert_gameed(gameed, 'U', 'Blue');
+		insert_gameed(gameed, 'A', 'Artifact');
+		insert_gameed(gameed, 'L', 'Land');
 
-		$.each(drafted, function(id, dev_null) {
-			insert_drafted(drafted, id, id);
+		$.each(gameed, function(id, dev_null) {
+			insert_gameed(gameed, id, id);
 		});
 
 		if (build) {
-			$('.draft_look .drafted h2').show();
+			$('.game_look .gameed h2').show();
 			$('.add_card').show();
-			Draft.deck_building = true;
+			Game.deck_building = true;
 			deck.sort(function(a, b){return a.name.localeCompare(b.name);});
 			insert_deck(deck);
 		}
 
-		$('.draft_look .loader').hide();
-		$('.draft_look .drafted').slideDown();
+		$('.game_look .loader').hide();
+		$('.game_look .gameed').slideDown();
 		if (build) {
-			$('.draft_look .deck').slideDown();
+			$('.game_look .deck').slideDown();
 		}
 	});
 }
@@ -272,24 +272,24 @@ function display_ready() {
 	switch_display('ready');
 }
 
-function insert_drafted(data, index, name) {
+function insert_gameed(data, index, name) {
 	if (!data[index]) {
 		return;
 	}
 
-	var header = $('<div/>').addClass('drafted_color_header').html(name);
-	var div = $('<div/>').addClass('drafted_color').append(header);
+	var header = $('<div/>').addClass('gameed_color_header').html(name);
+	var div = $('<div/>').addClass('gameed_color').append(header);
 
 	$.each(data[index], function(id, item){
 		var span = $('<span/>').data('item', item).bind('compile', function(){
 			var item = $(this).data('item');
 			$(this).html(item.count + ' x ' + item.name);
-		}).addClass('drafted-' + item.id).addClass('hover_card').trigger('compile');
-		var row = $('<div/>').addClass('drafted_row').append(span);
+		}).addClass('gameed-' + item.id).addClass('hover_card').trigger('compile');
+		var row = $('<div/>').addClass('gameed_row').append(span);
 		div.append(row);
 	});
 
-	$('.draft_look .drafted').append(div);
+	$('.game_look .gameed').append(div);
 
 	delete data[index];
 }
@@ -349,7 +349,7 @@ function get_base_data(callback) {
 		Time.diff = new Date().getTime() - new Date(response.time * 1000).getTime();
 	});
 
-	$.get('/ajax_draft/get_user', {id: Draft.id}, function(response) {
+	$.get('/ajax_game/get_user', {id: Game.id}, function(response) {
 		if (!response.success || !response.user) {
 			return;
 		}
@@ -360,7 +360,7 @@ function get_base_data(callback) {
 				found = true;
 			}
 
-			Draft.users[user.id] = user;
+			Game.users[user.id] = user;
 
 			if (user.signed_out == '0') {
 				var md5 = $.md5(user.login);
@@ -375,7 +375,7 @@ function get_base_data(callback) {
 				var color = 'BBBBBB';
 			}
 			users.push('<span style="color: #'+ color + ';" ' +
-				'class="draft_user draft_user_' + user.id + '">' + user.login + '</span>');
+				'class="game_user game_user_' + user.id + '">' + user.login + '</span>');
 		});
 		if (!found) {
 			document.location.href = '/';
@@ -384,21 +384,21 @@ function get_base_data(callback) {
 		$(".participants").html('Участвуют: ' + users.join(', ') + '.');
 	});
 
-	$.get('/ajax_draft/get_card', {id: Draft.id}, function(response) {
+	$.get('/ajax_game/get_card', {id: Game.id}, function(response) {
 		if (!response.success || !response.cards) {
 			return;
 		}
 
 		$.each(response.cards, function(id, card){
 			card.id = id;
-			Draft.card[id] = card;
-			Draft.card[id].small = new Image();
-			Draft.card[id].full = new Image();
-			Draft.card[id].small.src = '/images/small' + card.image;
-			Draft.card[id].full.src = '/images/full' + card.image;
+			Game.card[id] = card;
+			Game.card[id].small = new Image();
+			Game.card[id].full = new Image();
+			Game.card[id].small.src = '/images/small' + card.image;
+			Game.card[id].full.src = '/images/full' + card.image;
 		});
 
-		Draft.got_cards = true;
+		Game.got_cards = true;
 
 		callback.call(this);
 	});
@@ -415,8 +415,8 @@ function switch_display(type, counter) {
 		sync_on_off_music_button();
 	}
 
-	$('.draft_base:not(.draft_info):not(.draft_'+type+')').hide();
-	$('.draft_'+type).show();
+	$('.game_base:not(.game_info):not(.game_'+type+')').hide();
+	$('.game_'+type).show();
 }
 
 function counter_init(seconds) {
@@ -441,16 +441,16 @@ function counter_init(seconds) {
 	}
 }
 
-if (Draft.state == 0) {
+if (Game.state == 0) {
 	switch_display('waiting_start');
-	$('body').everyTime(1500, get_draft_data);
+	$('body').everyTime(1500, get_game_data);
 } else {
 	get_base_data(function(){
-		$('body').everyTime(1500, get_draft_data);
+		$('body').everyTime(1500, get_game_data);
 	});
 }
 
-$('.draft_pick .cards img').hover(function(){
+$('.game_pick .cards img').hover(function(){
 	var src = $(this).attr('src').replace('/small/', '/full/');
 	$('.display_card img').attr('src', src);
 	$('.display_card').show();
@@ -469,9 +469,9 @@ $('.hover_card').live({
 	}
 });
 
-$('.drafted_row span').live({
+$('.gameed_row span').live({
 	click: function(){
-		if (!Draft.deck_building) {
+		if (!Game.deck_building) {
 			return;
 		}
 		var item = $(this).data('item');
@@ -496,7 +496,7 @@ $('.remove_card').live({
 			return;
 		}
 		item.count--;
-		var target = $('.drafted-' + item.id), item_target = target.data('item');
+		var target = $('.gameed-' + item.id), item_target = target.data('item');
 		item_target.count++;
 
 		parent.data('item', item).trigger('compile');
@@ -505,8 +505,8 @@ $('.remove_card').live({
 	}
 });
 
-$('.draft_pick .cards img').click(function(){
-	if (Draft.picking || !Draft.pick) {
+$('.game_pick .cards img').click(function(){
+	if (Game.picking || !Game.pick) {
 		return;
 	}
 
@@ -514,23 +514,23 @@ $('.draft_pick .cards img').click(function(){
 		return;
 	}
 
-	Draft.picking = true;
+	Game.picking = true;
 	$('body').css('cursor', 'progress');
 	$(this).addClass('picking');
-	$('.draft_pick .cards').addClass('picking');
+	$('.game_pick .cards').addClass('picking');
 
 	var me = this;
 
-	$.get('/ajax_draft/pick',
-		{id: Draft.id, number: Draft.pick, card: $(this).data('id')},
+	$.get('/ajax_game/pick',
+		{id: Game.id, number: Game.pick, card: $(this).data('id')},
 		function(response) {
 			if (!response.success) {
 				$(me).removeClass('picking');
-				$('.draft_pick .cards').removeClass('picking');
-				Draft.picking = false;
+				$('.game_pick .cards').removeClass('picking');
+				Game.picking = false;
 			} else {
 				$(me).addClass('picked');
-				$('.draft_pick .cards').addClass('picked');
+				$('.game_pick .cards').addClass('picked');
 			}
 			$('body').css('cursor', 'default');
 	});
@@ -541,9 +541,9 @@ $('.deck_finish').click(function(){
 		return;
 	}
 
-	$('.draft_look .loader').show();
-	$('.draft_look .drafted').hide();
-	$('.draft_look .deck').hide();
+	$('.game_look .loader').show();
+	$('.game_look .gameed').hide();
+	$('.game_look .deck').hide();
 
 	var cards = [];
 	$('.slot .items > div').each(function(){
@@ -553,11 +553,11 @@ $('.deck_finish').click(function(){
 		}
 	});
 
-	$.get('/ajax_draft/set_deck', {id: Draft.id, c: cards}, function(response) {
+	$.get('/ajax_game/set_deck', {id: Game.id, c: cards}, function(response) {
 		if (!response.success) {
-			$('.draft_look .loader').hide();
-			$('.draft_look .drafted').show();
-			$('.draft_look .deck').show();
+			$('.game_look .loader').hide();
+			$('.game_look .gameed').show();
+			$('.game_look .deck').show();
 			alert('Не удалось создать колоду.');
 		}
 	});
@@ -565,7 +565,7 @@ $('.deck_finish').click(function(){
 
 $('.challenge button').click(function(){
 	var opponent = $('.challenge .opponents').val();
-	if (!opponent || !Draft.users[opponent]) {
+	if (!opponent || !Game.users[opponent]) {
 		return;
 	}
 
@@ -578,12 +578,12 @@ $('.challenge button').click(function(){
 			'</head>' +
 		'<body onLoad="document.getElementById(\'form\').submit()">' +
 			'<form action="http://www.mtg.ru/play/start.phtml" method="POST" id="form">' +
-				'<input type="hidden" name="Player" value="' + Draft.users[User.id].nickname + '">' +
-				'<input type="hidden" name="Player_Avatar" value="http://mtgdraft.ru/images/avatar/' + User.avatar + '.jpg">' +
-				'<input type="hidden" name="Oponent" value="' + Draft.users[opponent].nickname + '">' +
-				'<input type="hidden" name="Oponent_Avatar" value="http://mtgdraft.ru/images/avatar/' + Draft.users[opponent].avatar + '.jpg">' +
+				'<input type="hidden" name="Player" value="' + Game.users[User.id].nickname + '">' +
+				'<input type="hidden" name="Player_Avatar" value="http://mtgGame.ru/images/avatar/' + User.avatar + '.jpg">' +
+				'<input type="hidden" name="Oponent" value="' + Game.users[opponent].nickname + '">' +
+				'<input type="hidden" name="Oponent_Avatar" value="http://mtgGame.ru/images/avatar/' + Game.users[opponent].avatar + '.jpg">' +
 				'<input type="hidden" name="Lang" value="EN">' +
-				'<textarea style="display:none;" name="Deck">' + Draft.decklist + '</textarea>' +
+				'<textarea style="display:none;" name="Deck">' + Game.decklist + '</textarea>' +
 			'</form>' +
 		'</body>' +
 	'</html>');
@@ -620,36 +620,36 @@ function check_create_button() {
 }
 
 function build_deck(cards) {
-	Draft.deck = {}, Draft.side = {};
+	Game.deck = {}, Game.side = {};
 	$.each(cards, function(key, card){
 		if (card.deck == 0) {
 
-			if (!Draft.side[card.id_card]) {
-				Draft.side[card.id_card] = 0;
+			if (!Game.side[card.id_card]) {
+				Game.side[card.id_card] = 0;
 			}
-			Draft.side[card.id_card]++;
+			Game.side[card.id_card]++;
 
 		} else {
 
-			if (!Draft.deck[card.id_card]) {
-				Draft.deck[card.id_card] = 0;
+			if (!Game.deck[card.id_card]) {
+				Game.deck[card.id_card] = 0;
 			}
-			Draft.deck[card.id_card]++;
+			Game.deck[card.id_card]++;
 		}
 	});
 
 	var list = [];
-	$.each(Draft.deck, function(id, count) {
-		list.push(count + ' ' + Draft.card[id].name);
+	$.each(Game.deck, function(id, count) {
+		list.push(count + ' ' + Game.card[id].name);
 	});
 
-	Draft.decklist = list.join('\n');
+	Game.decklist = list.join('\n');
 }
 
 function refresh_opponents() {
 	$('.challenge .opponents').children().remove();
 
-	$.each(Draft.opponents, function(id, opponent) {
+	$.each(Game.opponents, function(id, opponent) {
 		$('.challenge .opponents').append('<option value="' +
 			opponent.id + '">' + opponent.login + '</option>');
 	});

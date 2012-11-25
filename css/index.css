@@ -2,15 +2,15 @@
 	margin: 10px 20px;
 }
 
-.draft_base {
+.game_base {
 	width: 600px;
 }
 
-.draft_example, .sealed_example {
+.game_example, .sealed_example {
 	display: none;
 }
 
-.draft_item {
+.game_item {
 	padding: 7px;
 	border: 3px solid #999;
 	border-radius: 6px;
@@ -19,16 +19,16 @@
 	margin-bottom: 10px;
 }
 
-.draft_item table {
+.game_item table {
 	width: 100%;
 }
 
-.draft_item h3, .draft_item h5 {
+.game_item h3, .game_item h5 {
 	font-weight: normal;
 	white-space: nowrap;
 }
 
-.draft_item h3 span, .draft_item h5 span {
+.game_item h3 span, .game_item h5 span {
 	font-weight: bold;
 }
 
@@ -37,12 +37,12 @@
 	width: 100%;
 }
 
-.draft_item .delete {
+.game_item .delete {
 	margin-top: 30px;
 	display: none;
 }
 
-.draft_add {
+.game_add {
 	text-align: center;
 	height: 280px;
 	display: table-cell;
@@ -53,23 +53,23 @@
 	-webkit-border-radius: 20px;
 }
 
-.draft_add .draft_form_show {
+.game_add .game_form_show {
 	margin-right: 30px;
 }
 
-.draft_add .form-horizontal {
+.game_add .form-horizontal {
 	display: none;
 }
 
-.draft_add .draft-actions {
+.game_add .game-actions {
 	text-align: center;
 }
 
-.draft_add .control-group {
+.game_add .control-group {
 	margin-bottom: 3px;
 }
 
-.draft_add .control-label {
+.game_add .control-label {
 	width: 180px;
 }
 

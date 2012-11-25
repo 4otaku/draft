@@ -1,30 +1,30 @@
 init_sizes();
 
-var Draft = {
+var Game = {
 	last_time: null
 };
 
-function do_get_draft(callback, scope) {
+function do_get_game(callback, scope) {
 	callback = callback || function(){};
 	scope = scope || this;
 
-	$.get('/ajax_draft_list/get', function(response) {
+	$.get('/ajax_game_list/get', function(response) {
 		var ids = {};
 		$.each(response.data, function(key, item){
 			ids[item.id] = true;
 
-			if (Draft[item.id]) {
-				if (Draft[item.id].state != item.state) {
-					Draft[item.id] = item;
-					Draft[item.id].update_state = true;
+			if (Game[item.id]) {
+				if (Game[item.id].state != item.state) {
+					Game[item.id] = item;
+					Game[item.id].update_state = true;
 				}
 				return;
 			}
 
-			Draft[item.id] = item;
-			Draft[item.id].update_state = true;
-			var selector = item.is_sealed == 1 ? '.sealed_example' : '.draft_example';
-			var object = $(selector).clone().attr('id', 'draft-' + item.id);
+			Game[item.id] = item;
+			Game[item.id].update_state = true;
+			var selector = item.is_sealed == 1 ? '.sealed_example' : '.game_example';
+			var object = $(selector).clone().attr('id', 'game-' + item.id);
 			var booster = item.booster.split(',');
 			object.find('.name').html(item.login);
 			if (booster[0]) {
@@ -53,25 +53,25 @@ function do_get_draft(callback, scope) {
 			}
 			object.find('.pick_time').html(format_time(item.pick_time));
 			object.find('.pause_time').html(format_time(item.pause_time));
-			object.find('.join').attr('href', '/draft/' + item.id);
+			object.find('.join').attr('href', '/game/' + item.id);
 			object.find('.unjoin_going').click(function(){
 				if (confirm('Вы уверены, что хотите отказаться от дальнейшего участия в этом драфте?')) {
-					$.get('/ajax_draft_list/leave', {id: item.id});
+					$.get('/ajax_game_list/leave', {id: item.id});
 					object.remove();
 				}
 			});
 			object.prependTo('.left_wrapper').slideDown(1500)
-				.removeClass('draft_example').removeClass('sealed_example');
+				.removeClass('game_example').removeClass('sealed_example');
 
 			$('body').trigger('message', (item.is_sealed == '1' ? 'Силед' : 'Драфт') + ' №' +
 				item.id + ' (' + booster.join(', ') +') добавлен.');
 		});
 
-		$.each(Draft, function(key, item) {
+		$.each(Game, function(key, item) {
 			if (!ids[key] && key != 'last_time') {
-				delete Draft[key];
-				if ($('#draft-' + key).length > 0) {
-					$('#draft-' + key).slideUp(1500);
+				delete Game[key];
+				if ($('#game-' + key).length > 0) {
+					$('#game-' + key).slideUp(1500);
 
 					$('body').trigger('message', 'Драфт №' + item.id +
 						' (' + item.booster.replace(/,/g,', ') +') удален.');
@@ -79,14 +79,14 @@ function do_get_draft(callback, scope) {
 			}
 
 			if (item.update_state) {
-				var object = $('#draft-' + key);
+				var object = $('#game-' + key);
 
 				if (item.state == 0) {
 					if (item.id_user == User.id) {
 						object.find('.delete').show().click(function(){
 							if (confirm('Вы уверены, что хотите удалить драфт?')) {
 								object.slideUp(1500);
-								$.get('/ajax_draft_list/delete', {id: item.id});
+								$.get('/ajax_game_list/delete', {id: item.id});
 							}
 						});
 					}
@@ -111,64 +111,64 @@ function do_get_draft(callback, scope) {
 	});
 }
 
-function hide_draft_loader() {
-	this.find('.draft-actions button').show();
-	this.find('.draft-actions .loader').hide();
-	this.find('.draft_cancel').click();
+function hide_game_loader() {
+	this.find('.game-actions button').show();
+	this.find('.game-actions .loader').hide();
+	this.find('.game_cancel').click();
 }
 
 function send_create_data(button, selector) {
-	var parent = button.parents('.draft_add'),
+	var parent = button.parents('.game_add'),
 		request = parent.children(selector).find('select, input[type=text], input[type=hidden]').serialize();
 
-	parent.find('.draft-actions button').hide();
-	parent.find('.draft-actions .loader').show();
+	parent.find('.game-actions button').hide();
+	parent.find('.game-actions .loader').show();
 
 	var date = new Date();
 	request += '&utc=' + date.getTimezoneOffset();
 
-	$.get('/ajax_draft_list/add?' + request, function(response) {
-		do_get_draft(hide_draft_loader, parent);
+	$.get('/ajax_game_list/add?' + request, function(response) {
+		do_get_game(hide_game_loader, parent);
 	});
 }
 
 $(document).ready(function(){
 
-	$('body').bind('draft_change', function(e, time){
+	$('body').bind('game_change', function(e, time){
 		time = time ? new Date(time * 1000) : new Date();
-		if (!Draft.last_time || Draft.last_time < time) {
-			Draft.last_time = time;
-			do_get_draft();
+		if (!Game.last_time || Game.last_time < time) {
+			Game.last_time = time;
+			do_get_game();
 		}
-	}).trigger('draft_change');
+	}).trigger('game_change');
 
-	$('#timestart_draft').timepicker();
+	$('#timestart_game').timepicker();
 	$('#timestart_sealed').timepicker();
 
-	$('.draft_add .btn-large.draft_form_show').click(function(){
-		var parent = $(this).parents('.draft_add');
+	$('.game_add .btn-large.game_form_show').click(function(){
+		var parent = $(this).parents('.game_add');
 		parent.children('.btn-large').hide();
-		parent.children('.draft_form').show();
+		parent.children('.game_form').show();
 	});
 
-	$('.draft_add .btn-large.sealed_form_show').click(function(){
-		var parent = $(this).parents('.draft_add');
+	$('.game_add .btn-large.sealed_form_show').click(function(){
+		var parent = $(this).parents('.game_add');
 		parent.children('.btn-large').hide();
 		parent.children('.sealed_form').show();
 	});
 
-	$('.draft_add .draft_cancel, .draft_add .sealed_cancel').click(function(){
-		var parent = $(this).parents('.draft_add');
+	$('.game_add .game_cancel, .game_add .sealed_cancel').click(function(){
+		var parent = $(this).parents('.game_add');
 		parent.children('.form-horizontal').hide();
 		parent.children('.btn-large').show();
 	});
 
 	$('.selected').attr('selected', 'selected');
 
-	$('.draft_add .draft_create').click(function(){
-		send_create_data($(this), '.draft_form');
+	$('.game_add .game_create').click(function(){
+		send_create_data($(this), '.game_form');
 	});
-	$('.draft_add .sealed_create').click(function(){
+	$('.game_add .sealed_create').click(function(){
 		send_create_data($(this), '.sealed_form');
 	});
 });

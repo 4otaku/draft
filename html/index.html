@@ -32,7 +32,7 @@
 	</div>
 	<div class="clear"></div>
 	<div class="left_wrapper">
-		<div class="draft_base draft_example draft_item">
+		<div class="game_base game_example game_item">
 			<table><tr><td>
 				<h3>Владелец: <span class="name"></span></h3>
 				<h5 class="start">Время начала: <span class="timestart"></span></h5>
@@ -61,7 +61,7 @@
 				</div>
 			</td></tr></table>
 		</div>
-		<div class="draft_base sealed_example draft_item">
+		<div class="game_base sealed_example game_item">
 			<table><tr><td>
 				<h3>Владелец: <span class="name"></span></h3>
 				<h5 class="start">Время начала: <span class="timestart"></span></h5>
@@ -91,19 +91,19 @@
 				</div>
 			</td></tr></table>
 		</div>
-		<div class="draft_base draft_add">
-			<button class="btn btn-primary btn-large draft_form_show" type="submit">
+		<div class="game_base game_add">
+			<button class="btn btn-primary btn-large game_form_show" type="submit">
 				Создать новый драфт
 			</button>
 			<button class="btn btn-primary btn-large sealed_form_show" type="submit">
 				Создать новый Sealed
 			</button>
-			<div class="form-horizontal draft_form">
+			<div class="form-horizontal game_form">
 				<fieldset>
 					<div class="control-group">
 						<label class="control-label" for="timestart">Время начала:</label>
 						<div class="controls">
-							<input id="timestart_draft" name="start" type="text" />
+							<input id="timestart_game" name="start" type="text" />
 						</div>
 					</div>
 					<div class="control-group">
@@ -178,9 +178,9 @@
 							</select>
 						</div>
 					</div>
-					<div class="draft-actions">
-						<button class="btn btn-primary draft_create">Создать</button>
-						<button class="btn btn-warning draft_cancel">Отменить</button>
+					<div class="game-actions">
+						<button class="btn btn-primary game_create">Создать</button>
+						<button class="btn btn-warning game_cancel">Отменить</button>
 						<img src="/images/loading.gif" class="loader" />
 					</div>
 				</fieldset>
@@ -253,7 +253,7 @@
 							</select>
 						</div>
 					</div>
-					<div class="draft-actions">
+					<div class="game-actions">
 						<input name="type" type="hidden" value="2" />
 						<button class="btn btn-primary sealed_create">Создать</button>
 						<button class="btn btn-warning sealed_cancel">Отменить</button>
