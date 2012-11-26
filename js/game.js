@@ -203,7 +203,7 @@ function display_look(time, build) {
 		switch_display('look', Math.ceil((time.getTime() - (new Date()).getTime() + Time.diff) / 1000));
 	} else {
 		switch_display('look');
-		if (Game.is_sealed) play_sound('game_start');
+		if (Game.type == 2) play_sound('game_start');
 	}
 
 	$.get('/ajax_game/get_deck', {id: Game.id, add_land: build}, function(response){

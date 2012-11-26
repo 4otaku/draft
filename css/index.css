@@ -6,7 +6,7 @@
 	width: 600px;
 }
 
-.game_example, .sealed_example {
+.game_example {
 	display: none;
 }
 
@@ -44,13 +44,20 @@
 
 .game_add {
 	text-align: center;
-	height: 280px;
+	height: 260px;
 	display: table-cell;
 	vertical-align: middle;
 	border: 10px solid #999;
 	border-radius: 20px;
 	-moz-border-radius: 20px;
 	-webkit-border-radius: 20px;
+}
+
+.game_add fieldset {
+	text-align: left;
+	margin-left: auto;
+	margin-right: auto;
+	width: 500px;
 }
 
 .game_add .game_form_show {
@@ -61,6 +68,10 @@
 	display: none;
 }
 
+.form-horizontal .controls {
+	margin-left: 190px;
+}
+
 .game_add .game-actions {
 	text-align: center;
 }
@@ -69,8 +80,21 @@
 	margin-bottom: 3px;
 }
 
+.game_add .control-group.add {
+	font-size: 120%;
+}
+
+.game_add .add-label {
+	position: relative;
+	bottom: 3px;
+}
+
 .game_add .control-label {
 	width: 180px;
+}
+
+.game_add .game_form_3 .control-group {
+	margin-bottom: 30px;
 }
 
 .loader {

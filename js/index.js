@@ -23,7 +23,7 @@ function do_get_game(callback, scope) {
 
 			Game[item.id] = item;
 			Game[item.id].update_state = true;
-			var selector = item.is_sealed == 1 ? '.sealed_example' : '.game_example';
+			var selector = '.game_example_' + item.type;
 			var object = $(selector).clone().attr('id', 'game-' + item.id);
 			var booster = item.booster.split(',');
 			object.find('.name').html(item.login);
@@ -63,7 +63,7 @@ function do_get_game(callback, scope) {
 			object.prependTo('.left_wrapper').slideDown(1500)
 				.removeClass('game_example').removeClass('sealed_example');
 
-			$('body').trigger('message', (item.is_sealed == '1' ? 'Силед' : 'Драфт') + ' №' +
+			$('body').trigger('message', (item.type == '2' ? 'Силед' : 'Драфт') + ' №' +
 				item.id + ' (' + booster.join(', ') +') добавлен.');
 		});
 
@@ -73,8 +73,8 @@ function do_get_game(callback, scope) {
 				if ($('#game-' + key).length > 0) {
 					$('#game-' + key).slideUp(1500);
 
-					$('body').trigger('message', 'Драфт №' + item.id +
-						' (' + item.booster.replace(/,/g,', ') +') удален.');
+					$('body').trigger('message', (item.type == '2' ? 'Силед' : 'Драфт') +
+						' №' + item.id + ' (' + item.booster.replace(/,/g,', ') +') удален.');
 				}
 			}
 
@@ -117,9 +117,9 @@ function hide_game_loader() {
 	this.find('.game_cancel').click();
 }
 
-function send_create_data(button, selector) {
-	var parent = button.parents('.game_add'),
-		request = parent.children(selector).find('select, input[type=text], input[type=hidden]').serialize();
+function send_create_data(form) {
+	var parent = form.parents('.game_add'),
+		request = form.find('select, input[type=text], input[type=hidden]').serialize();
 
 	parent.find('.game-actions button').hide();
 	parent.find('.game-actions .loader').show();
@@ -144,31 +144,24 @@ $(document).ready(function(){
 
 	$('#timestart_game').timepicker();
 	$('#timestart_sealed').timepicker();
+	$('#timestart_masters').timepicker();
 
-	$('.game_add .btn-large.game_form_show').click(function(){
+	$('.game_add .btn.game_form_show').click(function(){
 		var parent = $(this).parents('.game_add');
-		parent.children('.btn-large').hide();
-		parent.children('.game_form').show();
-	});
-
-	$('.game_add .btn-large.sealed_form_show').click(function(){
-		var parent = $(this).parents('.game_add');
-		parent.children('.btn-large').hide();
-		parent.children('.sealed_form').show();
+		var type = $('#game_type :selected').val();
+		parent.children('.control-group.add').hide();
+		parent.children('.game_form_' + type).show();
 	});
 
 	$('.game_add .game_cancel, .game_add .sealed_cancel').click(function(){
 		var parent = $(this).parents('.game_add');
 		parent.children('.form-horizontal').hide();
-		parent.children('.btn-large').show();
+		parent.children('.control-group.add').show();
 	});
 
 	$('.selected').attr('selected', 'selected');
 
 	$('.game_add .game_create').click(function(){
-		send_create_data($(this), '.game_form');
-	});
-	$('.game_add .sealed_create').click(function(){
-		send_create_data($(this), '.sealed_form');
+		send_create_data($(this).parents('.form-horizontal'));
 	});
 });

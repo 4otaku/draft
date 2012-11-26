@@ -49,7 +49,7 @@
 	<div class="left_wrapper">
 		<div class="game_info game_base">
 			<table>
-				{% if game.is_sealed %}
+				{% if game.type == 2 %}
 					<tr><td colspan="2">
 						<h4 class="start" style="float:right;">
 							Начало: <span class="utc_date"></span>
@@ -161,7 +161,7 @@
 	<script type="text/javascript">
 		var Game = {
 			id: {{game.id}},
-			is_sealed: {% if game.type == 2 %}1{% else %}0{% endif %},
+			type: {{game.type}},
 			id_owner: {{game.id_user}},
 			state: {{game.state}},
 			owner: '{{game.login}}',
