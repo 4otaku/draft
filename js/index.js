@@ -23,7 +23,8 @@ function do_get_game(callback, scope) {
 
 			Game[item.id] = item;
 			Game[item.id].update_state = true;
-			var selector = '.game_example_' + item.type;
+			var cls = 'game_example_' + item.type;
+			var selector = '.' + cls;
 			var object = $(selector).clone().attr('id', 'game-' + item.id);
 			var booster = item.booster.split(',');
 			object.find('.name').html(item.login);
@@ -60,8 +61,7 @@ function do_get_game(callback, scope) {
 					object.remove();
 				}
 			});
-			object.prependTo('.left_wrapper').slideDown(1500)
-				.removeClass('game_example').removeClass('sealed_example');
+			object.prependTo('.left_wrapper').slideDown(1500).removeClass('cls');
 
 			$('body').trigger('message', (item.type == '2' ? 'Силед' : 'Драфт') + ' №' +
 				item.id + ' (' + booster.join(', ') +') добавлен.');
