@@ -61,7 +61,7 @@ function do_get_game(callback, scope) {
 					object.remove();
 				}
 			});
-			object.prependTo('.left_wrapper').slideDown(1500).removeClass('cls');
+			object.prependTo('.left_wrapper').slideDown(1500).removeClass(cls);
 
 			$('body').trigger('message', (item.type == '2' ? 'Силед' : 'Драфт') + ' №' +
 				item.id + ' (' + booster.join(', ') +') добавлен.');
