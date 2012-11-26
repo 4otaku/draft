@@ -1,0 +1,20 @@
+<fieldset>
+	<div class="control-group">
+		<label class="control-label" for="timestart_masters">Время начала:</label>
+		<div class="controls">
+			<input id="timestart_masters" name="start" type="text" />
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label" for="select_masters_01">Бустер:</label>
+		<div class="controls">
+			<select id="select_masters_01" name="set[]">
+				{% for set in sets %}
+					<option value="{{set.id}}">{{set.name}}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+	<input name="type" type="hidden" value="3" />
+	{% include 'index/add_actions.html' %}
+</fieldset>

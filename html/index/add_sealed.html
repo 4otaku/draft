@@ -1,0 +1,71 @@
+
+<fieldset>
+	<div class="control-group">
+		<label class="control-label" for="timestart_sealed">Время начала:</label>
+		<div class="controls">
+			<input id="timestart_sealed" name="start" type="text" />
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label" for="select_sealed_01">Первый бустер:</label>
+		<div class="controls">
+			<select id="select_sealed_01" name="set[]">
+				{% for set in sets %}
+					<option value="{{set.id}}">{{set.name}}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label" for="select_sealed_02">Второй бустер:</label>
+		<div class="controls">
+			<select id="select_sealed_02" name="set[]">
+				{% for set in sets %}
+					<option value="{{set.id}}">{{set.name}}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label" for="select_sealed_03">Третий бустер:</label>
+		<div class="controls">
+			<select id="select_sealed_03" name="set[]">
+				{% for set in sets %}
+					<option value="{{set.id}}">{{set.name}}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label" for="select_sealed_04">Четвертый бустер:</label>
+		<div class="controls">
+			<select id="select_sealed_04" name="set[]">
+				{% for set in sets %}
+					<option value="{{set.id}}">{{set.name}}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label" for="select_sealed_05">Пятый бустер:</label>
+		<div class="controls">
+			<select id="select_sealed_05" name="set[]">
+				{% for set in sets %}
+					<option value="{{set.id}}">{{set.name}}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+	<div class="control-group">
+		<label class="control-label" for="select_sealed_06">Шестой бустер:</label>
+		<div class="controls">
+			<select id="select_sealed_06" name="set[]">
+				{% for set in sets %}
+					<option value="{{set.id}}">{{set.name}}</option>
+				{% endfor %}
+			</select>
+		</div>
+	</div>
+	<input name="type" type="hidden" value="2" />
+	{% include 'index/add_actions.html' %}
+</fieldset>
