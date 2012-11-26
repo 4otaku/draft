@@ -14,7 +14,7 @@ abstract class Booster_Abstract
 	protected $uncommon = 3;
 	protected $rare = 1;
 
-	public function __constructed($id) {
+	public function __construct($id) {
 		$this->id = $id;
 	}
 
