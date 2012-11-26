@@ -610,7 +610,7 @@ function check_create_button() {
 		type_count++;
 	});
 
-	if (count >= 40 && type_count <= 25) {
+	if (count >= 40 && type_count <= 50) {
 		$('.deck_finish').removeClass('disabled');
 	} else {
 		$('.deck_finish').addClass('disabled');
