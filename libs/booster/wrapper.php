@@ -52,6 +52,8 @@ class Booster
 				$cards[$group['rarity']] = explode(',', $group['ids']);
 			}
 
+			$cards[0] = array(1, 2, 3, 4, 5);
+
 			self::$card_cache[$set] = $cards;
 		}
 
