@@ -101,7 +101,7 @@ class Game_Draft extends Game_Abstract
 			'gs.id_game = ? and gs.order = ? and gbc.id_user = ? and gb.id_user = ?',
 			array($this->get_id(), $set, 0, $user));
 
-		return array('success' => true, 'cards' => $cards);
+		return $cards;
 	}
 
 	public function test_force_picks($set, $shift) {
@@ -186,7 +186,7 @@ class Game_Draft extends Game_Abstract
 		}
 	}
 
-	public function do_pick($user, $card, $set, $shift) {
+	public function pick($user, $card, $set, $shift) {
 		$user_data = Database::get_row('game_user', array('order', 'force_picks'),
 			'id_user = ? and id_game = ?', array($user, $this->get_id()));
 		$max = Database::get_field('game_user', 'max(`order`)', 'id_game = ?', $this->get_id());
