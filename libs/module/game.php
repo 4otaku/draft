@@ -47,4 +47,22 @@ class Module_Game extends Module_Abstract_Authorized
 
 		return $data;
 	}
+
+	protected function get_list($type) {
+		$data = parent::get_list($type);
+
+		if ($type == 'js') {
+			switch ($this->game['type']) {
+				case 1: $type = 'draft'; break;
+				case 2: $type = 'sealed'; break;
+				case 3: $type = 'masters'; break;
+				default: $type = 'draft';
+			}
+
+			$data['game'] = $type;
+			$data['gametime'] = filemtime(JS . SL . 'game' . SL . $type . '.js');
+		}
+
+		return $data;
+	}
 }

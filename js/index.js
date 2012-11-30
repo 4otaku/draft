@@ -3,6 +3,7 @@ init_sizes();
 var Game = {
 	last_time: null
 };
+var Game_Types = ['', 'Драфт', 'Силед', 'Мини-мастерс'];
 
 function do_get_game(callback, scope) {
 	callback = callback || function(){};
@@ -27,7 +28,9 @@ function do_get_game(callback, scope) {
 			var selector = '.' + cls;
 			var object = $(selector).clone().attr('id', 'game-' + item.id);
 			var booster = item.booster.split(',');
+			object.find('.type').html(Game_Types[item.type]);
 			object.find('.name').html(item.login);
+			object.find('.id').html(item.id);
 			if (booster[0]) {
 				object.find('.booster_1').html(booster[0]);
 			}
@@ -54,7 +57,7 @@ function do_get_game(callback, scope) {
 			}
 			object.find('.pick_time').html(format_time(item.pick_time));
 			object.find('.pause_time').html(format_time(item.pause_time));
-			object.find('.join').attr('href', '/game/' + item.id);
+			object.find('.link').attr('href', '/game/' + item.id);
 			object.find('.unjoin_going').click(function(){
 				if (confirm('Вы уверены, что хотите отказаться от дальнейшего участия в этом драфте?')) {
 					$.get('/ajax_game_list/leave', {id: item.id});
@@ -63,7 +66,7 @@ function do_get_game(callback, scope) {
 			});
 			object.prependTo('.left_wrapper').slideDown(1500).removeClass(cls);
 
-			$('body').trigger('message', (item.type == '2' ? 'Силед' : 'Драфт') + ' №' +
+			$('body').trigger('message', Game_Types[item.type] + ' №' +
 				item.id + ' (' + booster.join(', ') +') добавлен.');
 		});
 
@@ -73,13 +76,14 @@ function do_get_game(callback, scope) {
 				if ($('#game-' + key).length > 0) {
 					$('#game-' + key).slideUp(1500);
 
-					$('body').trigger('message', (item.type == '2' ? 'Силед' : 'Драфт') +
+					$('body').trigger('message', Game_Types[item.type] +
 						' №' + item.id + ' (' + item.booster.replace(/,/g,', ') +') удален.');
 				}
 			}
 
 			if (item.update_state) {
 				var object = $('#game-' + key);
+				object.find('.delete').hide();
 
 				if (item.state == 0) {
 					if (item.id_user == User.id) {
@@ -92,16 +96,18 @@ function do_get_game(callback, scope) {
 					}
 				} else if (item.state == 1) {
 					if (item.presense > 0) {
-						object.find('.join_going').show();
 						object.find('.unjoin_going').show();
 					} else {
-						object.find('.join_going').hide();
 						object.find('.unjoin_going').hide();
 					}
 				}
 
-				object.find('.wrapper_state').hide();
-				object.find('.wrapper_state_' + item.state).show();
+				object.find('.game_state').hide();
+				var selector = '.game_state_' + item.state;
+				if (item.state == '1') {
+					selector += item.presense ? '.active' : '.inactive';
+				}
+				object.find(selector).show();
 
 				item.update_state = false;
 			}

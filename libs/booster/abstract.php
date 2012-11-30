@@ -67,7 +67,8 @@ abstract class Booster_Abstract
 		Database::insert('game_booster_card', array(
 			'id_game_booster' => $this->id,
 			'id_card' => $id,
-			'id_user' => $this->user
+			'id_user' => $this->user,
+			'deck' => $this->deck
 		));
 	}
 }

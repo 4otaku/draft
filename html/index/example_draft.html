@@ -1,27 +1,14 @@
-<table><tr><td>
-	<h3>Владелец: <span class="name"></span></h3>
-	<h5 class="start">Время начала: <span class="timestart"></span></h5>
-	<h5>Первый бустер: <span class="booster_1"></span></h5>
-	<h5>Второй бустер: <span class="booster_2"></span></h5>
-	<h5>Третий бустер: <span class="booster_3"></span></h5>
-	<h5>Время на выбор карты: <span class="pick_time"></span></h5>
-	<h5>Пауза между бустерами: <span class="pause_time"></span></h5>
-</td><td class="join_wrapper">
-	<div class="wrapper_state wrapper_state_0">
-		<a class="join" href="" target="_blank">
-			<button class="btn btn-large">Присоединиться</button>
-		</a>
-		<div class="delete">
-			<button class="btn btn-danger">Удалить драфт</button>
-		</div>
-	</div>
-	<div class="wrapper_state wrapper_state_1">
-		<h3>Драфт уже идет</h3>
-		<a class="join join_going" href="" target="_blank">
-			<button class="btn">Войти</button>
-		</a>
-		<a class="unjoin_going" href="#">
-			<button class="btn">Покинуть</button>
-		</a>
-	</div>
-</td></tr></table>
+{% extends "index/example_abstract.html" %}
+
+{% block fields %}
+	<td class="game_data">
+		<h5>Первый бустер: <span class="booster_1"></span></h5>
+		<h5>Второй бустер: <span class="booster_2"></span></h5>
+		<h5>Третий бустер: <span class="booster_3"></span></h5>
+	</td>
+	<td class="game_data">
+		<h5 class="start">Время начала: <span class="timestart"></span></h5>
+		<h5>Время на выбор карты: <span class="pick_time"></span></h5>
+		<h5>Пауза между бустерами: <span class="pause_time"></span></h5>
+	</td>
+{% endblock %}

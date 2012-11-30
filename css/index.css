@@ -16,11 +16,38 @@
 	border-radius: 6px;
 	-moz-border-radius: 6px;
 	-webkit-border-radius: 6px;
+	vertical-align: top;
 	margin-bottom: 10px;
 }
 
 .game_item table {
 	width: 100%;
+}
+
+.game_item .game_header {
+	font-size: 18px;
+	border-bottom: 1px solid #999;
+	position: relative;
+}
+
+.game_item .game_header > a, .game_item .game_header > span {
+	display: none;
+}
+
+.game_item .delete,.game_item .unjoin_going {
+	position: absolute;
+	bottom: 1px;
+	right: 0px;
+	height: 24px;
+	width: 24px;
+	background-image: url(/images/delete.png);
+	display: none;
+	cursor: pointer;
+}
+
+.game_item .game_data {
+	padding-top: 10px;
+	vertical-align: text-top;
 }
 
 .game_item h3, .game_item h5 {
@@ -30,11 +57,6 @@
 
 .game_item h3 span, .game_item h5 span {
 	font-weight: bold;
-}
-
-.join_wrapper {
-	text-align: center;
-	width: 100%;
 }
 
 .game_item .delete {
@@ -98,9 +120,5 @@
 }
 
 .loader {
-	display: none;
-}
-
-.wrapper_state {
 	display: none;
 }

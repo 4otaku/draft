@@ -1,9 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title></title>
-</head>
-<body>
+{% extends "index/example_abstract.html" %}
 
-</body>
-</html>
+{% block fields %}
+<td class="game_data">
+	<h5>Бустер: <span class="booster_1"></span></h5>
+</td>
+<td class="game_data">
+	<h5 class="start">Время начала: <span class="timestart"></span></h5>
+</td>
+{% endblock %}

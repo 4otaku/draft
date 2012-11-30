@@ -49,7 +49,16 @@
 	<div class="left_wrapper">
 		<div class="game_info game_base">
 			<table>
-				{% if game.type == 2 %}
+				{% if game.type == 3 %}
+					<tr><td colspan="2">
+						<h4>Владелец: <span>{{game.login}}</span></h4>
+					</td></tr>
+					<tr><td>
+						<h5 class="start">Время начала: <span class="utc_date"></span></h5>
+					</td><td>
+						<h5>Бустер: <span>{{game.booster.0.name}}</span></h5>
+					</td></tr>
+				{% elseif game.type == 2 %}
 					<tr><td colspan="2">
 						<h4 class="start" style="float:right;">
 							Начало: <span class="utc_date"></span>
@@ -87,7 +96,7 @@
 			<h2>Ожидаем старта</h2>
 			{% if game.id_user == user.id %}
 				<button class="btn btn-success btn-large game_start_button">
-					Начать драфт c текущим составом
+					Начать игру c текущим составом
 					<img src="/images/loading.gif" />
 				</button>
 			{% endif %}
@@ -144,18 +153,15 @@
 			<div class="clear"></div>
 		</div>
 		<div class="game_ready game_base">
-			<!-- <button class="btn deck_side">
-				<span>Посайдиться</span>
-			</button>
-			<button class="btn disabled deck_unside">
-				<span>Рассайдиться</span>
-			</button>
-			<br /> -->
 			<div class="challenge well form-inline">
 				Оппоненты:
 				<select class="opponents"></select>
 				<button class="btn">Вызвать</button>
 			</div>
+			<br />
+			<button class="btn deck_side">
+				<span>Редактировать колоду</span>
+			</button>
 		</div>
 	</div>
 	<script type="text/javascript">
@@ -183,6 +189,7 @@
 			]
 		};
 	</script>
+	<script type="text/javascript" src="/external/m/?b=js/game&f={{js.game}}.js&ver={{js.gametime}}"></script>
 	<script type="text/javascript">var Chat = {room: {{game.id}}, freq: 2000};</script>
 	{% include 'chat.html' %}
 	<div class="display_card"><img /></div>

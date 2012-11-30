@@ -170,6 +170,44 @@ abstract class Game_Abstract
 			'gs.id_game = ? and gbc.id_user = ?', array($this->get_id(), $user));
 	}
 
+	public function land_added($user) {
+		$count = Database::join('game_booster', 'gb.id_game_set = gs.id')
+			->join('game_booster_card', 'gbc.id_game_booster = gb.id')
+			->get_count('game_set', 'gs.id_game = ? and gbc.id_user = ? and gbc.id_card = 1',
+			array($this->get_id(), $user));
+
+		return $count >= 100;
+	}
+
+	public function add_land($user) {
+
+		$id_booster = Database::join('game_booster', 'gb.id_game_set = gs.id')
+			->get_field('game_set', 'gb.id', 'gs.id_game = ?', $this->get_id());
+
+		$insert = $this->generate_lands($id_booster, $user);
+
+		Database::bulk_insert('game_booster_card', $insert, true);
+	}
+
+	protected function generate_lands($booster, $user) {
+		$pick = 200;
+		$insert = array();
+		for ($id_card = 1; $id_card <=5; $id_card++) {
+			for ($j = 1; $j <=100; $j++) {
+				$pick++;
+
+				$insert[] = array(
+					'id_game_booster' => $booster,
+					'id_card' => $id_card,
+					'id_user' => $user,
+					'pick' => $pick
+				);
+			}
+		}
+
+		return $insert;
+	}
+
 	public function set_deck($user, $cards) {
 		foreach ($cards as $card) {
 			if (!is_numeric($card)) {

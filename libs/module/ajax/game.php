@@ -103,34 +103,8 @@ class Module_Ajax_Game extends Module_Ajax_Abstract_Authorized
 	}
 
 	protected function do_get_deck($get) {
-		if (!empty($get['add_land'])) {
-			$count = Database::join('game_booster', 'gb.id_game_set = gs.id')
-				->join('game_booster_card', 'gbc.id_game_booster = gb.id')
-				->get_count('game_set', 'gs.id_game = ? and gbc.id_user = ? and gbc.id_card = 1',
-					array($this->game->get_id(), $this->user));
-
-			if ($count < 100) {
-
-				$id_booster = Database::join('game_booster', 'gb.id_game_set = gs.id')
-					->get_field('game_set', 'gb.id', 'gs.id_game = ?', $this->game->get_id());
-
-				$pick = 200;
-				$insert = array();
-				for ($id_card = 1; $id_card <=5; $id_card++) {
-					for ($j = 1; $j <=100; $j++) {
-						$pick++;
-
-						$insert[] = array(
-							'id_game_booster' => $id_booster,
-							'id_card' => $id_card,
-							'id_user' => $this->user,
-							'pick' => $pick
-						);
-					}
-				}
-
-				Database::bulk_insert('game_booster_card', $insert, true);
-			}
+		if (!empty($get['add_land']) && !$this->game->land_added($this->user)) {
+			$this->game->add_land($this->user);
 		}
 
 		return array('success' => true, 'cards' => $this->game->get_deck($this->user));
