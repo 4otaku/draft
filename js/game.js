@@ -157,7 +157,8 @@ function display_look(time, build) {
 		var deck = [];
 
 		$.each(response.cards, function(id, card) {
-			var count = card.count;
+			var count = card.count - card.deck;
+			var deck_count = card.deck;
 			var card = Game.card[card.id_card];
 
 			if (!card_pool[card.color]) {
@@ -168,7 +169,7 @@ function display_look(time, build) {
 				image: card.full, count: count});
 
 			deck.push({id: card.id, name: card.name,
-				image: card.full, count: 0});
+				image: card.full, count: deck_count});
 		});
 
 		$.each(card_pool, function(id, dev_null) {
@@ -233,6 +234,9 @@ function insert_card_pool(data, index, name) {
 }
 
 function insert_deck(data) {
+	$('.deck .buffer').html('');
+	$('.slot_holder .slot .items').html('');
+
 	$.each(data, function(id, item){
 		var div = $('<div/>').data('item', item).bind('compile', function(e, display){
 			var item = $(this).data('item');
@@ -275,8 +279,7 @@ function insert_deck(data) {
 				});
 			}
 			check_slot_height();
-		}).addClass('deck-' + item.id).addClass('hover_card').trigger('compile');
-		$('.deck .buffer').append(div);
+		}).addClass('deck-' + item.id).addClass('hover_card').trigger('compile', true);
 	});
 }
 

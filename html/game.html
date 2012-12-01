@@ -148,7 +148,7 @@
 			</div>
 			<div class="clear"></div>
 			<div class="card_pool">
-				<h2>Набранное</h2>
+				<h2>Доступные карты</h2>
 			</div>
 			<div class="clear"></div>
 		</div>
@@ -201,5 +201,5 @@
 {% endblock %}
 {% block script %}
 {{parent()}}
-<script type="text/javascript" src="/external/m/?b=js/game&f={{js.game}}.js&ver={{js.gametime}}"></script>
+<script type="text/javascript" src="/external/m/?b=js/game&f={{js.game}}.js&ver={{js.gametime}}{{js.debug}}"></script>
 {% endblock %}

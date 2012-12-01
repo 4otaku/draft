@@ -40,7 +40,9 @@ abstract class Module_Abstract_Html extends Module_Abstract
 
 		return array(
 			'list' => $list,
-			'time' => $time
+			'time' => $time,
+			'debug' => $_SERVER['REMOTE_ADDR'] == '127.0.0.1' ?
+				'&debug=1' : ''
 		);
 	}
 }

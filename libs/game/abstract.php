@@ -72,7 +72,7 @@ abstract class Game_Abstract
 
 		$this->insert_game_steps($sets);
 	}
-	
+
 	protected function insert_users($users) {
 		$order = 0;
 		foreach ($users as $user) {
@@ -82,7 +82,7 @@ abstract class Game_Abstract
 				'order' => $order
 			));
 			$order++;
-		}		
+		}
 	}
 
 	protected function make_booster($id, $set, $user) {
@@ -104,7 +104,7 @@ abstract class Game_Abstract
 	}
 
 	public function is_ready($user) {
-		return Database::get_count('game_user', 
+		return Database::get_count('game_user',
 			'id_game = ? and id_user = ? and created_deck = 1',
 			array($this->get_id(), $user)) > 0;
 	}
@@ -116,10 +116,10 @@ abstract class Game_Abstract
 		if (!empty($action)) {
 			$action['time'] = strtotime($action['time']);
 		}
-		
+
 		if (preg_match('/^pick_\d+$/', $action['type'])) {
 			$action['data'] = (int) str_replace('pick_', '', $action['type']);
-			$action['type'] = 'pick';			
+			$action['type'] = 'pick';
 		} else {
 			$action['data'] = false;
 		}
@@ -162,7 +162,7 @@ abstract class Game_Abstract
 	public function has_pick($pick) {
 		return false;
 	}
-	
+
 	public function add_booster($user) {
 		return false;
 	}
@@ -186,7 +186,7 @@ abstract class Game_Abstract
 
 		return Database::group('gbc.id_card')->join('game_booster', 'gb.id_game_set = gs.id')
 			->join('game_booster_card', 'gbc.id_game_booster = gb.id')
-			->get_table('game_set', array('gbc.id_card', 'count(*) as count'),
+			->get_table('game_set', array('gbc.id_card', 'count(*) as count', 'sum(gbc.deck) as deck'),
 			'gs.id_game = ? and gbc.id_user = ?', array($this->get_id(), $user));
 	}
 
@@ -232,13 +232,13 @@ abstract class Game_Abstract
 		$old_ids = Database::join('game_booster', 'gb.id_game_set = gs.id')
 			->join('game_booster_card', 'gbc.id_game_booster = gb.id')
 			->get_vector('game_set', 'gbc.id',
-				'gs.id_game = ? and gbc.id_user = ? and deck = 1', 
+				'gs.id_game = ? and gbc.id_user = ? and deck = 1',
 				array($this->get_id(), $user));
 
 		$old_ids = array_keys($old_ids);
-		Database::update('game_booster_card', array('deck' => 0), 
-			Database::array_in('id', $old_ids), $old_ids);				
-		
+		Database::update('game_booster_card', array('deck' => 0),
+			Database::array_in('id', $old_ids), $old_ids);
+
 		foreach ($cards as $card) {
 			if (!is_numeric($card)) {
 				throw new Error();
