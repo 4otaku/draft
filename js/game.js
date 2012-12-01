@@ -425,8 +425,14 @@ $('.deck_finish').click(function(){
 			$('.game_look .card_pool').show();
 			$('.game_look .deck').show();
 			alert('Не удалось создать колоду.');
+		} else {
+			Game.deck = false;
 		}
 	});
+});
+
+$('.game_ready .deck_side').click(function(){
+	display_look(0, 1);
 });
 
 $('.challenge button').click(function(){
