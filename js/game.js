@@ -12,31 +12,39 @@ var Fn = {
 	},
 	process_ready: function(response){
 		if (response.ready) {
-			var need_opponents_refresh = false;
-			$.each(response.users, function(key, value){
-				var user = value.id_user;
-				if (Game.opponents[user]) {
-					return;
-				}
-
-				Game.opponents[user] = Game.users[user];
-				$('body').trigger('message', Game.opponents[user].login +
-					' собрал колоду и готов играть.');
-				need_opponents_refresh = true;
-			});
-
-			if (need_opponents_refresh) {
-				refresh_opponents();
+			var me = this;
+			if (!Game.users.length) {
+				get_base_data(function(){
+					me.display_ready(response);
+				});
+			} else {
+				me.display_ready(response);
+			}
+		}
+	},
+	display_ready: function(response){
+		var need_opponents_refresh = false;
+		$.each(response.users, function(key, value){
+			var user = value.id_user;
+			if (Game.opponents[user]) {
+				return;
 			}
 
-			if (!Game.deck) {
-				if (Game.got_cards) {
-					build_deck(response.deck);
-				} else {
-					get_base_data(function(){build_deck(response.deck);});
-				}
-				this.switch_display('ready');
+			Game.opponents[user] = Game.users[user];
+			$('body').trigger('message', Game.opponents[user].login +
+				' собрал колоду и готов играть.');
+			need_opponents_refresh = true;
+		});
+
+		if (need_opponents_refresh) {
+			refresh_opponents();
+		}
+
+		if (!Game.deck) {
+			if (Game.got_cards) {
+				build_deck(response.deck);
 			}
+			this.switch_display('ready');
 		}
 	},
 	process_actions: function(response){
@@ -169,7 +177,7 @@ function display_look(time, build) {
 				image: card.full, count: count});
 
 			deck.push({id: card.id, name: card.name,
-				image: card.full, count: deck_count});
+				image: card.full, count: deck_count - 0});
 		});
 
 		$.each(card_pool, function(id, dev_null) {
@@ -237,6 +245,7 @@ function insert_deck(data) {
 	$('.deck .buffer').html('');
 	$('.slot_holder .slot .items').html('');
 
+	var insertTo = 0;
 	$.each(data, function(id, item){
 		var div = $('<div/>').data('item', item).bind('compile', function(e, display){
 			var item = $(this).data('item');
@@ -246,7 +255,8 @@ function insert_deck(data) {
 			if (item.count == 0) {
 				$(this).appendTo('.buffer');
 			} else if (display) {
-				$(this).appendTo('.slot:last .items');
+				$(this).appendTo($('.slot').eq(insertTo % 3).children('.items'));
+				insertTo++;
 				$(this).draggable('destroy');
 
 				$(this).draggable({
@@ -281,6 +291,7 @@ function insert_deck(data) {
 			check_slot_height();
 		}).addClass('deck-' + item.id).addClass('hover_card').trigger('compile', true);
 	});
+	check_create_button();
 }
 
 function get_base_data(callback) {
@@ -323,9 +334,8 @@ function get_base_data(callback) {
 		}
 
 		$(".participants").html('Участвуют: ' + users.join(', ') + '.');
+		get_cards_data(callback);
 	});
-
-	get_cards_data(callback);
 }
 
 function get_cards_data(callback) {

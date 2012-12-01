@@ -27,8 +27,8 @@ abstract class Booster_Abstract
 		$this->user = $user;
 	}
 
-	public function set_in_deck() {
-		$this->deck = 1;
+	public function set_in_deck($value) {
+		$this->deck = (int) $value;
 	}
 
 	public function generate() {

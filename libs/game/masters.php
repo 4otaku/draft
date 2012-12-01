@@ -5,7 +5,7 @@ class Game_Masters extends Game_Abstract
 	protected function make_booster($id, $set, $user) {
 		$booster = parent::make_booster($id, $set, $user);
 		$booster->set_user($user);
-		$booster->set_in_deck();
+		$booster->set_in_deck(true);
 		return $booster;
 	}
 
@@ -60,6 +60,7 @@ class Game_Masters extends Game_Abstract
 		$booster = Database::last_id();
 
 		$booster = $this->make_booster($booster, $set['id_set'], $user);
+		$booster->set_in_deck(false);
 		$ids = $booster->generate();
 
 		Grabber::get_images(array_unique($ids));

@@ -33,6 +33,7 @@ Fn.process_response = function(response) {
 		}
 	});
 }
+Fn.process_action_build = function(response) {}
 
 $('.game_ready .booster_add').click(function(){
 	if ($(this).is('.disabled')) {
