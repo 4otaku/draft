@@ -12,27 +12,30 @@
 		<div class="content">
 			{% block content %}{% endblock %}
 		</div>
-		<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-		<script type="text/javascript">
-			if (typeof jQuery == 'undefined') {
-				document.write(unescape("%3Cscript src='/js/external/jquery.js' type='text/javascript'%3E%3C/script%3E"));
-			}
-		</script>
-		{% if user.id %}
+		{% block script %}
+			<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 			<script type="text/javascript">
-				var User = {
-					name: "{{user.login}}",
-					avatar: "{{user.avatar}}",
-					id: {{user.id}},
-					settings: {
-						{% for name, value in user.settings %}
-							{{name}}: {{value}}{% if not loop.last %},{% endif %}
-						{% endfor %}
-					},
-					is_highlighted: /\b{{user.login}}\b/
-				};
+				if (typeof jQuery == 'undefined') {
+					document.write(unescape("%3Cscript src='/js/external/jquery.js' type='text/javascript'%3E%3C/script%3E"));
+				}
 			</script>
-		{% endif %}
-		<script type="text/javascript" src="/external/m/?b=js&f={{js.list|join(',')}}&ver={{js.time}}"></script>
+			{% if user.id %}
+				<script type="text/javascript">
+					var User = {
+						name: "{{user.login}}",
+						avatar: "{{user.avatar}}",
+						id: {{user.id}},
+						settings: {
+							{% for name, value in user.settings %}
+								{{name}}: {{value}}{% if not loop.last %},{% endif %}
+							{% endfor %}
+						},
+						is_highlighted: /\b{{user.login}}\b/
+					};
+				</script>
+			{% endif %}
+
+			<script type="text/javascript" src="/external/m/?b=js&f={{js.list|join(',')}}&ver={{js.time}}"></script>
+		{% endblock %}
 	</body>
 </html>

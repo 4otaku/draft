@@ -4,9 +4,6 @@ var Time = {
 
 init_sizes();
 
-$('.game_info .pick_time').html(format_time(Game.pick_time));
-$('.game_info .pause_time').html(format_time(Game.pause_time));
-
 if (Game.start > 0) {
 	var start = new Date(Game.start * 1000);
 	$('.game_info .utc_date').html(start.format('dd.mm.yyyy HH:MM'));
