@@ -103,31 +103,32 @@ class Module_Ajax_Game extends Module_Ajax_Abstract_Authorized
 	}
 
 	protected function do_get_deck($get) {
-		if (!empty($get['add_land']) && !$this->game->land_added($this->user)) {
-			$this->game->add_land($this->user);
-		}
-
-		return array('success' => true, 'cards' => $this->game->get_deck($this->user));
+		return array('success' => true, 'cards' => 
+			$this->game->get_deck($this->user, !empty($get['add_land'])));
 	}
 
 	protected function do_set_deck($get) {
 		if (!isset($get['c']) || !is_array($get['c']) ||
-			count($get['c']) < 40 || $this->game->is_ready()) {
+			count($get['c']) < 40) {
 
-			return array('success' => false);
+			return array('success' => false, 'step' => 1);
 		}
 
 		Database::begin();
 		try {
 			$this->game->set_deck($this->user, $get['c']);
 		} catch (Error $e) {
-			Database::rollback();
-			return array('success' => false);
+			Database::rollback();			
 		}
 
 		Database::commit();
 		return array('success' => true);
 	}
+	
+	protected function do_add_booster ($get) {
+		return array('success' => 
+			$this->game->add_booster($this->user));
+	}	
 
 	protected function is_owner() {
 		return $this->game->get('id_user') == $this->user;

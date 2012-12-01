@@ -146,7 +146,7 @@
 	float: left;
 	border-left: 1px solid #FFF;
 	padding: 0 5px;
-	min-height: 100px;
+	min-height: 150px;
 }
 
 .game_look .deck .slot:first-child {
@@ -163,35 +163,35 @@
 	cursor: pointer;
 }
 
-.game_look .gameed {
+.game_look .card_pool {
 	text-align: left;
 }
 
-.game_look .gameed h2 {
+.game_look .card_pool h2 {
 	display: none;
 }
 
-.game_look .gameed_color {
+.game_look .card_pool_color {
 	float: left;
 	margin: 5px;
 	width: 190px;
 }
 
-.game_look .gameed_color:nth-child(3n+2) {
+.game_look .card_pool_color:nth-child(3n+2) {
 	clear: left;
 }
 
-.game_look .gameed_color_header {
+.game_look .card_pool_color_header {
 	text-decoration: underline;
 	font-weight: bold;
 	font-size: 120%;
 }
 
-.game_look .gameed_row span {
+.game_look .card_pool_row span {
 	cursor: pointer;
 }
 
-.game_look .gameed_row span:hover {
+.game_look .card_pool_row span:hover {
 	text-decoration: underline;
 }
 

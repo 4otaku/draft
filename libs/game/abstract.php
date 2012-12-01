@@ -49,15 +49,7 @@ abstract class Game_Abstract
 	protected function create_data($users) {
 		Database::update('game', array('state' => 1), $this->get_id());
 
-		$order = 0;
-		foreach ($users as $user) {
-			Database::insert('game_user', array(
-				'id_game' => $this->get_id(),
-				'id_user' => $user,
-				'order' => $order
-			));
-			$order++;
-		}
+		$this->insert_users($users);
 
 		$sets = Database::order('order', 'asc')
 			->get_full_table('game_set', 'id_game = ?', $this->get_id());
@@ -80,6 +72,18 @@ abstract class Game_Abstract
 
 		$this->insert_game_steps($sets);
 	}
+	
+	protected function insert_users($users) {
+		$order = 0;
+		foreach ($users as $user) {
+			Database::insert('game_user', array(
+				'id_game' => $this->get_id(),
+				'id_user' => $user,
+				'order' => $order
+			));
+			$order++;
+		}		
+	}
 
 	protected function make_booster($id, $set, $user) {
 		return Booster::make_for_set($set, $id);
@@ -100,7 +104,8 @@ abstract class Game_Abstract
 	}
 
 	public function is_ready($user) {
-		return Database::get_count('game_user', 'id_game = ? and id_user = ? and created_deck = 1',
+		return Database::get_count('game_user', 
+			'id_game = ? and id_user = ? and created_deck = 1',
 			array($this->get_id(), $user)) > 0;
 	}
 
@@ -110,6 +115,13 @@ abstract class Game_Abstract
 
 		if (!empty($action)) {
 			$action['time'] = strtotime($action['time']);
+		}
+		
+		if (preg_match('/^pick_\d+$/', $action['type'])) {
+			$action['data'] = (int) str_replace('pick_', '', $action['type']);
+			$action['type'] = 'pick';			
+		} else {
+			$action['data'] = false;
 		}
 
 		return $action;
@@ -150,6 +162,10 @@ abstract class Game_Abstract
 	public function has_pick($pick) {
 		return false;
 	}
+	
+	public function add_booster($user) {
+		return false;
+	}
 
 	public function get_pick($set, $user, $shift) {
 		throw new Error();
@@ -163,7 +179,11 @@ abstract class Game_Abstract
 		return;
 	}
 
-	public function get_deck($user) {
+	public function get_deck($user, $add_land = false) {
+		if ($add_land && !$this->land_added($user)) {
+			$this->add_land($user);
+		}
+
 		return Database::group('gbc.id_card')->join('game_booster', 'gb.id_game_set = gs.id')
 			->join('game_booster_card', 'gbc.id_game_booster = gb.id')
 			->get_table('game_set', array('gbc.id_card', 'count(*) as count'),
@@ -209,6 +229,16 @@ abstract class Game_Abstract
 	}
 
 	public function set_deck($user, $cards) {
+		$old_ids = Database::join('game_booster', 'gb.id_game_set = gs.id')
+			->join('game_booster_card', 'gbc.id_game_booster = gb.id')
+			->get_vector('game_set', 'gbc.id',
+				'gs.id_game = ? and gbc.id_user = ? and deck = 1', 
+				array($this->get_id(), $user));
+
+		$old_ids = array_keys($old_ids);
+		Database::update('game_booster_card', array('deck' => 0), 
+			Database::array_in('id', $old_ids), $old_ids);				
+		
 		foreach ($cards as $card) {
 			if (!is_numeric($card)) {
 				throw new Error();
