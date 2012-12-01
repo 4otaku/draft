@@ -30,7 +30,11 @@ var Fn = {
 			}
 
 			if (!Game.deck) {
-				build_deck(response.deck);
+				if (Game.got_cards) {
+					build_deck(response.deck);
+				} else {
+					get_base_data(function(){build_deck(response.deck);});
+				}
 				this.switch_display('ready');
 			}
 		}
@@ -51,12 +55,12 @@ var Fn = {
 
 		Game.current_action = type;
 		Game.current_action_time = time;
-		
+
 		var fn = 'process_action_' + type;
 		if (this[fn]) {
 			this[fn].call(this, time, response.action.data);
 		}
-	},	
+	},
 	process_action_build: function(time, data) {
 		if (Game.got_cards) {
 			display_look(time, 1);
@@ -128,7 +132,7 @@ function get_game_data() {
 			if (!response.success) {
 				return;
 			}
-			
+
 			Fn.process_response(response);
 		}
 	});
@@ -317,7 +321,7 @@ function get_base_data(callback) {
 
 		$(".participants").html('Участвуют: ' + users.join(', ') + '.');
 	});
-	
+
 	get_cards_data(callback);
 }
 

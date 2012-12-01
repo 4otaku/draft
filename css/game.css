@@ -205,3 +205,7 @@
 	border-radius: 0 0 0 0 !important;
 	box-shadow: none !important;
 }
+
+.game_ready .btn {
+	margin: 0 20px;
+}
