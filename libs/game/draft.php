@@ -41,7 +41,7 @@ class Game_Draft extends Game_Abstract
 	public function get_action() {
 		$action = parent::get_action();
 
-		if (!empty($action) && $action['type'] == 'pick') {
+		if (!empty($action['type']) && $action['type'] == 'pick') {
 			$pick = $action['data'];
 			$set = ceil($pick / 15);
 			$shift = ($pick - 1) % 15;

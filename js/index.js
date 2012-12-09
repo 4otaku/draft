@@ -84,6 +84,7 @@ function do_get_game(callback, scope) {
 			if (item.update_state) {
 				var object = $('#game-' + key);
 				object.find('.delete').hide();
+				object.find('.user_count').html(item.user_count);
 
 				if (item.state == 0) {
 					if (item.id_user == User.id) {
