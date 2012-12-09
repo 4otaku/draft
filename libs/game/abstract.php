@@ -155,7 +155,7 @@ abstract class Game_Abstract
 		return Database::join('game_booster', 'gb.id_game_set = gs.id')
 			->join('game_booster_card', 'gbc.id_game_booster = gb.id')
 			->join('card', 'c.id = gbc.id_card')->get_vector('game_set',
-			array('c.id', 'c.name', 'c.image', 'c.color'),
+			array('c.id', 'c.name', 'c.image', 'c.color', 'c.mana_cost'),
 			'gs.id_game = ?', $this->get_id());
 	}
 

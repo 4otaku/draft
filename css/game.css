@@ -121,6 +121,10 @@
 	margin-top: 0px;
 }
 
+.game_look h2 {
+	line-height: 24px;
+}
+
 .game_look .deck {
 	display: none;
 	text-align: left;
@@ -163,12 +167,28 @@
 	cursor: pointer;
 }
 
+.game_look .mana_holder {
+	margin-bottom: 5px;
+}
+
+.game_look .mana {
+	background-position: left center;
+	background-repeat: no-repeat;
+	padding-left: 13px;
+	margin-right: 5px;
+}
+
+.game_look .mana_hidden {
+	display: none;
+}
+
 .game_look .card_pool {
 	text-align: left;
 }
 
 .game_look .card_pool h2 {
 	display: none;
+	margin-bottom: 5px;
 }
 
 .game_look .card_pool_color {
@@ -209,3 +229,33 @@
 .game_ready .btn {
 	margin: 0 20px;
 }
+
+/* Мана-символы */
+
+.game_look .mana_1 { background-image: url(/images/mana/1.png); }
+.game_look .mana_X { background-image: url(/images/mana/X.png); }
+.game_look .mana_B { background-image: url(/images/mana/B.png); }
+.game_look .mana_W { background-image: url(/images/mana/W.png); }
+.game_look .mana_G { background-image: url(/images/mana/G.png); }
+.game_look .mana_R { background-image: url(/images/mana/R.png); }
+.game_look .mana_U { background-image: url(/images/mana/U.png); }
+.game_look .mana_PW { background-image: url(/images/mana/PW.png); }
+.game_look .mana_PU { background-image: url(/images/mana/PU.png); }
+.game_look .mana_PB { background-image: url(/images/mana/PB.png); }
+.game_look .mana_PR { background-image: url(/images/mana/PR.png); }
+.game_look .mana_PG { background-image: url(/images/mana/PG.png); }
+.game_look .mana_WU { background-image: url(/images/mana/WU.png); }
+.game_look .mana_WB { background-image: url(/images/mana/WB.png); }
+.game_look .mana_RW { background-image: url(/images/mana/RW.png); }
+.game_look .mana_GW { background-image: url(/images/mana/GW.png); }
+.game_look .mana_UB { background-image: url(/images/mana/UB.png); }
+.game_look .mana_UR { background-image: url(/images/mana/UR.png); }
+.game_look .mana_GU { background-image: url(/images/mana/GU.png); }
+.game_look .mana_BR { background-image: url(/images/mana/BR.png); }
+.game_look .mana_BG { background-image: url(/images/mana/BG.png); }
+.game_look .mana_RG { background-image: url(/images/mana/RG.png); }
+.game_look .mana_2W { background-image: url(/images/mana/2W.png); }
+.game_look .mana_2U { background-image: url(/images/mana/2U.png); }
+.game_look .mana_2B { background-image: url(/images/mana/2B.png); }
+.game_look .mana_2R { background-image: url(/images/mana/2R.png); }
+.game_look .mana_2G { background-image: url(/images/mana/2G.png); }

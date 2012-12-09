@@ -30,7 +30,7 @@ function do_get_game(callback, scope) {
 			var booster = item.booster.split(',');
 			object.find('.type').html(Game_Types[item.type]);
 			object.find('.name').html(item.login);
-			object.find('.id').html(item.id);
+			object.find('.user_count').html(item.user_count);
 			if (booster[0]) {
 				object.find('.booster_1').html(booster[0]);
 			}

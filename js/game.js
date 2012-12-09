@@ -13,7 +13,7 @@ var Fn = {
 	process_ready: function(response){
 		if (response.ready) {
 			var me = this;
-			if (!Game.users.length) {
+			if ($.isEmptyObject(Game.users)) {
 				get_base_data(function(){
 					me.display_ready(response);
 				});
@@ -177,6 +177,7 @@ function display_look(time, build) {
 				image: card.full, count: count});
 
 			deck.push({id: card.id, name: card.name,
+				mana: parse_mana_cost(card.mana_cost),
 				image: card.full, count: deck_count - 0});
 		});
 
@@ -247,16 +248,23 @@ function insert_deck(data) {
 
 	var insertTo = 0;
 	$.each(data, function(id, item){
-		var div = $('<div/>').data('item', item).bind('compile', function(e, display){
+		var div = $('<div/>').data('item', item).bind('compile', function(e, user_call){
 			var item = $(this).data('item');
 			$(this).html('<span class="drag_card">' + item.count + ' x ' + item.name + '</span>' +
 				' <span class="remove_card">&#9746;</span>');
 
+			var in_slot = $(this).parent().is('.items');
+
 			if (item.count == 0) {
 				$(this).appendTo('.buffer');
-			} else if (display) {
-				$(this).appendTo($('.slot').eq(insertTo % 3).children('.items'));
-				insertTo++;
+			} else if (!in_slot) {
+				if (user_call) {
+					$(this).appendTo('.slot:first .items');
+				} else {
+					$(this).appendTo($('.slot').eq(insertTo % 3).children('.items'));
+					insertTo++;
+				}
+
 				$(this).draggable('destroy');
 
 				$(this).draggable({
@@ -288,10 +296,45 @@ function insert_deck(data) {
 					}
 				});
 			}
-			check_slot_height();
-		}).addClass('deck-' + item.id).addClass('hover_card').trigger('compile', true);
+			if (user_call) {
+				check_slot_height();
+				check_mana();
+			}
+		}).addClass('deck-' + item.id).addClass('hover_card').trigger('compile');
 	});
 	check_create_button();
+	check_slot_height();
+	check_mana();
+}
+
+function parse_mana_cost(raw_cost) {
+	raw_cost = raw_cost || '';
+	var matches = raw_cost.match(/\((.*?)\)/g);
+	if (!matches) {
+		return {};
+	}
+
+	var ret = {};
+	$.each(matches, function(key, match){
+		match = match.replace('(', '').replace(')', '');
+		var value = 1;
+		var target = '.mana_' + match;
+		if (match.match(/^\d+$/)) {
+			value = match - 0;
+			target = '.mana_1';
+		}
+		if (match == 'Y' || match == 'Z') {
+			target = '.mana_X';
+		}
+		if ($(target).length) {
+			if (!ret[target]) {
+				ret[target] = 0;
+			}
+			ret[target] += value;
+		}
+	});
+
+	return ret;
 }
 
 function get_base_data(callback) {
@@ -393,7 +436,7 @@ $('.card_pool_row span').live({
 		item_target.count++;
 
 		$(this).data('item', item).trigger('compile');
-		target.data('item', item_target).trigger('compile', item_target.count == 1);
+		target.data('item', item_target).trigger('compile', true);
 		check_create_button();
 	}
 });
@@ -409,7 +452,7 @@ $('.remove_card').live({
 		var target = $('.card_pool-' + item.id), item_target = target.data('item');
 		item_target.count++;
 
-		parent.data('item', item).trigger('compile');
+		parent.data('item', item).trigger('compile', true);
 		target.data('item', item_target).trigger('compile');
 		check_create_button();
 	}
@@ -487,6 +530,21 @@ function check_slot_height() {
 	});
 }
 
+function check_mana() {
+	$('.mana').data('count', 0);
+
+	$('.slot .items div').each(function(){
+		var data = $(this).data('item');
+
+		$.each(data.mana, function(target, count){
+			$(target).data('count', $(target).data('count') +
+				count * data.count);
+		});
+	});
+
+	$('.mana').trigger('compile');
+}
+
 function check_create_button() {
 	var count = 0, type_count = 0;
 
@@ -539,3 +597,17 @@ function refresh_opponents() {
 			opponent.id + '">' + opponent.login + '</option>');
 	});
 }
+
+$(document).ready(function(){
+
+	$('.mana').bind('compile', function(){
+		var count = $(this).data('count');
+		$(this).html(': ' + count);
+
+		if (count == 0 && $(this).is('.mana_hidden')) {
+			$(this).hide();
+		} else {
+			$(this).show();
+		}
+	});
+});

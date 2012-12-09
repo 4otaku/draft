@@ -41,8 +41,8 @@ class Game_Draft extends Game_Abstract
 	public function get_action() {
 		$action = parent::get_action();
 
-		if (!empty($action) && strpos($action['type'], 'pick_') === 0) {
-			$pick = str_replace('pick_', '', $action['type']);
+		if (!empty($action) && $action['type'] == 'pick') {
+			$pick = $action['data'];
 			$set = ceil($pick / 15);
 			$shift = ($pick - 1) % 15;
 			$action['picked'] = Database::join('game_booster', 'gb.id_game_set = gs.id')

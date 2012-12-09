@@ -68,9 +68,10 @@ class Module_Ajax_Game_List extends Module_Ajax_Abstract_Authorized
 			->join('set', 'gs.id_set = s.id')->group('g.id')
 			->get_table('game', array('g.id, g.id_user, g.state, u.login, g.pick_time, g.update,
 				g.pause_time, g.start, g.type', 'group_concat(s.name) as booster', 'gu.id_user as presense'),
-			'g.state != ? and g.update > ?', array(4, date('Y-m-d G:i:s', time() - 864000)));
+			'g.state != ? and g.update > ?', array(4, date('Y-m-d G:i:s', time() - 86400)));
 
-		$date_missed = time() - 7200;
+		$date_missed = time() - 10800;
+		$ids = array();
 		foreach ($data as $key => $item) {
 			if ($item['state'] > 0 && empty($item['presense'])
 				&& strtotime($item['update']) < $date_missed) {
@@ -83,6 +84,14 @@ class Module_Ajax_Game_List extends Module_Ajax_Abstract_Authorized
 			} else {
 				$data[$key]['start'] = strtotime($item['start']);
 			}
+			$ids[] = $item['id'];
+		}
+
+		$count = Database::group('id_game')->get_vector('game_user',
+			array('id_game', 'count(`id_user`)'), Database::array_in('id_game', $ids), $ids);
+		foreach ($data as $key => $item) {
+			$data[$key]['user_count'] = isset($count[$item['id']]) ?
+				$count[$item['id']] : 0;
 		}
 
 		return array(
