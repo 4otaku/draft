@@ -504,8 +504,14 @@ $('.challenge button').click(function(){
 	}
 
 	if (!Game.deck) {
+		$(this).children('img').show();
+		$(this).children('span').hide();
+		$(this).addClass('disabled');
 		get_cards_data(function(){
 			do_challenge(opponent);
+			$(this).children('img').hide();
+			$(this).children('span').show();
+			$(this).removeClass('disabled');
 		});
 	} else {
 		do_challenge(opponent);
