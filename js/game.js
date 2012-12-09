@@ -13,8 +13,12 @@ var Fn = {
 	process_ready: function(response){
 		if (response.ready) {
 			var me = this;
-			if ($.isEmptyObject(Game.users)) {
+			if ($.isEmptyObject(Game.opponents)) {
 				get_base_data(function(){
+					me.display_ready(response);
+				});
+			} else if (!Game.got_cards) {
+				get_cards_data(function(){
 					me.display_ready(response);
 				});
 			} else {
@@ -26,6 +30,7 @@ var Fn = {
 		var need_opponents_refresh = false;
 		$.each(response.users, function(key, value){
 			var user = value.id_user;
+
 			if (Game.opponents[user]) {
 				return;
 			}
@@ -103,6 +108,7 @@ $('.game_start_button').click(function(){
 			ids += key + ',';
 			ask += value.name + ', ';
 			game_users[key] = value;
+			game_users[key].login = value.name;
 		}
 	});
 	var confirm_text = 'Вы хотите начать драфт следующим составом: ' +
@@ -497,6 +503,16 @@ $('.challenge button').click(function(){
 		return;
 	}
 
+	if (!Game.deck) {
+		get_cards_data(function(){
+			do_challenge(opponent);
+		});
+	} else {
+		do_challenge(opponent);
+	}
+});
+
+function do_challenge(opponent) {
 	var win = window.open('', 'Дуэль');
 
 	win.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">' +
@@ -516,7 +532,7 @@ $('.challenge button').click(function(){
 		'</body>' +
 	'</html>');
 	win.document.close();
-});
+};
 
 function check_slot_height() {
 	var height = 150;
