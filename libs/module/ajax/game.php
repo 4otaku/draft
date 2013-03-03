@@ -63,6 +63,11 @@ class Module_Ajax_Game extends Module_Ajax_Abstract_Authorized
 		$cards = $cards + $lands;
 		ksort($cards);
 
+		foreach ($cards as &$card) {
+			$card['image'] .= '?' . filemtime(IMAGES . SL . 'small' . SL .
+				$card['image']);
+		}
+
 		return array('success' => true, 'cards' => $cards);
 	}
 
@@ -103,7 +108,7 @@ class Module_Ajax_Game extends Module_Ajax_Abstract_Authorized
 	}
 
 	protected function do_get_deck($get) {
-		return array('success' => true, 'cards' => 
+		return array('success' => true, 'cards' =>
 			$this->game->get_deck($this->user, !empty($get['add_land'])));
 	}
 
@@ -118,17 +123,17 @@ class Module_Ajax_Game extends Module_Ajax_Abstract_Authorized
 		try {
 			$this->game->set_deck($this->user, $get['c']);
 		} catch (Error $e) {
-			Database::rollback();			
+			Database::rollback();
 		}
 
 		Database::commit();
 		return array('success' => true);
 	}
-	
+
 	protected function do_add_booster ($get) {
-		return array('success' => 
+		return array('success' =>
 			$this->game->add_booster($this->user));
-	}	
+	}
 
 	protected function is_owner() {
 		return $this->game->get('id_user') == $this->user;
