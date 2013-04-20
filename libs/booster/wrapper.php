@@ -3,6 +3,7 @@
 class Booster
 {
 	protected static $card_cache = array();
+	protected static $card_land_cache = array();
 
 	/**
 	 * @param {String} $set
@@ -32,6 +33,10 @@ class Booster
 				$booster = new Booster_New_Land($id); break;
 			case 'ISD': case 'DKA':
 				$booster = new Booster_Double_Faced($id); break;
+			case 'DGM':
+				$booster = new Booster_Mythic_Nonbasic($id);
+				$booster->set_nonbasic_pool(self::get_land_cards($set));
+				break;
 			default:
 				$booster = new Booster_Mythic($id); break;
 		}
@@ -58,5 +63,23 @@ class Booster
 		}
 
 		return self::$card_cache[$set];
+	}
+
+	public static function get_land_cards($set) {
+		if (empty(self::$card_cache[$set])) {
+			$card_ids = Database::join('set_card', 'sc.id_card = c.id')
+				->group('sc.rarity')->get_table('card', array('sc.rarity',
+					'group_concat(c.`id`) as ids'), 'sc.id_set = ? and c.color = ?',
+					array($set, 'L'));
+
+			$cards = array();
+			foreach ($card_ids as $group) {
+				$cards[$group['rarity']] = explode(',', $group['ids']);
+			}
+
+			self::$card_land_cache[$set] = $cards;
+		}
+
+		return self::$card_land_cache[$set];
 	}
 }
