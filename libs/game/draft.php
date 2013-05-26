@@ -222,14 +222,22 @@ class Game_Draft extends Game_Abstract
 			$force_users = Database::get_vector('game_user', 'id_user',
 				'id_game = ? and force_picks > ?', array($this->get_id(), 1));
 
-			if (count($force_users) + $picked_count >=
-				Database::get_count('game_user', 'id_game = ?', $this->get_id())) {
+			$user_count = Database::get_count('game_user',
+				'id_game = ?', $this->get_id());
+			$cache_key = 'force_lock_' . $this->get_id() . '_' . $pick;
+			if (
+				count($force_users) + $picked_count >= $user_count &&
+				!Cache::get($cache_key)
+			) {
+				Cache::set($cache_key, 1);
 
 				if (!empty($force_users)) {
 					$this->force_picks($force_users, $set, $shift);
 				}
 
 				$this->shift_game_steps();
+
+				Cache::delete($cache_key);
 			}
 		}
 
