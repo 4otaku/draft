@@ -4,8 +4,8 @@ abstract class Booster_Abstract_Foil extends Booster_Abstract
 {
 	protected $is_foil = false;
 
-	public function __constructed($id) {
-		parent::__constructed($id);
+	public function __construct($id) {
+		parent::__construct($id);
 		$this->is_foil = (mt_rand(0, 6) < 1);
 	}
 

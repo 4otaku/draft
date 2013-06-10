@@ -37,6 +37,8 @@ class Booster
 				$booster = new Booster_Mythic_Nonbasic($id);
 				$booster->set_nonbasic_pool(self::get_land_cards($set));
 				break;
+			case 'MMA':
+				$booster = new Booster_Forced_Foil($id); break;
 			default:
 				$booster = new Booster_Mythic($id); break;
 		}
